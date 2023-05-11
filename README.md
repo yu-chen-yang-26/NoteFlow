@@ -1,6 +1,5 @@
 前後端開發
 ```bash
-
 docker compose --env-file .compose.env up -d
 
 ## frontend will be open on 7415 by default.
