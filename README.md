@@ -1,6 +1,5 @@
 前後端開發
 ```bash
-
 docker compose --env-file .compose.env up -d
 
 ## frontend will be open on 7415 by default.
@@ -13,7 +12,7 @@ docker compose --env-file .compose.env up -d
 
 docker compose --env-file .compose.env down
 ## compose for the first time will take longer time
-## because it has to install all the dependencies
+## because it has to install all the dependencies.
 ## you can always use "docker logs <container name>" to see how it is going.
 ```
 
