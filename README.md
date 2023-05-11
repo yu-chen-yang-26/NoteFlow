@@ -12,6 +12,9 @@ docker compose --env-file .compose.env up -d
 ## but you should edit the port at nginx.conf either.
 
 docker compose --env-file .compose.env down
+## compose for the first time will take longer time
+## because it has to install all the dependencies
+## you can always use "docker logs <container name>" to see how it is going.
 ```
 
 開發完畢，build docker
