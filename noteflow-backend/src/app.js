@@ -15,11 +15,11 @@ import fs from 'fs';
 import koaStatic from 'koa-static';
 import send from 'koa-send';
 
-import sharedb, { redisClient } from './database/mongodb/sharedb.js';
+import sharedb from './model/mongodb/sharedb.js';
+import redisClient from './model/redis/redisClient.js';
 import routes from './routes/index.js';
-import redisSession, { getSession } from './database/redis/redisSession.js';
-
-import { Flow, Node } from './database/mongodb/model/index.js';
+import redisSession, { getSession } from './model/redis/redisSession.js';
+import { Flow, Node } from './model/mongodb/model/index.js';
 
 const app = new Koa();
 
@@ -81,39 +81,39 @@ wsServer.on('connection', async (ws, req) => {
     const query = requests[1];
     if (url === '/registerNodeColab') {
         // 展示卡比獸們
-        getSession(req.headers.cookie)
-            .then((sess) => {
-                try {
-                    const email = sess.email;
-                    const params = new URLSearchParams(query);
+        // getSession(req.headers.cookie)
+        //     .then((sess) => {
+        //         try {
+        //             const email = sess.email;
+        //             const params = new URLSearchParams(query);
 
-                    console.log(email);
+        //             console.log(email);
 
-                    Node.CanUserEdit(
-                        params.get('id'),
-                        params.get('id').split('-')[0],
-                        email
-                    )
-                        .then((can) => {
-                            if (!can) {
-                                // Unauthorized. 你沒有權限進入這個 component
-                                ws.close(1000);
-                            }
-                        })
-                        .catch((e) => {
-                            // Component not exists. 嘗試讀取不存在的 List
-                            // ws.send(1001);
-                            ws.close(1001);
-                        });
-                } catch (e) {
-                    // Internal Server Error
-                    ws.close(4999);
-                }
-            })
-            .catch((e) => {
-                // You have no session. 我不認識你
-                ws.close(1002, 'Unauthorized.');
-            });
+        //             Node.CanUserEdit(
+        //                 params.get('id'),
+        //                 params.get('id').split('-')[0],
+        //                 email
+        //             )
+        //                 .then((can) => {
+        //                     if (!can) {
+        //                         // Unauthorized. 你沒有權限進入這個 component
+        //                         ws.close(1000);
+        //                     }
+        //                 })
+        //                 .catch((e) => {
+        //                     // Component not exists. 嘗試讀取不存在的 List
+        //                     // ws.send(1001);
+        //                     ws.close(1001);
+        //                 });
+        //         } catch (e) {
+        //             // Internal Server Error
+        //             ws.close(4999);
+        //         }
+        //     })
+        //     .catch((e) => {
+        //         // You have no session. 我不認識你
+        //         ws.close(1002, 'Unauthorized.');
+        //     });
 
         ws.on('message', async (message) => {
             try {
@@ -165,39 +165,40 @@ wsServer.on('connection', async (ws, req) => {
                 ws.close(1002, 'Unauthorized.');
             });
     } else {
-        getSession(req.headers.cookie)
-            .then((sess) => {
-                try {
-                    const email = sess.email;
-                    const params = new URLSearchParams(query);
-
-                    Node.CanUserEdit(
-                        params.get('id'),
-                        params.get('id').split('-')[0],
-                        email
-                    )
-                        .then((can) => {
-                            if (can) {
-                                const stream = new WebSocketJSONStream(ws);
-                                sharedb.listen(stream);
-                            } else {
-                                // Unauthorized. 你沒有權限進入這個 component
-                                ws.close(1000);
-                            }
-                        })
-                        .catch((e) => {
-                            // Component not exists. 嘗試讀取不存在的 List
-                            ws.close(1001);
-                        });
-                } catch (e) {
-                    // Internal Server Error
-                    ws.close(4999);
-                }
-            })
-            .catch((e) => {
-                // You have no session. 我不認識你
-                ws.close(1002, 'Unauthorized.');
-            });
+        const stream = new WebSocketJSONStream(ws);
+        sharedb.listen(stream);
+        // getSession(req.headers.cookie)
+        //     .then((sess) => {
+        //         try {
+        //             const email = sess.email;
+        //             const params = new URLSearchParams(query);
+        //             Node.CanUserEdit(
+        //                 params.get('id'),
+        //                 params.get('id').split('-')[0],
+        //                 email
+        //             )
+        //                 .then((can) => {
+        //                     if (can) {
+        //                         const stream = new WebSocketJSONStream(ws);
+        //                         sharedb.listen(stream);
+        //                     } else {
+        //                         // Unauthorized. 你沒有權限進入這個 component
+        //                         ws.close(1000);
+        //                     }
+        //                 })
+        //                 .catch((e) => {
+        //                     // Component not exists. 嘗試讀取不存在的 List
+        //                     ws.close(1001);
+        //                 });
+        //         } catch (e) {
+        //             // Internal Server Error
+        //             ws.close(4999);
+        //         }
+        //     })
+        //     .catch((e) => {
+        //         // You have no session. 我不認識你
+        //         ws.close(1002, 'Unauthorized.');
+        //     });
     }
 });
 

@@ -51,7 +51,18 @@
     # 可以使用 docker compose down 關閉
     docker compose --env-file ./config/.env.development down
     ```
-5. test
+5. docker with DB mongo
+    ```bash
+    # 進入docker container-mongodb
+    docker exec -it mongo /bin/bash
+
+    # 使用superadmin-user
+
+    mongosh -u user -p
+    use noteflow
+    db.createUsers(user:"user",pwd:"112a", roles:[{role:"readWrite",db:"noteflow"}])
+    ```
+6. test
     - 跑單元測試
         ```bash
         npm run test

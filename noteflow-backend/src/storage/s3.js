@@ -1,9 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import aws from 'aws-sdk';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: `${process.cwd()}/config/.env.development` });
 
 const { S3_BUCKET_REGION } = process.env;
 

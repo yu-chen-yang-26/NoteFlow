@@ -10,5 +10,4 @@ yarn.lock
 redis/redis.conf
 
 /coverage/*
-/config/.env.development
-/config/.env.production
+config/.env.development

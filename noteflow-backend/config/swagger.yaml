@@ -5,50 +5,41 @@ info:
   version: "0.1"
 servers:
   - url: http://localhost:3000/
-    description: main server
+    description: localhost
+  - url: https://noteflow.live/
+    description: production
 
 
 paths:
   /:
     get:
+      tags:
+        - frontend
       summary: 首頁
       description: 首頁
       responses:
           '200':
             description: 首頁成功
             content:
-              application/json:
-                schema: 
-                  type: object
-
-  /api/user:
+              text/plain:
+                example:
+                  ok
+  /api/hello-world:
     get:
-      summary: get user's JWT
+      summary: health check
       tags:
-        - user
+        - healthCheck
       responses:
-        '200':    # status code
-          description: get user token
+        '200':
+          description: healthCheck
           content:
-            application/json:
-              schema: 
-                type: object
-    put:
-      summary: 更新使用者資訊
-      tags:
-        - user
-      responses:
-        '200':    # status code
-          description: update user info
-          content:
-            application/json:
-              schema: 
-                type: object
+            text/plain:
+              example:
+                hello world!
 
   /api/user/register:
     post:
       summary: 使用者註冊
-      x-swagger-router-controller: user-controller
       tags:
           - user
       requestBody:
@@ -65,7 +56,7 @@ paths:
                 password:
                   type: string
               example:
-                user: 
+                user:
                   name: test
                   email: test@gmail.com
                   password: test
@@ -74,12 +65,59 @@ paths:
           description: successful login
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
-                items: 
+                items:
                   type: string
               example:
-                user: 
+                user:
+                  name: test
+                  email: test@gmail.com
+                  uuid: fd16ffe2-61a7-4c61-8693-009428a3b43a
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20ifSwiaWF0IjoxNjgxMTMxMjgxLCJleHAiOjE2ODE3MzYwODF9.iUOMcH_ltO42896ruTL5KA9eRokVbte0ByAreH0L0TE
+        '400':
+          description: bad request
+          content:
+            application/json:
+              example:
+                errors:
+                  You didn't provide sufficient information.
+        '401':
+          description: bad request
+          content:
+            application/json:
+              example:
+                errors:
+                  Forbidden, you already have  an email.
+  /api/user/verify/{userId}/{token}:
+    get:
+      summary: 使用者用email 進行認證
+      tags:
+          - user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: userId
+          example:
+            userId: 1
+        - in: path
+          name: token
+          schema:
+            type: integer
+          required: true
+          description: hash token
+          example:
+            token: test
+      responses:
+        '200':
+          description: successful verify
+          content:
+            application/json:
+              example:
+                user:
                   name: test
                   email: test@gmail.com
                   uuid: fd16ffe2-61a7-4c61-8693-009428a3b43a
@@ -98,7 +136,6 @@ paths:
           description: not found
     post:
       summary: 登入
-      x-swagger-router-controller: user-controller
       tags:
         - user
       requestBody:
@@ -115,44 +152,124 @@ paths:
                 password:
                   type: string
               example:
-                user: 
-                  name: admin
-                  email: admin@gmail.com
-                  password: admin
+                user:
+                  name: test
+                  email: test@gmail.com
+                  password: test
       responses:
         '200':
           description: successful login
           content:
             application/json:
-              schema: 
+              example:
+                user:
+                  email: test@gmail.com
+                  name: test
+        '401':
+          description: user auth error
+          content:
+            application/json:
+              example:
+                errors:
+                  email or password is not valid
+        '422':
+          description: input data error
+          content:
+            application/json:
+              example:
+                errors:
+                    email or password input error
+  /api/user/google-login:
+    post:
+      summary: 使用google-login登入(undone)
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
                 type: object
-                items: 
+                properties:
+                  name:
+                    type: string
+              example:
+                user:
+                  email: test@gmail.com
+      responses:
+        '200':
+          description: successful login
+          content:
+            application/json:
+              example:
+                user:
+                  id: 2
+                  email: 'test@gmail.com'
+                  name: 'test'
+                  password: '$argon2id$v=19$m=65536,t=3,p=4$0BjJneCLlW11ZlCj6k62IA$bTQ9YgkdgU4bE4jgnqZrAO1qk68edZaAOxsoEltDTE8'
+                  created_at: '2023-04-10T12:41:17.148Z'
+                  updated_at: '2023-04-10T12:41:17.148Z'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              example:
+                errors: You didn't provide user column.
+  /api/user/update:
+    post:
+      summary: update user name
+      description: Update name
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
                   type: string
               example:
-                user: 
-                  id: 1
-                  uuid: e8a3d4c9-ae21-4c4b-80b7-62b0f480e83e
-                  email: admin@gmail.com
-                  name: admin
-                  created_at: "2023-04-10T12:52:21.773Z"
-                  updated_at: "2023-04-10T12:52:21.773Z"
-                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOjEsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIn0sImlhdCI6MTY4MTEzMTU1NCwiZXhwIjoxNjgxNzM2MzU0fQ.RNYPSb4yX5rCXLdmFDoKq5A0r44G3N6vDIQaDTndYa8
+                user:
+                  name: test1
+                  email: test@gmail.com
+      responses:
+        '200':    # status code
+          description: A JSON array of user names
+          content:
+            application/json:
+              example:
+                user:
+                  name: test1
+                  email: test@gmail.com
+                  updatedAt: "2023-05-08T17:28:53.810Z"
+  /api/user/who-am-i:
+    get:
+      summary: 讀取session, 使用者是否已登入
+      description: 讀取session, 使用者是否已登入
+      tags:
+        - user
+      responses:
+        '200':
+          description: 已登入狀態
+          content:
+            application/json:
+              example:
+                text: had login
         '401':
-          description: user auth failed
+          description: 未登入
           content:
-            text/plain:
-              type: string
-              example: is invalid
-        '422':
-          description: data type error
-          content:
-            text/plain:
-              type: string
-              example: is not allowed
+            application/json:
+              example:
+                UnauthorizedError: You have no login data.
+
   /api/user/logout:
     post:
-      summary: 登出
-      description: 登出
+      summary: 登出(undone)
+      description: 登出(undone)
       tags:
         - user
       responses:
@@ -160,7 +277,97 @@ paths:
           description: A JSON array of user names
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
-                items: 
+                items:
                   type: string
+  /api/flows:
+    get:
+        summary: flows(undone)
+        description: flows(undone)
+        tags:
+          - flows
+        responses:
+          '200':    # status code
+            description: flows
+            content:
+              application/json:
+                schema:
+                  type: object
+                  items:
+                    type: string
+          '401':
+            description: Unauthorized. You haven't log in yet.
+            content:
+              application/json:
+                example:
+                  errors: Unauthorized. You haven't log in yet.
+  /api/flows/create:
+    post:
+        summary: flows(undone)
+        description: flows(undone)
+        tags:
+          - flows
+        responses:
+          '200':    # status code
+            description: flows
+            content:
+              application/json:
+                schema:
+                  type: object
+                  items:
+                    type: string
+          '401':
+            description: Unauthorized. You haven't log in yet.
+            content:
+              application/json:
+                example:
+                  errors: Unauthorized. You haven't log in yet.
+  /api/library:
+    get:
+        summary: get library(undone)
+        description: get library(undone)
+        tags:
+          - flows
+        responses:
+          '200':    # status code
+            description: flows
+            content:
+              application/json:
+                schema:
+                  type: object
+                  items:
+                    type: string
+          '401':
+            description: Unauthorized. You haven't log in yet.
+            content:
+              application/json:
+                example:
+                  errors: Unauthorized. You haven't log in yet.
+          '404':
+            description: model error
+            content:
+              application/json:
+                example:
+                  errors: Error.
+  /api/nodes/new-node:
+    post:
+        summary: get new node(undone)
+        description: get new node(undone)
+        tags:
+          - flows
+        responses:
+          '200':    # status code
+            description: flows
+            content:
+              application/json:
+                schema:
+                  type: object
+                  items:
+                    type: string
+          '401':
+            description: Unauthorized. You haven't log in yet.
+            content:
+              application/json:
+                example:
+                  errors: Unauthorized. You haven't log in yet.
