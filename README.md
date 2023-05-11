@@ -20,7 +20,7 @@ docker compose --env-file .compose.env down
 ./frontend.build.sh     ## build frontend
 ```
 
-Configure Nginx in MacOS/Linux
+Configure Nginx in MacOS
 ``` bash
 ## install nginx using brew, in Linux, try using apt-get install.
 brew install nginx
