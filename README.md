@@ -1,18 +1,15 @@
 前後端開發
 ```bash
-git clone frontend && backend...
-## rename <source> <target>
-## rename 的 source directory name 不管是什麼，都改成 target 就對了
-cd frontend && yarn
-cd backend && npm i
-rename NoteFlowFrontend noteflow-frontend
-rename noteflow-backend noteflow-backend
 
 docker compose --env-file .compose.env up -d
 
-## frontend will be open on 7415 by default.(https://localhost:7415)
+## frontend will be open on 7415 by default.
+## but for same origin policy, you must not specify port when you want to access noteflow.
+## you need to install and configure nginx for non-port support.
+## (as a result, typing "localhost" into browser is sufficient to enter into noteflow.)
 ## if you want to change port, feel free to change .compose.env
 ## where variable name is *-EXPOSE-PORT.
+## but you should edit the port at nginx.conf either.
 
 docker compose --env-file .compose.env down
 ```
