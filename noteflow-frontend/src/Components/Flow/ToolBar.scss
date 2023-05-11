@@ -1,0 +1,36 @@
+.toolbar{
+    position: relative;
+    .navbar {
+        position: absolute;
+        // height: 50px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: black;
+        border-radius: 0 10px 10px 0;
+        padding: 2px;
+
+        .left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+
+        }
+
+        .mid {
+            justify-self: center;
+            display: flex;
+            z-index: 3;
+        }
+
+        .right {
+            z-index: 3;
+        }
+
+        .toolBarButton {
+            border-radius: 15px;
+        }
+    }
+}

@@ -1,0 +1,14 @@
+node_modules/
+
+package-lock.json
+yarn.lock
+
+.DS_Store
+**/.DS_Store
+**/*/.DS_Store
+
+redis/redis.conf
+
+/coverage/*
+/config/.env.development
+/config/.env.production
