@@ -141,4 +141,3 @@ volumes:
 networks:
   noteflow:
     name: "noteflow"
-    external: true
