@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   mongo:
@@ -58,7 +58,7 @@ services:
   frontend:
     image: "node:lts"
     working_dir: /frontend
-    command: yarn vite
+    command: sh -c "yarn install && yarn vite"
     networks:
       - noteflow
     ports:
@@ -74,7 +74,7 @@ services:
   backend:
     image: "node:lts"
     working_dir: /backend
-    command: npm run start
+    command: sh -c "npm install && npm run start"
     networks:
       - noteflow
     ports:
@@ -100,7 +100,7 @@ services:
       REDIS_SESSION_PORT: $REDIS_SESSION_PORT
       REDIS_ACCOUNT: $REDIS_ACCOUNT
       REDIS_PASSWORD: $REDIS_PASSWORD
-      
+
       S3_BUCKET_REGION: $S3_BUCKET_REGION
 
       EMAIL_HOST: $EMAIL_HOST
@@ -109,12 +109,12 @@ services:
       REFRESH_TOKEN: $REFRESH_TOKEN
       CLIENT_SECRET: $CLIENT_SECRET
       CLIENT_ID: $CLIENT_ID
-      
+
     depends_on:
       - mongo
       - postgres
     volumes:
-        - ./noteflow-backend:/backend
+      - ./noteflow-backend:/backend
 
   migrate:
     image: "node:lts"
