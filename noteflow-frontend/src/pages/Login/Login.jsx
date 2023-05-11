@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useRef, useState } from "react";
+import { SwitchTransition, CSSTransition } from "react-transition-group";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -18,6 +19,7 @@ const Login = () => {
   const divRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user } = useApp();
   useEffect(() => {
@@ -92,25 +94,40 @@ const Login = () => {
     }
   }, [divRef.current]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTryme(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   return (
     <div className="login">
       <div className="login-container">
         <div className="logo">
-          <img src="assets/logo.png" alt="" width="190" height="190" />
-          <h1>NoteFlow</h1>
-          <Button
-            style={{
-              backgroundColor: "white",
-              color: "black",
-              textTransform: "none",
-            }}
-          >
-            Try Me
-          </Button>
+          <SwitchTransition mode="out-in">
+            <CSSTransition
+              key={tryme ? "tryme" : "logo"}
+              classNames="fade"
+              timeout={500}
+            >
+              {tryme ? (
+                <h1>Try Me</h1>
+              ) : (
+                <div>
+                  <img src="assets/logo.png" alt="" width="190" height="190" />
+                  <h1>NoteFlow</h1>
+                </div>
+              )}
+            </CSSTransition>
+          </SwitchTransition>
         </div>
+
         <div className="info">
           <h2>Login</h2>
-
           <div className="infoContainer">
             <Box
               component="form"

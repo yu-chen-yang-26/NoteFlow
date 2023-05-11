@@ -42,6 +42,7 @@
     "react-icons": "^4.8.0",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.10.0",
+    "react-transition-group": "^4.4.5",
     "reactflow": "^11.7.0",
     "reconnecting-websocket": "^4.4.0",
     "rich-text": "^4.1.0",
