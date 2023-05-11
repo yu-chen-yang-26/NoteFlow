@@ -98,6 +98,15 @@ const Login = () => {
         <div className="logo">
           <img src="assets/logo.png" alt="" width="190" height="190" />
           <h1>NoteFlow</h1>
+          <Button
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              textTransform: "none",
+            }}
+          >
+            Try Me
+          </Button>
         </div>
         <div className="info">
           <h2>Login</h2>
