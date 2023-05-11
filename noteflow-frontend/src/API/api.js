@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 let BASE_URL = import.meta.env.VITE_NOTEFLOW_BACKEND;
 
-if (import.meta.env.VITE_DEV === '1') {
-  BASE_URL = `localhost:${import.meta.env.VITE_NOTEFLOW_PORT}`;
+if (import.meta.env.VITE_DEV === "1") {
+  BASE_URL = `localhost`;
 }
 
 const instance = axios.create({
