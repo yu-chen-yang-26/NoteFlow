@@ -19,3 +19,25 @@ docker compose --env-file .compose.env down
 ./backend.build.sh      ## build backend
 ./frontend.build.sh     ## build frontend
 ```
+
+Configure Nginx in MacOS/Linux
+``` bash
+## install nginx using brew, in Linux, try using apt-get install.
+brew install nginx
+
+## try default nginx to see whether it works.
+nginx
+
+## move our server config into nginx configuration directory.
+sudo mv ./template/noteflow.nginx.conf /opt/homebrew/etc/nginx/servers/noteflow.conf
+## furthermore, you need to edit noteflow.conf where it is left unfilled.
+## e.g. <cert_file> & <key_file>. you can fill the path of cert & key in frontend folder.
+
+## make nginx test to see whether the new conf is valid
+nginx -t
+
+## if it is valid, kill original nginx and open new one.
+lsof -i :8080
+kill <pid>
+nginx
+```
