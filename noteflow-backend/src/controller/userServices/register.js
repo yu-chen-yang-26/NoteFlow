@@ -68,7 +68,7 @@ const register = async (ctx) => {
     await createUserBucket(user.email);
 
     ctx.status = 200;
-    ctx.body = verifyMessage;
+    ctx.body = JSON.stringify({ user: _.omit(user, ['password']) });
   } catch (err) {
     ctx.status = err.status || 500;
     ctx.body = JSON.stringify({ errors: err.message });

@@ -65,10 +65,12 @@ const Login = () => {
     instance
       .post("/user/login", request)
       .then((res) => {
+        console.log('ok!')
         refetchFromLocalStorage();
         navigateTo("/home");
       })
       .catch((e) => {
+        console.log(e)
         console.log("Login error");
       });
 
