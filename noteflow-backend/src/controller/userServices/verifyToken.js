@@ -1,13 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import humps from 'humps';
 import _ from 'lodash';
-import argon2 from 'argon2';
 import db from '../../lib/db.js';
 
 const verifyToken = async (ctx) => {
   try {
     const userId = ctx.params.id;
-    const token = ctx.params.token;
+    const { token } = ctx.params;
 
     const user = await db('users').first().where({ id: userId });
 
@@ -17,15 +15,14 @@ const verifyToken = async (ctx) => {
         .update({
           verified: true,
         })
-        .returning('*')
-        .then((rows) => {
-          console.log('User verified successfully.');
-        });
+        .returning('*');
 
-      ctx.session.logined = true;
-      ctx.session.email = user.email;
-      ctx.session.name = user.name;
-      ctx.session.picture = user.picture;
+      ctx.session = {
+        logined: true,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      };
       await ctx.session.save();
 
       const newUser = await db('users').first().where({ id: userId });
