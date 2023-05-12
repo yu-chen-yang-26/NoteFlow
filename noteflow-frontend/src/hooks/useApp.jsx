@@ -1,9 +1,11 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import crc32 from "crc-32";
 import instance from "../API/api";
+import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext({
   user: {},
+  logout: () => {},
   refetchFromLocalStorage: () => {},
 });
 
@@ -17,6 +19,13 @@ const UserProvider = (props) => {
 
   console.log(user);
   const [rerender, setRerender] = useState(false);
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    setUser("");
+    navigate("/");
+  };
   useEffect(() => {
     instance
       .get("/user/who-am-i")
@@ -27,7 +36,10 @@ const UserProvider = (props) => {
         }
         setUser(user);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        navigate("/");
+        console.log(e);
+      });
   }, [rerender]);
 
   const refetchFromLocalStorage = () => {
@@ -35,7 +47,7 @@ const UserProvider = (props) => {
   };
   return (
     <UserContext.Provider
-      value={{ user, refetchFromLocalStorage }}
+      value={{ user, refetchFromLocalStorage, logout }}
       {...props}
     />
   );

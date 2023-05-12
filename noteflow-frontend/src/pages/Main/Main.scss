@@ -1,40 +1,24 @@
-.App {
-  width: 100vw;
-  height: 100vh;
+#root {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  margin: 0;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.App-tab {
+  width: calc(100% - 160px);
+  overflow-x: hidden;
   padding: 0;
+  margin: 0;
+  min-height: 600px;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
 
-  #root {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-  }
-
-  .App-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    gap: 0;
-
-    .App-tab {
-      width: calc(100% - 160px);
-      overflow-x: hidden;
-      padding: 0;
-      margin: 0;
-      min-height: 600px;
-      background-color: black;
-      display: flex;
-      flex-direction: column;
-
-      .Flow-grid {
-        background-color: white;
-        flex: 1;
-        overflow-y: scroll;
-      }
-    }
+  .Flow-grid {
+    background-color: white;
+    // flex: 1;
+    // overflow-y: scroll;
+    height: 93%;
+    // width: 100%;
   }
 }

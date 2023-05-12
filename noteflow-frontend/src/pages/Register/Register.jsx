@@ -36,8 +36,13 @@ const Register = () => {
     instance
       .post("/user/register", request)
       .then((res) => {
+<<<<<<< HEAD
         refetchFromLocalStorage();
         navigateTo("/home");
+=======
+        console.log(res.data);
+        navigateTo("/");
+>>>>>>> d4565c7ba24bf9691dfe018dbd8ceec99be8b693
       })
       .catch((e) => {
         console.log("Login error");
@@ -131,18 +136,89 @@ const Register = () => {
                   style={{ backgroundColor: "white", color: "black" }}
                   onClick={() => navigateTo("/")}
                 >
-                  {t("Cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mt: 2, mb: 2, width: "45%" }}
-                  style={{ backgroundColor: "#0e1111" }}
-                >
-                  {t("Register")}
-                </Button>
-              </div>
-            </Box>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="name"
+                    label={t("Name")}
+                    name="name"
+                    autoComplete="name"
+                    autoFocus
+                    size="small"
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label={t("Email Address")}
+                    name="email"
+                    autoComplete="email"
+                    size="small"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label={t("Password")}
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    size="small"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label={t("Check Password")}
+                    type="password"
+                    id="check-password"
+                    autoComplete="current-password"
+                    size="small"
+                    onChange={(e) => {
+                      setCheckPassword(e.target.value);
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-around",
+                      width: "100%",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      sx={{ mt: 2, mb: 2, width: "45%" }}
+                      style={{ backgroundColor: "white", color: "black" }}
+                      onClick={() => navigateTo("/")}
+                    >
+                      {t("Cancel")}
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{ mt: 2, mb: 2, width: "45%" }}
+                      style={{ backgroundColor: "#0e1111", color: "white" }}
+                    >
+                      {t("Register")}
+                    </Button>
+                  </div>
+                </Box>
+              </>
+            )}
           </div>
         </div>
       </div>
