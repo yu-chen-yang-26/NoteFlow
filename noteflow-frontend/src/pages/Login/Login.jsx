@@ -111,8 +111,8 @@ const Login = () => {
   }, []);
 
   return (
-    <div className={`${isMobile ? "login-mobile" : "login"}`}>
-      <div className={`${isMobile ? "logo-mobile" : "logo"}`}>
+    <div className={`${isMobile ? "login" : "login"}`}>
+      <div className={`${isMobile ? "logo" : "logo"}`}>
         <SwitchTransition mode="out-in">
           <CSSTransition
             key={tryme ? "tryme" : "logo"}
@@ -131,7 +131,7 @@ const Login = () => {
         </SwitchTransition>
       </div>
 
-      <div className={`${isMobile ? "info-mobile" : "info"}`}>
+      <div className={`${isMobile ? "info" : "info"}`}>
         <h2>Login</h2>
         <div className="infoContainer">
           <Box

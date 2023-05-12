@@ -36,13 +36,8 @@ const Register = () => {
     instance
       .post("/user/register", request)
       .then((res) => {
-<<<<<<< HEAD
-        refetchFromLocalStorage();
-        navigateTo("/home");
-=======
         console.log(res.data);
         navigateTo("/");
->>>>>>> d4565c7ba24bf9691dfe018dbd8ceec99be8b693
       })
       .catch((e) => {
         console.log("Login error");
@@ -216,9 +211,9 @@ const Register = () => {
                       {t("Register")}
                     </Button>
                   </div>
-                </Box>
-              </>
-            )}
+                </Button>
+              </div>
+            </Box>
           </div>
         </div>
       </div>

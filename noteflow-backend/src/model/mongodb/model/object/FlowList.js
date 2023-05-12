@@ -2,78 +2,79 @@
 import { getMongoClient } from '../../mongoClient.js';
 
 class FlowList {
-    constructor(user) {
-        this.user = user;
-        this.flowList = {};
+  constructor(user) {
+    this.user = user;
+    this.flowList = {};
+  }
+
+  static async genFlowListProfile(userEmail) {
+    const result = {
+      user: userEmail,
+      flowList: [],
+    };
+
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flowList');
+    if (await collection.findOne({ user: result.user })) {
+      return; // We have created for this user.
     }
+    await collection.insertOne(result);
 
-    static async genFlowListProfile(userEmail) {
-        const result = {
-            user: userEmail,
-            flowList: [],
-        };
+    await mongoClient.close();
+  }
 
-        const mongoClient = getMongoClient();
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('flowList');
-        if (await collection.findOne({ user: result.user })) {
-            return; // We have created for this user.
-        }
-        await collection.insertOne(result);
+  async fetchFlowList() {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flowList');
 
-        await mongoClient.close();
-    }
+    this.flowList = (
+      await collection.findOne({
+        user: this.user,
+      })
+    ).flowList;
 
-    async fetchFlowList() {
-        const mongoClient = getMongoClient();
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('flowList');
+    await mongoClient.close();
+  }
 
-        this.flowList = (
-            await collection.findOne({
-                user: this.user,
-            })
-        ).flowList;
+  async addSomebodyToFlowList(userEmail, flowId) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flowList');
+    await collection.findOneAndUpdate(
+      {
+        user: userEmail,
+      },
+      {
+        $addToSet: { flowList: { owner: this.user, flowId } },
+      },
+    );
 
-        await mongoClient.close();
-    }
+    await mongoClient.close();
+  }
 
-    async addSomebodyToFlowList(userEmail, flowId) {
-        const mongoClient = getMongoClient();
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('flowList');
-        await collection.findOneAndUpdate(
-            {
-                user: userEmail,
-            },
-            {
-                $addToSet: { flowList: { owner: userEmail, flowId } },
-            }
-        );
+  // eslint-disable-next-line class-methods-use-this
+  async removeSomebodyFromFlowList(userEmail, flowId) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flowList');
 
-        await mongoClient.close();
-    }
+    await collection.findOneAndUpdate(
+      {
+        user: userEmail,
+      },
+      {
+        $pull: { flowList: { flowId: { $eq: flowId } } },
+      },
+    );
 
-    async removeSomebodyFromFlowList(userEmail, flowId) {
-        const mongoClient = getMongoClient();
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('flowList');
-
-        await collection.findOneAndUpdate(
-            {
-                user: userEmail,
-            },
-            {
-                $pull: { [`flowList.${this.user}`]: flowId },
-            }
-        );
-
-        await mongoClient.close();
-    }
+    await mongoClient.close();
+  }
 }
 
 export default FlowList;

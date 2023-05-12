@@ -41,14 +41,13 @@ class Flows {
     await mongoClient.close();
   }
 
-  static async fetchFlowsByFlowList(flowList, page) {
-    console.log(page);
-    const request_mapper = {};
+  static async fetchFlowsByFlowList(flowList) {
+    const requestMapper = {};
     flowList.forEach((element) => {
-      if (!(element.owner in request_mapper)) {
-        request_mapper[element.owner] = [];
+      if (!(element.owner in requestMapper)) {
+        requestMapper[element.owner] = [];
       }
-      request_mapper[element.owner].push(element.flowId);
+      requestMapper[element.owner].push(element.flowId);
     });
 
     const mongoClient = getMongoClient();
@@ -84,6 +83,28 @@ class Flows {
     await mongoClient.close();
 
     return result;
+  }
+
+  static async fetchColaborators(owner, flowId) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flows');
+
+    const resolved = await collection
+      .aggregate([
+        { $match: { user: owner } },
+        { $limit: 1 },
+        { $unwind: '$flows' },
+        { $match: { 'flows.id': { $eq: flowId } } },
+        { $replaceRoot: { newRoot: '$flows' } },
+      ])
+      .toArray();
+
+    await mongoClient.close();
+
+    return resolved[0].colaborators;
   }
 }
 

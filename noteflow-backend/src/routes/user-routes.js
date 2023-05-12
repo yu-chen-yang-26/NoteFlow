@@ -29,7 +29,9 @@ router
 
   .get('/flows', flow.getFlows)
   .post('/flows/create', flow.createFlow)
+  .get('/flows/get-colab-list', flow.getColabList)
   // .get('/flows/access-flow, service.accessFlow) // 是否可以進入這個 flow 修改 // 變成 middleware 做在 ws 裡面
+  .post('/flows/revise-colab-list', flow.reviseColabList)
   // .put('/flows/add-colab, service.addColab)
   // .put('/flows/remove-colab, service.removeColab)
   .get('/library', flow.getLibrary)
