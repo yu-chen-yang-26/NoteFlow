@@ -1,7 +1,6 @@
 前後端開發
 ```bash
 docker compose --env-file .compose.env up -d
-
 ## frontend will be open on 7415 by default.
 ## but for same origin policy, you must not specify port when you want to access noteflow.
 ## you need to install and configure nginx for non-port support.
