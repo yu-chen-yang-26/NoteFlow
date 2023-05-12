@@ -6,7 +6,6 @@ import './Editor.scss';
 import { IoIosArrowBack } from 'react-icons/io';
 import IconButton from '@mui/material/IconButton';
 import { useState } from 'react';
-import { useFlowStorage } from '../../storage/Storage';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { useQuill } from '../../API/useQuill';

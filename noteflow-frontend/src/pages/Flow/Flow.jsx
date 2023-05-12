@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import ReactFlow, {
   Position,
-  Handle,
   Controls,
   Background,
   MiniMap,
@@ -23,16 +22,13 @@ import { Editor } from '../../Components/Editor/Editor';
 import PageTab from '../../Components/PageTab/PageTab';
 import { useFlowStorage } from '../../storage/Storage';
 import { Navigate, useLocation } from 'react-router-dom';
-import { toPng } from 'html-to-image';
 import { QuillProvider } from '../../API/useQuill';
-// import { FlowProvider, useFlow } from "../../API/useFlow";
 import instance from '../../API/api';
 import { useApp } from '../../hooks/useApp';
 import './Flow.scss';
 import 'reactflow/dist/style.css';
 import FlowWebSocket from '../../hooks/flowConnection';
 import { useNavigate } from 'react-router-dom';
-// import { getConnection } from "../../hooks/flowConnection";
 
 const nodeTypes = {
   CustomNode,
