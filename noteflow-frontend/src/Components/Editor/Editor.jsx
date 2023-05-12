@@ -20,11 +20,11 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   const { user } = useApp();
   const [colab, setColab] = useState([]);
   const [colabWebSocket, setColabWebSocket] = useState(null);
-  const { OpenEditor, QuillRef, colabs } = useQuill();
+  const { OpenEditor, QuillRef, setOnline } = useQuill();
   useEffect(() => {
     OpenEditor(editorId);
-    console.log('open editor');
     const connection = new Colab(editorId, user.email, (members) => {
+      // 定期看要不要 clean 掉
       setColab(members);
     });
     setColabWebSocket(connection);
@@ -35,18 +35,20 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     });
   }, []);
 
+  useEffect(() => {
+   setOnline(colab) 
+  }, [colab]);
+
   const [state, setState] = useState({
     title: '',
     value: '',
   });
 
   const handleChange = (value) => {
-    console.log(state.value);
     setState({ ...state, value });
   };
 
   const onSave = () => {
-    // console.log(state.value);
     // saveNode({
     //   flow_id: flowId,
     //   node_id: nodeId,
@@ -55,6 +57,8 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     // });
     //connect to backend
   };
+
+
 
   // shareDB
 

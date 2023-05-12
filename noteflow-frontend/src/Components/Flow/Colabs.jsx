@@ -10,6 +10,7 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
   const [allColabs, setAllColabs] = useState(null);
   const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState("");
+  const [alarms, setAlarms] = useState("");
 
   useEffect(() => {
     if(show) {
@@ -19,6 +20,7 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
           new_array[i] = {
             email: res.data[i],
             type: "original",
+            status: 200,
           }
         }
         setAllColabs(new_array);
@@ -32,8 +34,31 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
   const handleSubmit = async () => {
     instance.post('/flows/revise-colab-list', { colabs: allColabs, id: flowId }).then((res) => {
       if(res.status === 200) {
-        console.log('successful!')
-        setShow(false);
+        let canClose = true;
+        console.log(res.data)
+        res.data.map((data, index) => {
+          if(data.status !== 200) {
+            canClose = false;
+            if(data.type === 'remove') {
+              res.data[index].type = 'original';
+            }
+          }
+        })
+        setAllColabs(res.data);
+        if(canClose) {
+          setShow(false);
+        }
+      }
+    }).catch((e) => {
+      switch(e.response.status) {
+        case 401: // 沒有登入
+          return setAlarms("You have not logged in yet.")
+        case 402: // 提供不充分的資料
+          return setAlarms("Error. Reopen the window and try again.")
+        case 403: // 沒有權限使用
+          return setAlarms("You are not authorized to edit this.")
+        default:
+          return setAlarms("Internal server error.")
       }
     })
   }
@@ -66,7 +91,7 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
               onKeyDown={(e) => {
                 if(e.key === 'Enter') {
                   e.preventDefault();
-                  setAllColabs(state => [...state, {email: colabInput, type: "new"}]);
+                  setAllColabs(state => [...state, {email: colabInput, type: "new", status: 200}]);
                   setColabInput("");
                 }
               }}
@@ -78,10 +103,13 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
                 startAdornment: allColabs === null ? undefined : (
                   allColabs.map((data, index) => {
                     return ( data.type === 'remove' ? <></> : 
-                      <ColabTags id={`colab-${index}`} key={`colab-${index}`}>{data.email}
+                      <ColabTags id={`colab-${index}`} key={`colab-${index}`} style={{ border: data.status === 200 ? undefined : '1px solid red'}}>{data.email}
                         <div onClick={() => {
-                          console.log('remove')
                           setAllColabs(state => {
+                            // 如果是 new，可以直接 filter 掉，
+                            if(state[index].type === 'new') {
+                              return state.filter((d, i) => i !== index);
+                            }
                             state[index].type = 'remove';
                             return state;
                           })
@@ -95,6 +123,13 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
                 ),
               }}
             />
+            <div style={{
+                color: 'red',
+                height: '18px',
+                // border: '1px solid black',
+                textAlign: 'left',
+                padding: '0 5px 0 5px',
+              }}>{alarms}</div>
             <Button
               onClick={handleSubmit}
               variant="contained"

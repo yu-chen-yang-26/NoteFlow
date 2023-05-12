@@ -99,9 +99,7 @@ function Flow({flowId}) {
 
   useEffect(() => {
     const flowConnection = new FlowWebSocket(flowId, (data) => {
-      console.log(data);
       if (data.error) {
-        console.log(data.error);
         navigateTo('/error');
       } else rerender(data);
     });
@@ -169,7 +167,6 @@ function Flow({flowId}) {
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        console.log('res:', res.data);
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
@@ -208,7 +205,6 @@ function Flow({flowId}) {
 
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
-    console.log('node:', node);
     setEditorId(node.editorId);
     setIsEdit(true);
   });
@@ -240,7 +236,6 @@ function Flow({flowId}) {
             }}
             onEdgeUpdate={(param) => {
               onEdgeUpdate(param);
-              console.log('2');
             }}
             onConnect={(param) => {
               onConnect(param);
@@ -248,7 +243,6 @@ function Flow({flowId}) {
                 { ...param, id: edgeId.current.toString() },
                 'edge'
               );
-              console.log(param);
             }}
             // onInit={setRfInstance}
             onNodeDoubleClick={onNodeDoubleClick}

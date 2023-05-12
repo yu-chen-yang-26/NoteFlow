@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useRef,
+  useCallback,
 } from 'react';
 import ObjectID from 'bson-objectid';
 import tinycolor from 'tinycolor2';
@@ -19,14 +20,14 @@ sharedb.types.register(richText.type);
 
 const QuillContext = createContext({
   OpenEditor: () => {},
-  setIdentity: () => {},
+  setOnline: () => {},
+  QuillRef: {},
 });
 
 const collection = 'editor';
 
 /**
- * 亂數產生的 hashId, 這個 id 可以再綁定一個名字，
- * 可以使用 setIdentity({..., name: ...}) 來綁定名字。
+ * 亂數產生的 hashId, 這個 id 可以再綁定一個名字
  */
 const presenceId = new ObjectID().toHexString(); // TODO
 
@@ -45,9 +46,9 @@ const QuillProvider = (props) => {
   const [editorId, setEditorId] = useState(null);
   const [editor, setEditor] = useState(null);
   const [presence, setPresence] = useState(null);
+  const [cursors, setCursors] = useState(null);
+  const [online, setOnline] = useState([])
   const QuillRef = useRef();
-  const [identity, setIdentity] = useState(null);
-  const [colabs, setColabs] = useState([]);
 
   const { user } = useApp();
 
@@ -56,7 +57,6 @@ const QuillProvider = (props) => {
     const socket = new WebSocket(`wss://${BASE_URL}/ws/node?id=${editorId}`);
     const connection = new sharedb.Connection(socket);
     setWebsocket(connection);
-    setIdentity(user);
   }, [editorId]);
 
   const OpenEditor = async (editorId) => {
@@ -68,7 +68,6 @@ const QuillProvider = (props) => {
     if (presence) {
       await presence.unsubscribe();
     }
-    console.log('open', editorId);
     setEditorId(editorId);
     QuillRef.current !== null
       ? setQuill(QuillRef.current.getEditor())
@@ -76,19 +75,31 @@ const QuillProvider = (props) => {
   };
 
   useEffect(() => {
+    // 拿 member 跟 presence 比？ 應該拿 colors 就好了
+    // 包含在裡面的我不想要留著，留著的都是等等要被殺掉的
+    if(quill && editor) {
+      /*
+        當 members 裡面少了一個 3，剩下 1 2
+        原本的 colors 有 2 3，
+        killed = [3]
+      */
+      const cursors = quill.getModule('cursors');
+      const killed = Object.keys(colors).filter(email => !online.includes(email))
+      killed.forEach(email => {
+        delete colors[email];
+        cursors.removeCursor(email);
+      })
+    }
+  }, [online])
+
+  useEffect(() => {
     if (!editorId || !quill || !websocket) return;
 
-    console.log('editorId', editorId);
-
     const editor = websocket.get(collection, editorId);
-    console.log(editor);
+
     editor.subscribe((error) => {
       if (error) throw error;
-      console.log('訂閱好啦！');
-      // 設定特定 node editor 的 websocket
-      // if (editor.type === null) {
-      //   editor.create([{ insert: "hello world" }], "rich-text");
-      // }
+
       setEditor(editor);
       quill.setContents(editor.data);
 
@@ -108,41 +119,38 @@ const QuillProvider = (props) => {
       const presence = editor.connection.getDocPresence(collection, editorId);
       presence.subscribe((error) => {
         if (error) throw error;
-        console.log(presence);
         setPresence(presence);
-        // console.log(presence.所有其他人);
-        // const colabs = presence.所有其他人;
-        // setColabs(colabs);
       });
 
       const localPresence = presence.create(user.email);
-      quill.on('');
+
       quill.on('selection-change', (range, oldRange, source) => {
+        // client 端，送給其他人你的消息
         if (source !== 'user') return;
         if (!range) return;
-        console.log(1);
-        range.name = identity ? (identity.name ? identity.name : '-') : '-'; // # TODO
+        range.name = user ? (user.name ? user.name : '-') : '-'; // # TODO
         localPresence.submit(range, (error) => {
           if (error) throw error;
         });
       });
 
+      quill.on('')
       const cursors = quill.getModule('cursors');
       presence.on('receive', function (id, range) {
+        // 我收到了來自 server 端的，其他人的消息
         colors[id] = colors[id] || tinycolor.random().toHexString();
-        var name = (range && range.name) || 'Anonymous';
+        const name = (range && range.name) || 'Anonymous';
         cursors.createCursor(id, name, colors[id]);
         cursors.moveCursor(id, range);
       });
     });
 
     setEditor(editor);
-    console.log('Done');
-  }, [editorId, quill, websocket, identity]);
+  }, [editorId, quill, websocket, user]);
 
   return (
     <QuillContext.Provider
-      value={{ OpenEditor, setIdentity, identity, QuillRef, colabs }}
+      value={{ OpenEditor, setOnline, QuillRef }}
       {...props}
     />
   );
