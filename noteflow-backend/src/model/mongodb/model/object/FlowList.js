@@ -57,6 +57,7 @@ class FlowList {
     await mongoClient.close();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async removeSomebodyFromFlowList(userEmail, flowId) {
     const mongoClient = getMongoClient();
     await mongoClient.connect();
@@ -68,7 +69,7 @@ class FlowList {
         user: userEmail,
       },
       {
-        $pull: { [`flowList.${this.user}`]: flowId },
+        $pull: { flowList: { flowId: { $eq: flowId } } },
       },
     );
 

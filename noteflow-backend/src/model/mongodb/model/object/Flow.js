@@ -122,15 +122,18 @@ class Flow {
     const collection = database.collection('flows');
 
     const owner = flowId.split('-')[0];
-    await collection.findOneAndUpdate(
-      {
-        user: owner,
-        'flows.id': flowId,
-      },
-      {
-        $addToSet: { 'flows.$.colaborators': { $each: add } },
-      },
-    );
+    if (add.length !== 0) {
+      await collection.findOneAndUpdate(
+        {
+          user: owner,
+          'flows.id': flowId,
+        },
+        {
+          $addToSet: { 'flows.$.colaborators': { $each: add } },
+        },
+      );
+    }
+
     await collection.findOneAndUpdate(
       {
         user: owner,
@@ -140,6 +143,7 @@ class Flow {
         $pull: { 'flows.$.colaborators': { $in: remove } },
       },
     );
+    // eslint-disable-next-line no-empty
 
     await mongoClient.close();
   }

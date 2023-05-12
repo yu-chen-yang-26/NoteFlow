@@ -8,6 +8,7 @@ import instance from "../../API/api";
 export default function Colabs ({ show, setShow, handleClose, flowId }) {
 
   const [allColabs, setAllColabs] = useState(null);
+  const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState("");
 
   useEffect(() => {
@@ -72,15 +73,25 @@ export default function Colabs ({ show, setShow, handleClose, flowId }) {
               InputProps={{
                 style: {
                   display: 'flex',
+                  flexWrap: 'wrap',
                 },
                 startAdornment: allColabs === null ? undefined : (
-                  <>
-                    {
-                      allColabs.map((data, index) => {
-                        return <ColabTags id={`colab-${index}`} key={`colab-${index}`}>{data.email}<CloseIcon/></ColabTags>
-                      })
-                    }
-                  </>
+                  allColabs.map((data, index) => {
+                    return ( data.type === 'remove' ? <></> : 
+                      <ColabTags id={`colab-${index}`} key={`colab-${index}`}>{data.email}
+                        <div onClick={() => {
+                          console.log('remove')
+                          setAllColabs(state => {
+                            state[index].type = 'remove';
+                            return state;
+                          })
+                          setRerender(state => !state);
+                        }}>
+                          <CloseIcon/>
+                        </div>
+                      </ColabTags>
+                    )
+                  })
                 ),
               }}
             />
@@ -121,6 +132,7 @@ const ColabTags = styled("div")`
   border-radius: 3px;
   background-color: #f7f9fc;
   padding: 5px 10px 5px 10px;
+  margin: 5px 0 5px 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

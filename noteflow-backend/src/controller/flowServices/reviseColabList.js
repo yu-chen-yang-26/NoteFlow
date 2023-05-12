@@ -31,18 +31,19 @@ const reviseColabList = async (ctx) => {
   // const colabs = await Flows.fetchColaborators(owner, id);
   const added = [];
   const removed = [];
-  colabs.map(async (data) => {
-    if (data.type === 'new') {
-      added.push(data.email);
-      await schema.addSomebodyToFlowList(data.email, id);
-    } else if (data.type === 'remove') {
-      removed.push(data.email);
-      await schema.removeSomebodyFromFlowList(data.email, id);
-    }
-  });
-  console.log(id);
-  console.log(added);
-  await Flow.refreshColabs(id, added, removed);
+  try {
+    colabs.map(async (data) => {
+      if (data.type === 'new') {
+        added.push(data.email);
+        await schema.addSomebodyToFlowList(data.email, id);
+      } else if (data.type === 'remove') {
+        removed.push(data.email);
+        await schema.removeSomebodyFromFlowList(data.email, id);
+      }
+    });
+    await Flow.refreshColabs(id, added, removed);
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
 
   ctx.status = 200;
 };
