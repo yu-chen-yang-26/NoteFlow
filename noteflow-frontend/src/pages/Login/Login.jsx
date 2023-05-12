@@ -69,12 +69,12 @@ const Login = () => {
     instance
       .post("/user/login", request)
       .then((res) => {
-        console.log('ok!')
+        console.log("ok!");
         refetchFromLocalStorage();
         navigateTo("/home");
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
         console.log("Login error");
       });
 
@@ -185,11 +185,6 @@ const Login = () => {
                     color: "white",
                     paddingTop: "2%",
                     textTransform: "none",
-                <Link
-                  variant="body2"
-                  style={{
-                    color: "#414a4c",
-                    cursor: "pointer",
                   }}
                 >
                   Login
@@ -200,17 +195,12 @@ const Login = () => {
                     display: "flex",
                     justifyContent: "space-between",
                   }}
-                  Forgot password?
-                </Link>
-                <Link
-                  variant="body2"
-                  style={{ color: "#414a4c", cursor: "pointer" }}
-                  onClick={() => navigateTo("/register")}
                 >
                   <Link
                     variant="body2"
                     style={{
                       color: "#414a4c",
+                      cursor: "pointer",
                     }}
                     onClick={() => navigateTo("/forgotPassword")}
                   >
@@ -218,7 +208,7 @@ const Login = () => {
                   </Link>
                   <Link
                     variant="body2"
-                    style={{ color: "#414a4c" }}
+                    style={{ color: "#414a4c", cursor: "pointer" }}
                     onClick={() => navigateTo("/register")}
                   >
                     {"Don't have an account? Sign Up"}
@@ -321,6 +311,7 @@ const Login = () => {
                     variant="body2"
                     style={{
                       color: "#414a4c",
+                      cursor: "pointer",
                     }}
                     onClick={() => navigateTo("/forgotPassword")}
                   >
@@ -328,7 +319,7 @@ const Login = () => {
                   </Link>
                   <Link
                     variant="body2"
-                    style={{ color: "#414a4c" }}
+                    style={{ color: "#414a4c", cursor: "pointer" }}
                     onClick={() => navigateTo("/register")}
                   >
                     {"Don't have an account? Sign Up"}
