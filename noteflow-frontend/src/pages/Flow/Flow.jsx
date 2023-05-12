@@ -74,8 +74,8 @@ function downloadImage(dataUrl) {
 //   }).then(downloadImage);
 // };
 
-function Flow() {
-  const location = useLocation();
+function Flow({flowId}) {
+
   const rfInstance = useReactFlow();
   const xPos = useRef(50);
   const yPos = useRef(0);
@@ -94,8 +94,6 @@ function Flow() {
   const { user } = useApp();
   const [activeNodeId, setActiveNodeId] = useState(null);
   const [editorId, setEditorId] = useState(null);
-  const searchParams = new URLSearchParams(location.search);
-  const flowId = searchParams.get('id');
 
   const navigateTo = useNavigate();
 
@@ -226,6 +224,7 @@ function Flow() {
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle);
             }}
+            flowId={flowId}
           />
           <ReactFlow
             className='NodePanel'
@@ -294,11 +293,16 @@ function Flow() {
 }
 
 function FlowWithProvider(...props) {
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const flowId = searchParams.get('id');
+
   return (
     <div className='Flow-container'>
-      <PageTab />
+      <PageTab flowId={flowId}/>
       <ReactFlowProvider>
-        <Flow />
+        <Flow flowId={flowId} />
       </ReactFlowProvider>
     </div>
   );
