@@ -5,14 +5,14 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import instance from "../../API/api";
 import { SHA256 } from "crypto-js";
-import { useApp } from "../../hooks/useApp";
+import { useParams } from "../../hooks/useParams";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Register.scss";
 
 const Register = () => {
   const { t } = useTranslation();
-  const { refetchFromLocalStorage } = useApp();
+  const [user, setUser] = useState({}); // user 是 google 回傳的 object, 可以拿去 render profile 頁面
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,19 +30,16 @@ const Register = () => {
         password: passwordHashed,
       },
     };
+    console.log(email);
+    console.log(password);
     if (passwordHashed !== checkPasswordHashed) {
       alert("Wrong password");
     }
     instance
       .post("/user/register", request)
       .then((res) => {
-<<<<<<< HEAD
-        refetchFromLocalStorage();
-        navigateTo("/home");
-=======
         console.log(res.data);
         navigateTo("/");
->>>>>>> d4565c7ba24bf9691dfe018dbd8ceec99be8b693
       })
       .catch((e) => {
         console.log("Login error");
@@ -61,80 +58,13 @@ const Register = () => {
         <div className="info">
           <h2>Register</h2>
           <div className="infoContainer">
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              style={{ margin: "10px 15px" }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label={t("Name")}
-                name="name"
-                autoComplete="name"
-                autoFocus
-                size="small"
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label={t("Email Address")}
-                name="email"
-                autoComplete="email"
-                size="small"
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label={t("Password")}
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                size="small"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label={t("Check Password")}
-                type="password"
-                id="check-password"
-                autoComplete="current-password"
-                size="small"
-                onChange={(e) => {
-                  setCheckPassword(e.target.value);
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-around",
-                  width: "100%",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  sx={{ mt: 2, mb: 2, width: "45%" }}
-                  style={{ backgroundColor: "white", color: "black" }}
-                  onClick={() => navigateTo("/")}
+            {Object.keys(user).length === 0 && (
+              <>
+                <Box
+                  component="form"
+                  onSubmit={handleSubmit}
+                  noValidate
+                  style={{ margin: "10px 15px" }}
                 >
                   <TextField
                     margin="normal"
