@@ -56,97 +56,93 @@ const Register = () => {
         <div className="info">
           <h2>Register</h2>
           <div className="infoContainer">
-            {Object.keys(user).length === 0 && (
-              <>
-                <Box
-                  component="form"
-                  onSubmit={handleSubmit}
-                  noValidate
-                  style={{ margin: "10px 15px" }}
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              style={{ margin: "10px 15px" }}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label={t("Name")}
+                name="name"
+                autoComplete="name"
+                autoFocus
+                size="small"
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label={t("Email Address")}
+                name="email"
+                autoComplete="email"
+                size="small"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label={t("Password")}
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                size="small"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label={t("Check Password")}
+                type="password"
+                id="check-password"
+                autoComplete="current-password"
+                size="small"
+                onChange={(e) => {
+                  setCheckPassword(e.target.value);
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  sx={{ mt: 2, mb: 2, width: "45%" }}
+                  style={{ backgroundColor: "white", color: "black" }}
+                  onClick={() => navigateTo("/")}
                 >
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="name"
-                    label={t("Name")}
-                    name="name"
-                    autoComplete="name"
-                    autoFocus
-                    size="small"
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label={t("Email Address")}
-                    name="email"
-                    autoComplete="email"
-                    size="small"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label={t("Password")}
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    size="small"
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label={t("Check Password")}
-                    type="password"
-                    id="check-password"
-                    autoComplete="current-password"
-                    size="small"
-                    onChange={(e) => {
-                      setCheckPassword(e.target.value);
-                    }}
-                  />
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-around",
-                      width: "100%",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      sx={{ mt: 2, mb: 2, width: "45%" }}
-                      style={{ backgroundColor: "white", color: "black" }}
-                      onClick={() => navigateTo("/")}
-                    >
-                      {t("Cancel")}
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{ mt: 2, mb: 2, width: "45%" }}
-                      style={{ backgroundColor: "#0e1111" }}
-                    >
-                      {t("Register")}
-                    </Button>
-                  </div>
-                </Box>
-              </>
-            )}
+                  {t("Cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2, mb: 2, width: "45%" }}
+                  style={{ backgroundColor: "#0e1111" }}
+                >
+                  {t("Register")}
+                </Button>
+              </div>
+            </Box>
           </div>
         </div>
       </div>

@@ -1,0 +1,21 @@
+.flow-container {
+  //   box-sizing: border-box;
+  margin-left: 20px;
+  height: auto;
+  //   border: red solid 2px;
+  position: relative;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 2vw;
+
+  .grid-item {
+    // background-color: brown;
+    // width: 20%;
+  }
+
+  .loading-checkpoint {
+    position: absolute;
+    bottom: 0px;
+  }
+}
