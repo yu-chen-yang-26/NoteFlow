@@ -31,6 +31,7 @@ brew install nginx
 nginx
 
 ## move our server config into nginx configuration directory.
+## default path is below, but you can check nginx -h for actual position.
 mkdir /opt/homebrew/etc/nginx/servers/
 sudo mv ./template/noteflow.nginx.conf /opt/homebrew/etc/nginx/servers/noteflow.conf
 ## furthermore, you need to edit noteflow.conf where it is left unfilled.
