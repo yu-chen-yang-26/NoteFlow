@@ -20,7 +20,7 @@ class FlowWebSocket {
 
   getConnection(flowId, callback) {
     const socket = new ReconnectingWebsocket(
-      `wss://${BASE_URL}/ws/flow?id=${flowId}`
+      `wss://${BASE_URL}/ws/flow?id=${flowId}`,
     );
     this.socket = socket;
 
@@ -117,7 +117,7 @@ class FlowWebSocket {
           json1.replaceOp(
             [type === 'node' ? 'nodes' : 'edges', param[0].id.toString()],
             true,
-            currentNode
+            currentNode,
           ),
         ].reduce(json1.type.compose, null);
         break;
