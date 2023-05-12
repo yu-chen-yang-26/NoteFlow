@@ -5,14 +5,14 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import instance from "../../API/api";
 import { SHA256 } from "crypto-js";
-import { useParams } from "../../hooks/useParams";
+import { useApp } from "../../hooks/useApp";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Register.scss";
 
 const Register = () => {
   const { t } = useTranslation();
-  const [user, setUser] = useState({}); // user 是 google 回傳的 object, 可以拿去 render profile 頁面
+  const { refetchFromLocalStorage } = useApp();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,15 +30,13 @@ const Register = () => {
         password: passwordHashed,
       },
     };
-    console.log(email);
-    console.log(password);
     if (passwordHashed !== checkPasswordHashed) {
       alert("Wrong password");
     }
     instance
       .post("/user/register", request)
       .then((res) => {
-        console.log(res.data);
+        refetchFromLocalStorage();
         navigateTo("/home");
       })
       .catch((e) => {
