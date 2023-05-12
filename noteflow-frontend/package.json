@@ -6,7 +6,8 @@
   "scripts": {
     "start": " vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --config .prettierrc \"**/*.+(js|json)\" --write"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -32,6 +33,7 @@
     "katex": "^0.16.4",
     "loadash": "^1.0.0",
     "ot-json1": "^1.0.2",
+    "prettier": "^2.8.8",
     "queue": "^7.0.0",
     "quill-cursors": "^4.0.2",
     "quill-image-resize-module-react": "^3.0.0",
