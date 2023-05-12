@@ -39,7 +39,7 @@ const Register = () => {
       .post("/user/register", request)
       .then((res) => {
         console.log(res.data);
-        navigateTo("/home");
+        navigateTo("/");
       })
       .catch((e) => {
         console.log("Login error");
@@ -141,7 +141,7 @@ const Register = () => {
                       type="submit"
                       variant="contained"
                       sx={{ mt: 2, mb: 2, width: "45%" }}
-                      style={{ backgroundColor: "#0e1111" }}
+                      style={{ backgroundColor: "#0e1111", color: "white" }}
                     >
                       {t("Register")}
                     </Button>
