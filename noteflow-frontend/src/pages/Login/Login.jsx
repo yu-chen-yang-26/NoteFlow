@@ -189,6 +189,7 @@ const Login = () => {
                   variant="body2"
                   style={{
                     color: "#414a4c",
+                    cursor: "pointer",
                   }}
                   onClick={() => navigateTo("/forgotPassword")}
                 >
@@ -196,7 +197,7 @@ const Login = () => {
                 </Link>
                 <Link
                   variant="body2"
-                  style={{ color: "#414a4c" }}
+                  style={{ color: "#414a4c", cursor: "pointer" }}
                   onClick={() => navigateTo("/register")}
                 >
                   {"Don't have an account? Sign Up"}

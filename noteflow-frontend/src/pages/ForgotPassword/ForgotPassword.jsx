@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                       type="submit"
                       variant="contained"
                       sx={{ mt: 4, width: "45%" }}
-                      style={{ backgroundColor: "#0e1111" }}
+                      style={{ backgroundColor: "#0e1111", color: "white" }}
                     >
                       {t("Send me an email")}
                     </Button>
