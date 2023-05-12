@@ -15,7 +15,7 @@ const createFlow = async (ctx) => {
     ctx.status = 200;
   } catch (err) {
     // 在 Model 階段出現任何錯誤
-    ctx.throw(404, JSON.stringify(err));
+    ctx.throw(500, JSON.stringify(err));
   }
 };
 

@@ -10,7 +10,7 @@ const getLibrary = async (ctx) => {
     await library.fetchNodes();
   } catch (err) {
     // 在 Model 階段出現任何錯誤
-    ctx.status = 404;
+    ctx.status = 500;
     ctx.body = JSON.stringify(err);
     return;
   }

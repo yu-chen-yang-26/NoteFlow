@@ -43,7 +43,9 @@ const reviseColabList = async (ctx) => {
     });
     await Flow.refreshColabs(id, added, removed);
     // eslint-disable-next-line no-empty
-  } catch (e) {}
+  } catch (err) {
+    ctx.throw(500, JSON.stringify(err));
+  }
 
   ctx.status = 200;
 };
