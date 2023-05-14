@@ -2,6 +2,7 @@ import FlowList from '../../model/mongodb/model/object/FlowList.js';
 import Flows from '../../model/mongodb/model/object/Flows.js';
 
 const getFlows = async (ctx) => {
+  const page = ctx.request.query.page;
   if (!ctx.session.email) {
     ctx.throw(401, "Unauthorized. You haven't log in yet.");
   }
@@ -10,7 +11,7 @@ const getFlows = async (ctx) => {
   const flows = new FlowList(ctx.session.email);
   try {
     await flows.fetchFlowList();
-    const result = await Flows.fetchFlowsByFlowList(flows.flowList);
+    const result = await Flows.fetchFlowsByFlowList(flows.flowList, page);
 
     ctx.status = 200;
     ctx.body = JSON.stringify(result);

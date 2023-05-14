@@ -1,4 +1,5 @@
 前後端開發
+
 ```bash
 docker compose --env-file .compose.env up -d
 ## frontend will be open on 7415 by default.
@@ -16,13 +17,15 @@ docker compose --env-file .compose.env down
 ```
 
 開發完畢，build docker
+
 ```bash
 ./backend.build.sh      ## build backend
 ./frontend.build.sh     ## build frontend
 ```
 
 Configure Nginx in MacOS
-``` bash
+
+```bash
 ## install nginx using brew, in Linux, try using apt-get install.
 brew install nginx
 
@@ -30,8 +33,7 @@ brew install nginx
 nginx
 
 ## move our server config into nginx configuration directory.
-## default path is below, but you can check nginx -h for actual position.
-mkdir /opt/homebrew/etc/nginx/servers/
+mkdir /opt/homebrew/etc/nginx/servers
 sudo mv ./template/noteflow.nginx.conf /opt/homebrew/etc/nginx/servers/noteflow.conf
 ## furthermore, you need to edit noteflow.conf where it is left unfilled.
 ## e.g. <cert_file> & <key_file>. you can fill the path of cert & key in frontend folder.
