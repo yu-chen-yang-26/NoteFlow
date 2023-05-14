@@ -13,6 +13,7 @@ import { useApp } from "../../hooks/useApp";
 const Sidebar = () => {
   //rwd
   const { isMobile } = useApp();
+
   const { t } = useTranslation();
   const changeMode = useFlowStorage((state) => state.changeMode);
   const mode = useFlowStorage((state) => state.mode);
