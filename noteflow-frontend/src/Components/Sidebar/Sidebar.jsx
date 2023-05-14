@@ -20,9 +20,10 @@ const Sidebar = () => {
   // const tabList = useFlowStorage((state) => state.tabList);
   // const location = useLocation();
 
-  const SideBarItem = styled(Box)(({ selected, isMobile }) => ({
+  const SideBarItem = styled(Box)(({ selected }) => ({
     cursor: "pointer",
     color: selected ? "black" : "white",
+    // color: selected ? "white" : "grey",
     width: "70%",
     height: "8px",
     marginTop: "10px",
@@ -30,9 +31,18 @@ const Sidebar = () => {
     display: "flex",
     justifyContent: "space-evenly",
     alignItems: "center",
-    borderTopRightRadius: isMobile ? "" : "50px",
-    borderBottomRightRadius: isMobile ? "" : "50px",
+    borderTopRightRadius: "50px",
+    borderBottomRightRadius: "50px",
+    backgroundColor: "black",
     backgroundColor: selected ? "white" : "black",
+
+    ...(isMobile && {
+      color: selected ? "white" : "grey",
+      borderTopRightRadius: "",
+      borderBottomRightRadius: "",
+      backgroundColor: "",
+      marginTop: "",
+    }),
   }));
 
   const SideBarText = styled("div")(() => ({
@@ -74,24 +84,24 @@ const Sidebar = () => {
             onClick={() => changeMode(0)}
             selected={mode === 0}
           >
-            <FaPen size={20} style={{ width: "45%" }} />
-            <SideBarText className="sidebar-text-mobile">
+            <FaPen size={20} />
+            {/* <SideBarText className="sidebar-text-mobile">
               {t("Flows")}
-            </SideBarText>
+            </SideBarText> */}
           </SideBarItem>
           <SideBarItem
             className="sidebar-item-mobile"
             onClick={() => changeMode(1)}
             selected={mode === 1}
           >
-            <FaBook size={20} style={{ width: "45%" }} />
-            <SideBarText className="sidebar-text-mobile">
+            <FaBook size={20} />
+            {/* <SideBarText className="sidebar-text-mobile">
               {t("Library")}
-            </SideBarText>
+            </SideBarText> */}
           </SideBarItem>
 
           <a className="logo" href="/home">
-            <img src="assets/logo.png" alt="" width="60" height="60" />
+            <img src="assets/logo.png" alt="" />
           </a>
 
           <SideBarItem
@@ -99,20 +109,20 @@ const Sidebar = () => {
             onClick={() => changeMode(2)}
             selected={mode === 2}
           >
-            <FaCalendarAlt size={20} style={{ width: "45%" }} />
-            <SideBarText className="sidebar-text-mobile">
+            <FaCalendarAlt size={20} />
+            {/* <SideBarText className="sidebar-text-mobile">
               {t("Calendar")}
-            </SideBarText>
+            </SideBarText> */}
           </SideBarItem>
           <SideBarItem
             className="sidebar-item-mobile"
             onClick={() => changeMode(3)}
             selected={mode === 3}
           >
-            <AiTwotoneSetting size={20} style={{ width: "45%" }} />
-            <SideBarText className="sidebar-text-mobile">
+            <AiTwotoneSetting size={20} />
+            {/* <SideBarText className="sidebar-text-mobile">
               {t("Settings")}
-            </SideBarText>
+            </SideBarText> */}
           </SideBarItem>
         </Stack>
       ) : (

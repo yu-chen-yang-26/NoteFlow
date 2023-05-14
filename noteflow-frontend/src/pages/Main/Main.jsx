@@ -33,9 +33,15 @@ export default function Main() {
           ) : (
             <Settings />
           )}
-          {containerRef.current && (
+          {/* {containerRef.current && (
             <BackToTopButton containerRef={containerRef} />
-          )}
+          )} */}
+
+          {isMobile
+            ? null
+            : containerRef.current && (
+                <BackToTopButton containerRef={containerRef} />
+              )}
         </div>
       </div>
     </div>
