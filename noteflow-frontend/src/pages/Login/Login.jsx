@@ -11,21 +11,19 @@ import instance from "../../API/api";
 import { SHA256 } from "crypto-js";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
-import { useMediaQuery, useTheme } from "@mui/material";
+
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
   "390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com";
 
 const Login = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const divRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
-  const { refetchFromLocalStorage, user } = useApp();
+  const { refetchFromLocalStorage, user, isMobile } = useApp();
+
   useEffect(() => {
     if (user) navigateTo("/home");
   }, [user]);

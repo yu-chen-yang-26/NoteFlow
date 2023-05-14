@@ -1,5 +1,5 @@
+import { useRef } from "react";
 import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
-
 import "./Main.scss";
 import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
 import PageTab from "../../Components/PageTab/PageTab.jsx";
@@ -7,17 +7,18 @@ import Library from "../../Components/Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../../Components/Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
+import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 
 export default function Main() {
   const mode = useFlowStorage((state) => state.mode);
-  console.log(mode);
+  const containerRef = useRef(null);
   return (
     <div className="App">
       <div className="App-container">
         <Sidebar />
         <div className="App-tab">
           <PageTab />
-          <div className="Flow-grid">
+          <div className="Flow-grid" ref={containerRef}>
             {mode === 0 ? (
               <FlowGrid />
             ) : mode === 1 ? (
@@ -26,6 +27,9 @@ export default function Main() {
               <Calendar />
             ) : (
               <Settings />
+            )}
+            {containerRef.current && (
+              <BackToTopButton containerRef={containerRef} />
             )}
           </div>
         </div>

@@ -1,12 +1,17 @@
-import { useContext, createContext, useState, useEffect } from 'react';
-import crc32 from 'crc-32';
-import instance from '../API/api';
+import { useContext, createContext, useState, useEffect } from "react";
+import crc32 from "crc-32";
+import instance from "../API/api";
 import { useNavigate } from "react-router-dom";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 const UserContext = createContext({
   user: {},
   logout: () => {},
   refetchFromLocalStorage: () => {},
+});
+
+const MediaContext = createContext({
+  isMobile: false,
 });
 
 const getRandomPicture = (name) => {
@@ -16,17 +21,19 @@ const getRandomPicture = (name) => {
 
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
+
+  // console.log(user);
   const [rerender, setRerender] = useState(false);
 
   const navigate = useNavigate();
 
   const logout = () => {
-    setUser("")
-    navigate('/');
-  }
+    setUser("");
+    navigate("/");
+  };
   useEffect(() => {
     instance
-      .get('/user/who-am-i')
+      .get("/user/who-am-i")
       .then((res) => {
         const user = res.data;
         if (!user.picture) {
@@ -35,8 +42,8 @@ const UserProvider = (props) => {
         setUser(user);
       })
       .catch((e) => {
-        navigate('/')
-        console.log(e)
+        navigate("/");
+        console.log(e);
       });
   }, [rerender]);
 
@@ -51,6 +58,23 @@ const UserProvider = (props) => {
   );
 };
 
-const useApp = () => useContext(UserContext);
+const MediaProvider = ({ children }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // console.log(isMobile);
 
-export { useApp, UserProvider, getRandomPicture };
+  return (
+    <MediaContext.Provider value={{ isMobile }}>
+      {children}
+    </MediaContext.Provider>
+  );
+};
+
+// const useApp = () => useContext(UserContext);
+const useApp = () => {
+  const userContext = useContext(UserContext);
+  const mediaContext = useContext(MediaContext);
+  return { ...userContext, ...mediaContext };
+};
+
+export { useApp, UserProvider, MediaProvider, getRandomPicture };
