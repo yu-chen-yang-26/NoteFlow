@@ -51,8 +51,10 @@ const Settings = () => {
         >
           <div
             style={{
-              width: "350px",
-              height: "350px",
+              // width: "350px",
+              // height: "350px",
+              width: "60%",
+              maxWidth: "300px",
               borderRadius: "50%",
               border: "2px solid black",
               overflow: "hidden",
