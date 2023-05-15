@@ -101,7 +101,8 @@ export default function PageTab({ flows }) {
         sx={{
           backgroundColor: "black",
           paddingBottom: 0,
-          minHeight: "7%",
+          height: "7%",
+          maxHeight: "30px",
         }}
         className="toolbar"
         direction="row"
