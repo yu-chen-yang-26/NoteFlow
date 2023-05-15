@@ -2,11 +2,11 @@
 /* eslint-disable no-lonely-if */
 /* eslint-disable import/no-extraneous-dependencies */
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
+import json1 from 'ot-json1';
 import sharedb from '../../sharedb.js';
 import { getMongoClient } from '../../mongoClient.js';
 import FlowList from './FlowList.js';
-import _ from 'lodash';
-import json1 from 'ot-json1';
 
 class Flow {
   constructor(
@@ -81,7 +81,7 @@ class Flow {
     await mongoClient.connect();
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
-    const resolved = await collection
+    const resolved = collection
       .aggregate([
         { $match: { user: owner } },
         { $limit: 1 },

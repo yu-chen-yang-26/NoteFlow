@@ -1,4 +1,4 @@
-import { FlowList, Flow } from '../../model/mongodb/model/index.js';
+import { FlowList, Flow, NodeRepo } from '../../model/mongodb/model/index.js';
 import db from '../../lib/db.js';
 
 const reviseColabList = async (ctx) => {
@@ -6,26 +6,12 @@ const reviseColabList = async (ctx) => {
   if (!id || !colabs) {
     ctx.throw(402, 'You did not offer sufficient data');
   }
-  // 查看這個人是否擁有這個 Flow 的瀏覽權限
-  const schema = new FlowList(ctx.session.email);
-  await schema.fetchFlowList();
 
-  let canEdit = false;
-  // let owner;
-
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < schema.flowList.length; i++) {
-    if (schema.flowList[i].flowId === id) {
-      canEdit = true;
-      // owner = schema.flowList[i].owner;
-      break;
-    }
+  const path = ctx.request.url.split('/')[2];
+  let schema;
+  if (path === 'flows') {
+    schema = new FlowList(ctx.session.email);
   }
-  if (!canEdit) {
-    ctx.throw(403, 'Forbidden. You are not invited into this flow.');
-  }
-  // 查看這個人
-  // const colabs = await Flows.fetchColaborators(owner, id);
   const added = [];
   const removed = [];
   try {
@@ -37,7 +23,9 @@ const reviseColabList = async (ctx) => {
           // 真的有這個人
           colabs[index].status = 200;
           added.push(data.email);
-          await schema.addSomebodyToFlowList(data.email, id);
+          if (schema) {
+            await schema.addSomebodyToFlowList(data.email, id);
+          }
         } else {
           // 沒有這個人
           colabs[index].status = 404;
@@ -52,7 +40,9 @@ const reviseColabList = async (ctx) => {
             // 真的有這個人
             colabs[index].status = 200;
             removed.push(data.email);
-            await schema.removeSomebodyFromFlowList(data.email, id);
+            if (schema) {
+              await schema.removeSomebodyFromFlowList(data.email, id);
+            }
           } else {
             // 沒有這個人
             colabs[index].status = 404;
@@ -60,7 +50,12 @@ const reviseColabList = async (ctx) => {
         }
       }
     });
-    await Flow.refreshColabs(id, added, removed);
+
+    if (schema) {
+      await Flow.refreshColabs(id, added, removed);
+    } else {
+      await NodeRepo.refreshColabs(id, added, removed);
+    }
     // eslint-disable-next-line no-empty
   } catch (err) {
     ctx.throw(500, JSON.stringify(err));

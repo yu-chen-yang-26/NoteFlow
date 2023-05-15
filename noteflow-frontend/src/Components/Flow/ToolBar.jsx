@@ -1,40 +1,39 @@
-import React, { useState } from "react";
-import "./FlowEditor.scss";
-import Button from "react-bootstrap/Button";
-import Dropdown from "react-bootstrap/Dropdown";
+import React, { useState } from 'react';
+import './FlowEditor.scss';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
 // import Modal from "react-bootstrap/Modal";
 
-import "./ToolBar.scss"
+import './ToolBar.scss';
 import {
   BsDot,
   BsNodePlus,
   BsArrowCounterclockwise,
   BsShare,
   BsPalette,
-} from "react-icons/bs";
-import { BiFirstPage, BiCross } from "react-icons/bi";
-import { AiOutlineBorderlessTable } from "react-icons/ai";
+} from 'react-icons/bs';
+import { BiFirstPage, BiCross } from 'react-icons/bi';
+import { AiOutlineBorderlessTable } from 'react-icons/ai';
 
-import Colabs from "./Colabs";
+import Colabs from './Colabs';
 
 export default function ToolBar({
   addNode,
   flowTitle,
   changeBackground,
   onSave,
-  flowId
+  flowId,
 }) {
   const [show, setShow] = useState(false);
   const [title, setTitle] = useState(flowTitle);
 
-
   const handleClose = () => setShow(false);
   const handleShow = () => {
     setShow(true);
-  }
+  };
 
   return (
-    <div className ="toolbar">
+    <div className="toolbar">
       <nav className="navbar">
         <div className="left">
           <Button
@@ -100,7 +99,12 @@ export default function ToolBar({
           </Button>
         </div>
       </nav>
-      <Colabs show={show} setShow={setShow} flowId={flowId} handleClose={handleClose} />
+      <Colabs
+        show={show}
+        setShow={setShow}
+        flowId={flowId}
+        handleClose={handleClose}
+      />
     </div>
   );
 }

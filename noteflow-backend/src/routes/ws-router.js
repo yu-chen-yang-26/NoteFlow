@@ -8,7 +8,14 @@ class WsRouter {
 
   session(path, section, callback) {
     const exec = async (ws, req) => {
-      const { email } = await getSession(req.headers.cookie);
+      const sess = await getSession(req.headers.cookie);
+
+      if (!sess) {
+        ws.close(1001);
+        return;
+      }
+
+      const { email } = sess;
       const params = new URLSearchParams(req.url.split('?')[1]);
       let Mode;
       switch (section) {
@@ -30,6 +37,7 @@ class WsRouter {
       );
       if (!can) {
         ws.close(1000);
+        return;
       }
 
       callback(ws);

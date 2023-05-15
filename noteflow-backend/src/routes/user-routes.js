@@ -1,6 +1,7 @@
 import Router from 'koa-router';
 import { user, flow } from '../controller/index.js';
 import logined from '../middleware/logined-middleware.js';
+import authorized from '../middleware/flow-auth-middleware.js';
 import redisClient from '../model/redis/redisClient.js';
 
 const router = new Router();
@@ -30,12 +31,16 @@ router
   .post('/user/reset-password-renew', user.forgotPasswordRenew)
   .get('/flows', logined, flow.getFlows)
   .post('/flows/create', logined, flow.createFlow)
-  .get('/flows/get-colab-list', logined, flow.getColabList)
-  .post('/flows/revise-colab-list', logined, flow.reviseColabList)
+  .get('/flows/get-colab-list', logined, authorized, flow.getColabList)
+  .post('/flows/revise-colab-list', logined, authorized, flow.reviseColabList)
   .get('/library', logined, flow.getLibrary)
   // .put('/library/add-node, service.addNodeToLibrary)
   // .put('/library/remove-node, service.removeNodeFromLibrary')
-  .post('/nodes/new-node', logined, flow.newNode);
+  .post('/nodes/new-node', logined, flow.newNode)
+  .get('/nodes/get-colab-list', logined, authorized, flow.getColabList)
+  .post('/nodes/revise-colab-list', logined, authorized, flow.reviseColabList)
+  .get('/nodes/get-title', logined, flow.getTitle)
+  .post('/nodes/set-title', logined, authorized, flow.setTitle);
 // .get('/nodes/access-node, service.accessNode) // 是否可以進入這個 node 修改 // 變成 middleware 做在 ws 裡面
 // .put('/nodes/add-colab, service.addColab)
 // .put('/nodes/remove-colab, service.removeColab);

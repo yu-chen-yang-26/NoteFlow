@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
+import { v4 as uuidv4 } from 'uuid';
 import { getMongoClient } from '../../mongoClient.js';
 import Node from './Node.js';
-import { v4 as uuidv4 } from 'uuid';
 
 class NodeRepo {
   constructor(user) {
@@ -95,6 +95,78 @@ class NodeRepo {
       await mongoClient.close();
     }
     return newUuid;
+  }
+
+  static async refreshColabs(nodeId, add = [], remove = []) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('NodeRepository');
+
+    const owner = nodeId.split('-')[0];
+    if (add.length !== 0) {
+      await collection.findOneAndUpdate(
+        {
+          user: owner,
+          'nodes.id': nodeId,
+        },
+        {
+          $addToSet: { 'nodes.$.colaborators': { $each: add } },
+        },
+      );
+    }
+
+    await collection.findOneAndUpdate(
+      {
+        user: owner,
+        'nodes.id': nodeId,
+      },
+      {
+        $pull: { 'nodes.$.colaborators': { $in: remove } },
+      },
+    );
+
+    await mongoClient.close();
+  }
+
+  static async setTitle(nodeId, newTitle) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('nodeRepository');
+
+    const owner = nodeId.split('-')[0];
+
+    await collection.findOneAndUpdate(
+      {
+        user: owner,
+        'nodes.id': newTitle,
+      },
+      {
+        $set: { 'nodes.$.name': newTitle },
+      },
+    );
+    await mongoClient.close();
+  }
+
+  static async getTitle(nodeId) {
+    const mongoClient = getMongoClient();
+    await mongoClient.connect();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('nodeRepository');
+
+    const owner = nodeId.split('-')[0];
+    const resolved = await collection
+      .aggregate([
+        { $match: { user: owner } },
+        { $limit: 1 },
+        { $unwind: '$nodes' },
+        { $match: { 'nodes.id': nodeId } },
+      ])
+      .toArray();
+
+    await mongoClient.close();
+    return resolved[0].name;
   }
 }
 

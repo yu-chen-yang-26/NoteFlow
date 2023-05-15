@@ -101,4 +101,6 @@ wsServer.on('connection', (ws, req) => {
 
 server.listen(3000);
 
+console.log('Listening!');
+
 export default server;
