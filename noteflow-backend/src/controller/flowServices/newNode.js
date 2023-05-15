@@ -1,10 +1,6 @@
 import { NodeRepo } from '../../model/mongodb/model/index.js';
 
 const newNode = async (ctx) => {
-  if (!ctx.session.email) {
-    ctx.throw(401, "Unauthorized. You haven't log in yet.");
-  }
-
   const nodeRepo = new NodeRepo(ctx.session.email);
 
   try {

@@ -1,10 +1,6 @@
 import Flow from '../../model/mongodb/model/object/Flow.js';
 
 const createFlow = async (ctx) => {
-  if (!ctx.session.email) {
-    ctx.throw(401, "Unauthorized. You haven't log in yet.");
-  }
-
   const owner = ctx.session.email;
 
   try {

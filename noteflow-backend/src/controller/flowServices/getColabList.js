@@ -5,10 +5,6 @@ const getColabList = async (ctx) => {
   if (!id) {
     ctx.throw(402, 'You did not offer sufficient data');
   }
-  // 查看這個人是否登入 ## TODO
-  if (!ctx.session.email) {
-    ctx.throw(401, "Unauthorized. You haven't log in yet.");
-  }
   // 查看這個人是否擁有這個 Flow 的瀏覽權限
   const schema = new FlowList(ctx.session.email);
   await schema.fetchFlowList();

@@ -21,23 +21,15 @@ sharedb.types.register(richText.type);
 const QuillContext = createContext({
   OpenEditor: () => {},
   setOnline: () => {},
+  setTitle: () => {},
+  setNewTitle: () => {},
   QuillRef: {},
+  title: "",
+  newTitle: ""
 });
 
 const collection = 'editor';
 
-/**
- * 亂數產生的 hashId, 這個 id 可以再綁定一個名字
- */
-const presenceId = new ObjectID().toHexString(); // TODO
-
-/**
- * 自動為不同人的 Cursors 產生不同顏色並渲染
- * {
- *  hashId1: '#......',
- *  hashId2: '#......',
- * }
- */
 const colors = {};
 
 const QuillProvider = (props) => {
@@ -46,8 +38,11 @@ const QuillProvider = (props) => {
   const [editorId, setEditorId] = useState(null);
   const [editor, setEditor] = useState(null);
   const [presence, setPresence] = useState(null);
-  const [cursors, setCursors] = useState(null);
-  const [online, setOnline] = useState([])
+  const [localPresence, setLocalPresence] = useState(null);
+  const [title, setTitle] = useState("");
+  const [newTitle, setNewTitle] = useState(title);
+  const [online, setOnline] = useState([]);
+  
   const QuillRef = useRef();
 
   const { user } = useApp();
@@ -74,15 +69,26 @@ const QuillProvider = (props) => {
       : console.error('NULL QUILL REFERENCE');
   };
 
+  const presenceHook = async (id, range, callback) => {
+    // server
+    switch(range.type) {
+      case 'disable':
+        const cursors = quill.getModule('cursors');
+        delete colors[range.name];
+        cursors.removeCursor(range.name);
+        return // ...
+      case 'change-title':
+        setTitle(range.title);
+        setNewTitle(range.title);
+        return;
+      default:
+        return callback();
+    }
+  }
+
   useEffect(() => {
-    // 拿 member 跟 presence 比？ 應該拿 colors 就好了
-    // 包含在裡面的我不想要留著，留著的都是等等要被殺掉的
+    // 檢查 ws 連線，自動刪除無效連線的 cursor
     if(quill && editor) {
-      /*
-        當 members 裡面少了一個 3，剩下 1 2
-        原本的 colors 有 2 3，
-        killed = [3]
-      */
       const cursors = quill.getModule('cursors');
       const killed = Object.keys(colors).filter(email => !online.includes(email))
       killed.forEach(email => {
@@ -91,6 +97,22 @@ const QuillProvider = (props) => {
       })
     }
   }, [online])
+
+  useEffect(() => {
+    // 創造一個 local presence.
+    // 當 setTitle 的時候觸發這個 hook
+    // 通常是按 enter 的時候按下這個 hook
+    if(localPresence) {
+      const range = {
+        title: title,
+        type: 'change-title',
+        name: user.email,
+      }
+      localPresence.submit(range, (error) => {
+        if (error) throw error;
+      });
+    }
+  }, [title])
 
   useEffect(() => {
     if (!editorId || !quill || !websocket) return;
@@ -119,38 +141,45 @@ const QuillProvider = (props) => {
       const presence = editor.connection.getDocPresence(collection, editorId);
       presence.subscribe((error) => {
         if (error) throw error;
+        const localPresence = presence.create(user.email);
         setPresence(presence);
-      });
+        setLocalPresence(localPresence);
 
-      const localPresence = presence.create(user.email);
+        const cursors = quill.getModule('cursors');
 
-      quill.on('selection-change', (range, oldRange, source) => {
-        // client 端，送給其他人你的消息
-        if (source !== 'user') return;
-        if (!range) return;
-        range.name = user ? (user.name ? user.name : '-') : '-'; // # TODO
-        localPresence.submit(range, (error) => {
-          if (error) throw error;
+        quill.on('selection-change', (range, oldRange, source) => {
+          // client 端，送給其他人你的消息
+          // console.log('selection-change', source, range)
+          if (source !== 'user') return; // 有可能是 api 或 user
+          if (!range) { // 我們可以考慮推一個奇怪的東西上去
+            range = {
+              type: 'disable',
+            }
+          }
+          // console.log('range', range, source);
+          range.name = user ? (user.name ? user.name : '-') : '-'; // # TODO
+          localPresence.submit(range, (error) => {
+            if (error) throw error;
+          });
         });
-      });
 
-      quill.on('')
-      const cursors = quill.getModule('cursors');
-      presence.on('receive', function (id, range) {
-        // 我收到了來自 server 端的，其他人的消息
-        colors[id] = colors[id] || tinycolor.random().toHexString();
-        const name = (range && range.name) || 'Anonymous';
-        cursors.createCursor(id, name, colors[id]);
-        cursors.moveCursor(id, range);
-      });
+        presence.on('receive', function (id, range) {
+          // 我收到了來自 server 端的，其他人的消息
+          if(id === user.email) return;
+          presenceHook(id, range, () => {
+            colors[id] = colors[id] || tinycolor.random().toHexString();
+            const name = (range && range.name) || 'Anonymous';
+            cursors.createCursor(id, name, colors[id]);
+            cursors.moveCursor(id, range);
+          })
+        });
+      });     
     });
-
-    setEditor(editor);
   }, [editorId, quill, websocket, user]);
 
   return (
     <QuillContext.Provider
-      value={{ OpenEditor, setOnline, QuillRef }}
+      value={{ OpenEditor, setOnline, title, setTitle, newTitle, setNewTitle, QuillRef,  }}
       {...props}
     />
   );

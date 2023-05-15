@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import React, { useEffect } from 'react';
+import ReactQuill from 'react-quill';
 import EditorToolbar, { modules, formats } from './EditorToolbar';
 import 'react-quill/dist/quill.snow.css';
 import './Editor.scss';
@@ -19,45 +19,21 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   const { user } = useApp();
   const [colab, setColab] = useState([]);
   const [colabWebSocket, setColabWebSocket] = useState(null);
-  const { OpenEditor, QuillRef, setOnline } = useQuill();
+  const [state, setState] = useState({
+    value: '',
+  });
+  const { OpenEditor, QuillRef, setOnline, title, setTitle, newTitle, setNewTitle } = useQuill();
   useEffect(() => {
     OpenEditor(editorId);
     const connection = new Colab(editorId, user.email, (members) => {
-      // 定期看要不要 clean 掉
       setColab(members);
     });
     setColabWebSocket(connection);
-    // setColab();
-    setState({
-      title: '',
-      value: '',
-    });
   }, []);
 
   useEffect(() => {
    setOnline(colab) 
   }, [colab]);
-
-  const [state, setState] = useState({
-    title: '',
-    value: '',
-  });
-
-  const handleChange = (value) => {
-    setState({ ...state, value });
-  };
-
-  const onSave = () => {
-    // saveNode({
-    //   flow_id: flowId,
-    //   node_id: nodeId,
-    //   title: state.title,
-    //   value: state.value,
-    // });
-    //connect to backend
-  };
-
-
 
   // shareDB
 
@@ -69,7 +45,6 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           onClick={() => {
             handleDrawerClose();
             colabWebSocket.close();
-            onSave();
           }}
         >
           <IoIosArrowBack size={20} />
@@ -78,13 +53,18 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           className='title-input'
           type='text'
           placeholder='Untitled...'
-          value={state.title}
+          value={newTitle}
           onChange={(e) => {
-            setState({ ...state, title: e.target.value });
+            setNewTitle(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if(e.key === 'Enter') {
+              e.preventDefault()
+              setTitle(newTitle);
+            }
           }}
         ></input>
         <span className='focus-border'></span>
-        {/* 需限制 user 數量 */}
         <div className='users'>
           {colab.map((element, index) => {
             return (
@@ -99,8 +79,8 @@ const Editor = ({ handleDrawerClose, editorId }) => {
         <EditorToolbar />
         <ReactQuill
           theme='snow'
-          value={state.value}
-          onChange={handleChange}
+          value={state}
+          onChange={setState}
           placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}

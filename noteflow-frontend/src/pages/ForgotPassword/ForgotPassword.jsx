@@ -16,7 +16,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // instance.get("forgotPassword")
+    instance.post("/user/forgot-password-send-email", {email})
     console.log(email);
   };
 

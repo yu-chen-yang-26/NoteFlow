@@ -18,8 +18,8 @@ import send from 'koa-send';
 import sharedb from './model/mongodb/sharedb.js';
 import redisClient from './model/redis/redisClient.js';
 import routes from './routes/index.js';
-import redisSession, { getSession } from './model/redis/redisSession.js';
-import { Flow, Node } from './model/mongodb/model/index.js';
+import redisSession from './model/redis/redisSession.js';
+import WsRouter from './routes/ws-router.js';
 
 const app = new Koa();
 
@@ -28,19 +28,19 @@ app.use(sslify());
 
 app.use(logger());
 app.use(
-    cors({
-        origin: '*',
-        exposeHeaders: ['Authorization'],
-        credentials: true,
-        allowMethods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Authorization', 'Content-Type'],
-        exposeHeaders: [
-            'set-cookie',
-            'access-control-allow-origin',
-            'access-control-allow-credentials',
-        ],
-        keepHeadersOnError: true,
-    })
+  cors({
+    origin: '*',
+    credentials: true,
+    allowMethods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Authorization', 'Content-Type'],
+    exposeHeaders: [
+      'Authorization',
+      'set-cookie',
+      'access-control-allow-origin',
+      'access-control-allow-credentials',
+    ],
+    keepHeadersOnError: true,
+  }),
 );
 
 app.use(redisSession(app));
@@ -49,157 +49,54 @@ app.use(koaBody());
 app.use(routes.allowedMethods());
 
 const server = https.createServer(
-    {
-        key: fs.readFileSync('./config/cert/server.key'),
-        cert: fs.readFileSync('./config/cert/server.cert'),
-    },
-    app.callback()
+  {
+    key: fs.readFileSync('./config/cert/server.key'),
+    cert: fs.readFileSync('./config/cert/server.cert'),
+  },
+  app.callback(),
 );
 
 const wsServer = new WebSocketServer({ server });
 
 app.use(async (ctx, next) => {
-    if (server instanceof http.Server) {
-        const { user } = ctx.request.body;
-        ctx.session = user ? { ...user } : ctx.session;
-    }
-    await next();
+  if (server instanceof http.Server) {
+    const { user } = ctx.request.body;
+    ctx.session = user ? { ...user } : ctx.session;
+  }
+  await next();
 });
 
 app.use(routes.routes());
 // app.use(koaServe({ rootPath: '/', rootDir: 'dist' }));
 app.use(koaStatic(path.join(process.cwd(), 'dist')));
 app.use(async (ctx) => {
-    await send(ctx, 'index.html', { root: path.join(process.cwd(), 'dist') });
+  await send(ctx, 'index.html', { root: path.join(process.cwd(), 'dist') });
 });
 
-wsServer.on('connection', async (ws, req) => {
-    // 某一個特定的人進來了這個地方，ws 裡面應該會存放有這個用戶的 sid & cookie
-    const requests = req.url.split('?');
-    const url_list = requests[0].split('/');
-    const url = '/' + url_list[url_list.length - 1];
-    const query = requests[1];
-    if (url === '/registerNodeColab') {
-        // 展示卡比獸們
-        // getSession(req.headers.cookie)
-        //     .then((sess) => {
-        //         try {
-        //             const email = sess.email;
-        //             const params = new URLSearchParams(query);
+const router = new WsRouter()
+  .no_session('/registerNodeColab', (ws) => {
+    ws.on('message', async (message) => {
+      try {
+        const query = JSON.parse(message.toString('utf-8'));
+        await redisClient.set(`${query.nodeId}-${query.email}`, 1, 'EX', 3);
+        const keys = await redisClient.keys(`${query.nodeId}-*`);
+        ws.send(JSON.stringify(keys));
+      } catch (e) {
+        ws.close(1001);
+      }
+    });
+  })
+  .session('/flow', 'Flow', (ws) => {
+    const stream = new WebSocketJSONStream(ws);
+    sharedb.listen(stream);
+  })
+  .no_session('/node', (ws) => {
+    const stream = new WebSocketJSONStream(ws);
+    sharedb.listen(stream);
+  });
 
-        //             console.log(email);
-
-        //             Node.CanUserEdit(
-        //                 params.get('id'),
-        //                 params.get('id').split('-')[0],
-        //                 email
-        //             )
-        //                 .then((can) => {
-        //                     if (!can) {
-        //                         // Unauthorized. 你沒有權限進入這個 component
-        //                         ws.close(1000);
-        //                     }
-        //                 })
-        //                 .catch((e) => {
-        //                     // Component not exists. 嘗試讀取不存在的 List
-        //                     // ws.send(1001);
-        //                     ws.close(1001);
-        //                 });
-        //         } catch (e) {
-        //             // Internal Server Error
-        //             ws.close(4999);
-        //         }
-        //     })
-        //     .catch((e) => {
-        //         // You have no session. 我不認識你
-        //         ws.close(1002, 'Unauthorized.');
-        //     });
-
-        ws.on('message', async (message) => {
-            try {
-                const query = JSON.parse(message.toString('utf-8'));
-                await redisClient.set(
-                    `${query.nodeId}-${query.email}`,
-                    1,
-                    'EX',
-                    3
-                );
-                const keys = await redisClient.keys(`${query.nodeId}-*`);
-                ws.send(JSON.stringify(keys));
-            } catch (e) {
-                ws.send(e);
-            }
-        });
-    } else if (url === '/flow') {
-        // flow 裡面的協作
-        getSession(req.headers.cookie)
-            .then((sess) => {
-                try {
-                    const email = sess.email;
-                    const params = new URLSearchParams(query);
-                    Flow.CanUserEdit(
-                        params.get('id'),
-                        params.get('id').split('-')[0],
-                        email
-                    )
-                        .then((can) => {
-                            if (can) {
-                                const stream = new WebSocketJSONStream(ws);
-                                sharedb.listen(stream);
-                            } else {
-                                // Unauthorized. 你沒有權限進入這個 component
-                                ws.close(1000);
-                            }
-                        })
-                        .catch((e) => {
-                            // Component not exists. 嘗試讀取不存在的 List
-                            ws.close(1001);
-                        });
-                } catch (e) {
-                    // Internal Server Error
-                    ws.close(4999);
-                }
-            })
-            .catch((e) => {
-                // You have no session. 我不認識你
-                ws.close(1002, 'Unauthorized.');
-            });
-    } else {
-        const stream = new WebSocketJSONStream(ws);
-        sharedb.listen(stream);
-        // getSession(req.headers.cookie)
-        //     .then((sess) => {
-        //         try {
-        //             const email = sess.email;
-        //             const params = new URLSearchParams(query);
-        //             Node.CanUserEdit(
-        //                 params.get('id'),
-        //                 params.get('id').split('-')[0],
-        //                 email
-        //             )
-        //                 .then((can) => {
-        //                     if (can) {
-        //                         const stream = new WebSocketJSONStream(ws);
-        //                         sharedb.listen(stream);
-        //                     } else {
-        //                         // Unauthorized. 你沒有權限進入這個 component
-        //                         ws.close(1000);
-        //                     }
-        //                 })
-        //                 .catch((e) => {
-        //                     // Component not exists. 嘗試讀取不存在的 List
-        //                     ws.close(1001);
-        //                 });
-        //         } catch (e) {
-        //             // Internal Server Error
-        //             ws.close(4999);
-        //         }
-        //     })
-        //     .catch((e) => {
-        //         // You have no session. 我不認識你
-        //         ws.close(1002, 'Unauthorized.');
-        //     });
-    }
+wsServer.on('connection', (ws, req) => {
+  router.serve(ws, req);
 });
 
 server.listen(3000);
