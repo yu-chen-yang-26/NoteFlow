@@ -8,32 +8,43 @@ import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../../Components/Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
 import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
+import { useApp } from "../../hooks/useApp.jsx";
 
 export default function Main() {
   const mode = useFlowStorage((state) => state.mode);
   const containerRef = useRef(null);
+
+  //rwd
+  const { isMobile } = useApp();
+
   return (
-    <div className="App">
-      <div className="App-container">
-        <Sidebar />
-        <div className="App-tab">
-          <PageTab />
-          <div className="Flow-grid" ref={containerRef}>
-            {mode === 0 ? (
-              <FlowGrid />
-            ) : mode === 1 ? (
-              <Library />
-            ) : mode === 2 ? (
-              <Calendar />
-            ) : (
-              <Settings />
-            )}
-            {containerRef.current && (
-              <BackToTopButton containerRef={containerRef} />
-            )}
-          </div>
+    // <div className="App">
+    <div className={`${isMobile ? "App-container-mobile" : "App-container"}`}>
+      <Sidebar />
+      <div className="App-tab">
+        <PageTab />
+        <div className="Flow-grid" ref={containerRef}>
+          {mode === 0 ? (
+            <FlowGrid />
+          ) : mode === 1 ? (
+            <Library />
+          ) : mode === 2 ? (
+            <Calendar />
+          ) : (
+            <Settings />
+          )}
+          {/* {containerRef.current && (
+            <BackToTopButton containerRef={containerRef} />
+          )} */}
+
+          {isMobile
+            ? null
+            : containerRef.current && (
+                <BackToTopButton containerRef={containerRef} />
+              )}
         </div>
       </div>
     </div>
+    // </div>
   );
 }

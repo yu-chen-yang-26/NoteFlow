@@ -19,9 +19,9 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>
 
-  // 讓所有的頁面都套用 Bauhaus 字體
+  // 讓所有的頁面都套用 Flipahaus 字體
   <ThemeProvider theme={theme}>
-      <App />
+    <App />
   </ThemeProvider>
   // </React.StrictMode>
 );

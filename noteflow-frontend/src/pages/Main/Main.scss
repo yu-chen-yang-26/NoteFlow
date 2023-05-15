@@ -1,39 +1,77 @@
-.App {
-  width: 100vw;
-  height: 100vh;
+// .App {
+//   width: 100vw;
+//   height: 100vh;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   box-sizing: border-box;
+//   margin: 0;
+//   padding: 0;
+// }
+
+#root {
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
 
-  #root {
+.App-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  // align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+
+  .App-tab {
+    padding: 0;
+    margin: 0;
+    width: calc(100% - 160px);
+    min-height: 600px;
+    background-color: black;
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-  }
+    flex-direction: column;
 
-  .App-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    gap: 0;
-
-    .App-tab {
-      padding: 0;
-      margin: 0;
-      width: calc(100% - 160px);
-      min-height: 600px;
-      background-color: black;
-      display: flex;
-      flex-direction: column;
-
-      .Flow-grid {
-        background-color: white;
-        flex: 1;
-        overflow-y: scroll;
-      }
+    .Flow-grid {
+      background-color: white;
+      flex: 1;
+      overflow-y: scroll;
     }
   }
+}
+// }
+
+.App-container-mobile {
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // box-sizing: border-box;
+  // margin: 0;
+  // padding: 0;
+  // gap: 0;
+
+  // .App-tab {
+  //   padding: 0;
+  //   margin: 0;
+  //   width: calc(100% - 160px);
+  //   min-height: 600px;
+  //   background-color: black;
+  //   display: flex;
+  //   flex-direction: column;
+
+  //   .Flow-grid {
+  //     background-color: white;
+  //     flex: 1;
+  //     overflow-y: scroll;
+  //   }
+  // }
 }
