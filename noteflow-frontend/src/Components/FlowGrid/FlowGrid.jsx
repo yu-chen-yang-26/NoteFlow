@@ -29,8 +29,8 @@ export default function FlowGrid() {
       backgroundColor: grey[100],
       border: "1px grey solid",
     },
-    width: 300,
-    height: 200,
+    width: "100%",
+    aspectRatio: "3/2",
   }));
   const options = {
     root: null,
