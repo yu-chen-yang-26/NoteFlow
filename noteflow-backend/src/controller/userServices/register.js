@@ -33,7 +33,7 @@ const register = async (ctx) => {
     const verifyMessage = 'An Email sent to your account please verify';
     const password = await argon2.hash(user.password);
 
-    const userValidate = await db('users')
+    await db('users')
       .insert({
         uuid: uuidv4(),
         name: user.name,
@@ -43,7 +43,6 @@ const register = async (ctx) => {
       })
       .returning('*')
       .then((rows) => {
-        console.log('User created successfully. New user id is:', rows[0].id);
         userId = rows[0].id;
       });
 
@@ -58,15 +57,18 @@ const register = async (ctx) => {
       html: HTML_TEMPLATE(message),
     });
 
-    ctx.session.logined = true;
-    ctx.session.email = user.email;
-    ctx.session.name = user.name;
-    ctx.session.picture = user.picture;
+    ctx.session = {
+      logined: true,
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+    };
+    await ctx.session.save();
 
     await createUserBucket(user.email);
 
     ctx.status = 200;
-    ctx.body = verifyMessage;
+    ctx.body = JSON.stringify({ user: _.omit(user, ['password']) });
   } catch (err) {
     ctx.status = err.status || 500;
     ctx.body = JSON.stringify({ errors: err.message });

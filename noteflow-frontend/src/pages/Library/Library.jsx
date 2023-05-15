@@ -83,9 +83,9 @@ const Library = () => {
         sx={{
           marginTop: "1vmin",
           marginBottom: "1vmin",
+          alignSelf: "flex-end",
           paddingLeft: 2,
           paddingRight: 2,
-          width: "100%",
         }}
       >
         <Search>
@@ -108,6 +108,7 @@ const Library = () => {
         sx={{ paddingLeft: 2, paddingRight: 2 }}
         spacing={2}
         columns={15}
+        style={{ width: "100%" }}
       >
         {nodes.map((node, id) => (
           <Grid item xs={3} md={3} key={id}>

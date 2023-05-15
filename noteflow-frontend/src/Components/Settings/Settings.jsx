@@ -12,10 +12,16 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import { useFlowStorage } from "../../storage/Storage";
+import { useNavigate } from "react-router-dom";
+import { useApp } from '../../hooks/useApp';
+import instance from "../../API/api";
+
 const Settings = () => {
+  const { user, logout } = useApp();
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
+  const navigate = useNavigate();
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     backgroundColor: "#0e1111",
@@ -71,7 +77,7 @@ const Settings = () => {
           sx={{ height: "100%", gap: "2vmin" }}
         >
           <Typography sx={{ fontSize: "24px", marginBottom: "10px" }}>
-            Lawrence Tsai
+            {user.name}
           </Typography>
 
           <Stack direction="row" justifyContent="left" alignItems="center">
@@ -79,7 +85,7 @@ const Settings = () => {
               size={25}
               style={{ marginRight: "15px" }}
             ></AiOutlineMail>
-            <Typography>lawrence@gmail.com</Typography>
+            <Typography>{user.email}</Typography>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
             <RiLockPasswordLine
@@ -96,7 +102,15 @@ const Settings = () => {
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
             <BiLogOut size={25} style={{ marginRight: "15px" }}></BiLogOut>
-            <SettingsButton>{t("Log out")}</SettingsButton>
+            <SettingsButton onClick={() => {
+              if (!user) return;
+              instance.post('/user/logout').then((res) => {
+                if(res.status !== 200) {
+                   alert('Internal server error!');
+                }
+                logout();
+              })
+            }}>{t("Log out")}</SettingsButton>
           </Stack>
         </Stack>
       </Grid>

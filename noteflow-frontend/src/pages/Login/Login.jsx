@@ -11,6 +11,7 @@ import instance from "../../API/api";
 import { SHA256 } from "crypto-js";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
+
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
   "390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com";
@@ -21,7 +22,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
-  const { refetchFromLocalStorage, user } = useApp();
+  const { refetchFromLocalStorage, user, isMobile } = useApp();
+
   useEffect(() => {
     if (user) navigateTo("/home");
   }, [user]);
@@ -65,10 +67,12 @@ const Login = () => {
     instance
       .post("/user/login", request)
       .then((res) => {
+        console.log("ok!");
         refetchFromLocalStorage();
         navigateTo("/home");
       })
       .catch((e) => {
+        console.log(e);
         console.log("Login error");
       });
 
@@ -105,111 +109,109 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="login">
-      <div className="login-container">
-        <div className="logo">
-          <SwitchTransition mode="out-in">
-            <CSSTransition
-              key={tryme ? "tryme" : "logo"}
-              classNames="fade"
-              timeout={500}
-            >
-              {tryme ? (
-                <h1>Try Me</h1>
-              ) : (
-                <div>
-                  <img src="assets/logo.png" alt="" width="190" height="190" />
-                  <h1>NoteFlow</h1>
-                </div>
-              )}
-            </CSSTransition>
-          </SwitchTransition>
-        </div>
-
-        <div className="info">
-          <h2>Login</h2>
-          <div className="infoContainer">
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              style={{ margin: "10px 15px" }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                size="small"
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                size="small"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 2, mb: 2 }}
-                style={{
-                  backgroundColor: "#0e1111",
-                  color: "white",
-                  paddingTop: "2%",
-                  textTransform: "none",
-                }}
-              >
-                Login
-              </Button>
-              <div
-                className="links"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Link
-                  variant="body2"
-                  style={{
-                    color: "#414a4c",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => navigateTo("/forgotPassword")}
-                >
-                  Forgot password?
-                </Link>
-                <Link
-                  variant="body2"
-                  style={{ color: "#414a4c", cursor: "pointer" }}
-                  onClick={() => navigateTo("/register")}
-                >
-                  {"Don't have an account? Sign Up"}
-                </Link>
+    <div className={`${isMobile ? "login-mobile" : "login"}`}>
+      <div className={`${isMobile ? "logo-mobile" : "logo"}`}>
+        <SwitchTransition mode="out-in">
+          <CSSTransition
+            key={tryme ? "tryme" : "logo"}
+            classNames="fade"
+            timeout={500}
+          >
+            {tryme ? (
+              <h1>Try Me</h1>
+            ) : (
+              <div>
+                <img src="assets/logo.png" alt="" width="190" height="190" />
+                <h1>NoteFlow</h1>
               </div>
-            </Box>
-          </div>
-          <div className="horizontalLine">
-            <span>OR</span>
-          </div>
-          <div id="signInDiv" ref={divRef}></div>
+            )}
+          </CSSTransition>
+        </SwitchTransition>
+      </div>
+
+      <div className={`${isMobile ? "info-mobile" : "info"}`}>
+        <h2>Login</h2>
+        <div className="infoContainer">
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            style={{ margin: "10px 15px" }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              size="small"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              size="small"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2, mb: 2 }}
+              style={{
+                backgroundColor: "#0e1111",
+                color: "white",
+                paddingTop: "2%",
+                textTransform: "none",
+              }}
+            >
+              Login
+            </Button>
+            <div
+              className="links"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Link
+                variant="body2"
+                style={{
+                  color: "#414a4c",
+                  cursor: "pointer",
+                }}
+                onClick={() => navigateTo("/forgotPassword")}
+              >
+                Forgot password?
+              </Link>
+              <Link
+                variant="body2"
+                style={{ color: "#414a4c", cursor: "pointer" }}
+                onClick={() => navigateTo("/register")}
+              >
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </div>
+          </Box>
         </div>
+        <div className="horizontalLine">
+          <span>OR</span>
+        </div>
+        <div id="signInDiv" ref={divRef}></div>
       </div>
     </div>
   );

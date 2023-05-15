@@ -7,13 +7,13 @@ import whoAmI from './whoAmI.js';
 import verifyToken from './verifyToken.js';
 
 const service = {
-    googleLogin,
-    verifyToken,
-    login,
-    logout,
-    register,
-    updateUserInfo,
-    whoAmI,
+  googleLogin,
+  verifyToken,
+  login,
+  logout,
+  register,
+  updateUserInfo,
+  whoAmI,
 };
 
 export default service;

@@ -1,17 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
-import EditorToolbar, { modules, formats } from './EditorToolbar';
-import 'react-quill/dist/quill.snow.css';
-import './Editor.scss';
-import { IoIosArrowBack } from 'react-icons/io';
-import IconButton from '@mui/material/IconButton';
-import { useState } from 'react';
-import { useFlowStorage } from '../../storage/Storage';
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
-import { useQuill } from '../../API/useQuill';
-import { useApp, getRandomPicture } from '../../hooks/useApp';
-import { Colab } from '../../API/Colab.js';
+import React, { useEffect, useRef } from "react";
+import ReactQuill, { Quill } from "react-quill";
+import EditorToolbar, { modules, formats } from "./EditorToolbar";
+import "react-quill/dist/quill.snow.css";
+import "./Editor.scss";
+import { IoIosArrowBack } from "react-icons/io";
+import IconButton from "@mui/material/IconButton";
+import { useState } from "react";
+import { useFlowStorage } from "../../storage/Storage";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+import { useQuill } from "../../API/useQuill";
+import { useApp, getRandomPicture } from "../../hooks/useApp";
+import { Colab } from "../../API/Colab.js";
 
 window.katex = katex;
 
@@ -23,21 +23,21 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   const { OpenEditor, QuillRef, colabs } = useQuill();
   useEffect(() => {
     OpenEditor(editorId);
-    console.log('open editor');
+    console.log("open editor");
     const connection = new Colab(editorId, user.email, (members) => {
       setColab(members);
     });
     setColabWebSocket(connection);
     // setColab();
     setState({
-      title: '',
-      value: '',
+      title: "",
+      value: "",
     });
   }, []);
 
   const [state, setState] = useState({
-    title: '',
-    value: '',
+    title: "",
+    value: "",
   });
 
   const handleChange = (value) => {
@@ -59,10 +59,10 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   // shareDB
 
   return (
-    <div className='editor'>
-      <div className='header'>
+    <div className="editor">
+      <div className="header">
         <IconButton
-          size='large'
+          size="large"
           onClick={() => {
             handleDrawerClose();
             colabWebSocket.close();
@@ -72,36 +72,36 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           <IoIosArrowBack size={20} />
         </IconButton>
         <input
-          className='title-input'
-          type='text'
-          placeholder='Untitled...'
+          className="title-input"
+          type="text"
+          placeholder="Untitled..."
           value={state.title}
           onChange={(e) => {
             setState({ ...state, title: e.target.value });
           }}
         ></input>
-        <span className='focus-border'></span>
+        <span className="focus-border"></span>
         {/* 需限制 user 數量 */}
-        <div className='users'>
+        <div className="users">
           {colab.map((element, index) => {
             return (
-              <div className='user' key={index}>
-                <img src={getRandomPicture(element)} alt='' />
+              <div className="user" key={index}>
+                <img src={getRandomPicture(element)} alt="" />
               </div>
             );
           })}
         </div>
       </div>
-      <div className='text-editor'>
+      <div className="text-editor">
         <EditorToolbar />
         <ReactQuill
-          theme='snow'
+          theme="snow"
           value={state.value}
           onChange={handleChange}
-          placeholder={'Write something awesome...'}
+          placeholder={"Write something awesome..."}
           modules={modules}
           formats={formats}
-          className='editor-input'
+          className="editor-input"
           ref={QuillRef}
         />
       </div>
