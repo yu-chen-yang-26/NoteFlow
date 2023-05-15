@@ -45,7 +45,7 @@ class Flow {
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
-    const result = await collection.findOneAndUpdate(
+    await collection.findOneAndUpdate(
       {
         user: this.owner,
       },
