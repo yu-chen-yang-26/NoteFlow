@@ -111,7 +111,7 @@ const Library = () => {
         style={{ width: "100%" }}
       >
         {nodes.map((node, id) => (
-          <Grid item xs={3} md={3} key={id}>
+          <Grid item xs={5} md={3} key={id}>
             <NodeButton onClick={() => toNode(node)}>
               {/* {t("Last Edit Time:")} {node.time} {t("hours")} */}
             </NodeButton>
