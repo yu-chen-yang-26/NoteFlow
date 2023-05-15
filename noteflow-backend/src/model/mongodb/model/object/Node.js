@@ -25,13 +25,12 @@ class Node {
       if (doc.type === null) {
         doc.create([{ insert: '' }], 'rich-text');
       }
-      console.log('node added!', doc.data);
     });
   }
 
   static async CanUserEdit(nodeId, owner, target) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('nodeRepository');
 
@@ -44,13 +43,11 @@ class Node {
       ])
       .toArray();
 
-    await mongoClient.close();
     return resolved[0].nodes.colaborators.includes(target);
   }
 
   static async fetchColaborators(owner, nodeId) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
 
     const database = mongoClient.db('noteflow');
     const collection = database.collection('nodeRepository');
@@ -64,8 +61,6 @@ class Node {
         { $replaceRoot: { newRoot: '$nodes' } },
       ])
       .toArray();
-
-    await mongoClient.close();
 
     return resolved[0].colaborators;
   }

@@ -44,7 +44,8 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     });
     setColabWebSocket(connection);
     instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
-      console.log(res.data);
+      setTitle(res.data);
+      setNewTitle(res.data);
     });
   }, []);
 
@@ -56,6 +57,8 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     // quill-editor, editor-settings
     const toolbar = document.querySelector('#toolbar');
     const editor = document.querySelector('#quill-editor');
+
+    console.log(editor.style.display);
     if (showSettings) {
       toolbar.style.pointerEvents = 'none';
       toolbar.style.opacity = '0.5';
@@ -65,7 +68,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       toolbar.style.pointerEvents = 'auto';
       toolbar.style.opacity = '1';
 
-      editor.style.display = 'auto';
+      editor.style.display = '';
     }
   }, [showSettings]);
 

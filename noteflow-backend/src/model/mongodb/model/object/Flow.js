@@ -41,7 +41,7 @@ class Flow {
 
   async newify() {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
@@ -59,7 +59,7 @@ class Flow {
         },
       },
     );
-    await mongoClient.close();
+
     const flowList = new FlowList(this.owner);
     await flowList.addSomebodyToFlowList(this.owner, this.id);
     await this.newify_sharedb();
@@ -78,10 +78,10 @@ class Flow {
 
   static async CanUserEdit(flowId, owner, target) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
-    const resolved = collection
+    const resolved = await collection
       .aggregate([
         { $match: { user: owner } },
         { $limit: 1 },
@@ -89,17 +89,18 @@ class Flow {
         { $match: { 'flows.id': flowId } },
       ])
       .toArray();
-    await mongoClient.close();
+
     return resolved[0].flows.colaborators.includes(target);
   }
 
   static async generateFlowId(owner) {
+    const mongoClient = getMongoClient();
+
     let resolved = false;
     let newUuid;
     while (!resolved) {
       newUuid = `${owner}-flow-${uuidv4()}`;
-      const mongoClient = getMongoClient();
-      await mongoClient.connect();
+
       const database = mongoClient.db('noteflow');
       const collection = database.collection('flows');
 
@@ -110,14 +111,14 @@ class Flow {
       if (!result) {
         resolved = true;
       }
-      await mongoClient.close();
     }
+
     return newUuid;
   }
 
   static async refreshColabs(flowId, add = [], remove = []) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
@@ -143,9 +144,6 @@ class Flow {
         $pull: { 'flows.$.colaborators': { $in: remove } },
       },
     );
-    // eslint-disable-next-line no-empty
-
-    await mongoClient.close();
   }
 }
 

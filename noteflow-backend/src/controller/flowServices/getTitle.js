@@ -9,6 +9,7 @@ const getTitle = async (ctx) => {
   } catch (e) {
     ctx.throw(500, 'Internal server error');
   }
+
   ctx.status = 200;
   ctx.body = JSON.stringify(resolved);
 };

@@ -14,20 +14,18 @@ class FlowList {
     };
 
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flowList');
     if (await collection.findOne({ user: result.user })) {
       return; // We have created for this user.
     }
     await collection.insertOne(result);
-
-    await mongoClient.close();
   }
 
   async fetchFlowList() {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flowList');
 
@@ -37,12 +35,12 @@ class FlowList {
       })
     ).flowList;
 
-    await mongoClient.close();
+    console.log(this.flowList);
   }
 
   async addSomebodyToFlowList(userEmail, flowId) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flowList');
     await collection.findOneAndUpdate(
@@ -53,14 +51,12 @@ class FlowList {
         $addToSet: { flowList: { owner: this.user, flowId } },
       },
     );
-
-    await mongoClient.close();
   }
 
   // eslint-disable-next-line class-methods-use-this
   async removeSomebodyFromFlowList(userEmail, flowId) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flowList');
 
@@ -72,8 +68,6 @@ class FlowList {
         $pull: { flowList: { flowId: { $eq: flowId } } },
       },
     );
-
-    await mongoClient.close();
   }
 }
 
