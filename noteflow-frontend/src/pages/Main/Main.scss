@@ -52,26 +52,18 @@
   width: 100vw;
   height: 100vh;
   display: flex;
-  // justify-content: center;
-  // align-items: center;
-  // box-sizing: border-box;
-  // margin: 0;
-  // padding: 0;
-  // gap: 0;
 
-  // .App-tab {
-  //   padding: 0;
-  //   margin: 0;
-  //   width: calc(100% - 160px);
-  //   min-height: 600px;
-  //   background-color: black;
-  //   display: flex;
-  //   flex-direction: column;
+  .App-tab {
+    //   padding: 0;
+    //   margin: 0;
+    //   width: calc(100% - 160px);
+    height: 90%;
 
-  //   .Flow-grid {
-  //     background-color: white;
-  //     flex: 1;
-  //     overflow-y: scroll;
-  //   }
-  // }
+    .Flow-grid {
+      height: 93%;
+      //     background-color: white;
+      //     flex: 1;
+      //     overflow-y: scroll;
+    }
+  }
 }
