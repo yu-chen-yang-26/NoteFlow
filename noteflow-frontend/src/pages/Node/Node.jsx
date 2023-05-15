@@ -13,7 +13,7 @@ const Node = () => {
   return (
     <div className="Node-container">
       <PageTab />
-      <div className="EditorContainer">
+      <div className="NodeEditorContainer">
         <Editor
           nodes={nodes}
           flowID={flowID}
