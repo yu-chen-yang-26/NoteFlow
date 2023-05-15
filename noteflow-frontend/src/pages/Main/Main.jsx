@@ -3,7 +3,7 @@ import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import "./Main.scss";
 import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
 import PageTab from "../../Components/PageTab/PageTab.jsx";
-import Library from "../../Components/Library/Library.jsx";
+import Library from "../Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../../Components/Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
