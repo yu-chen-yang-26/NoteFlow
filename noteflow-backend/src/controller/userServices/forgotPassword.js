@@ -57,19 +57,23 @@ const forgotPasswordAuth = async (ctx) => {
 };
 
 const forgotPasswordRenew = async (ctx) => {
-  const { email, resetPassword } = ctx.session;
+  if (ctx.session.logined === true) {
+    const { email } = ctx.session;
+    const { oldPassword, newPassword } = ctx.request.body;
 
-  ctx.assert(resetPassword, 408, 'Request timeout.');
+    const result = await db('users').first().where({ email });
 
-  const { oldPassword, newPassword } = ctx.request.body;
+    const validate = await argon2.verify(result.password, oldPassword);
 
-  const result = await db('users').first().where({ email });
-  const validate = await argon2.verify(result.newPassword, oldPassword);
+    ctx.assert(validate, 401, 'Old password is invalid.');
 
-  ctx.assert(validate, 401, 'Old password is invalid.');
+    const password = await argon2.hash(newPassword);
+    await db('users').update({ password }).where({ email });
+  } else {
+    const { email, resetPassword } = ctx.session;
 
-  const password = await argon2.hash(newPassword);
-  await db('users').update({ password }).where({ email });
+    ctx.assert(resetPassword, 408, 'Request timeout.');
+  }
 
   ctx.status = 200;
 };
