@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import "./Main.scss";
 import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
@@ -9,13 +9,18 @@ import Calendar from "../Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
 import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import { useApp } from "../../hooks/useApp.jsx";
+import { usePageTab } from "../../hooks/usePageTab.jsx";
 
 export default function Main() {
   const mode = useFlowStorage((state) => state.mode);
+  const { setActiveTab } = usePageTab();
   const containerRef = useRef(null);
 
   //rwd
   const { isMobile } = useApp();
+  useEffect(() => {
+    setActiveTab(null);
+  }, []);
 
   return (
     // <div className="App">

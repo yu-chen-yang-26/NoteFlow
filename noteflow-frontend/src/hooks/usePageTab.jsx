@@ -57,7 +57,7 @@ const PageTabProvider = (props) => {
 
   return (
     <PageTabContext.Provider
-      value={{ tabList, addTab, closeTab, toTab, activeTab }}
+      value={{ tabList, addTab, closeTab, toTab, activeTab, setActiveTab }}
       {...props}
     />
   );
