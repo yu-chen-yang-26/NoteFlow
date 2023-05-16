@@ -207,16 +207,6 @@ function Flow() {
     <div className="FlowEditPanel">
       {!back ? (
         <>
-          <ToolBar
-            setTitle={setTitle}
-            title={title}
-            addNode={onAdd}
-            onSave={onSave}
-            changeBackground={(bgStyle) => {
-              setBgVariant(bgStyle);
-            }}
-            flowWebSocket={flowWebSocket}
-          />
           <ReactFlow
             className="NodePanel"
             nodes={nodes}
@@ -246,6 +236,16 @@ function Flow() {
             nodeTypes={nodeTypes}
             // edgeTypes={edgeTypes}
           >
+            <ToolBar
+              setTitle={setTitle}
+              title={title}
+              addNode={onAdd}
+              onSave={onSave}
+              changeBackground={(bgStyle) => {
+                setBgVariant(bgStyle);
+              }}
+              flowWebSocket={flowWebSocket}
+            />
             {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
             <MiniMap nodeStrokeWidth={10} zoomable pannable />
             <Controls />
