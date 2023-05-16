@@ -9,7 +9,6 @@ import instance from '../../API/api';
 
 export default function ResetModal({ show, setShow, handleClose, flowId }) {
   const { t } = useTranslation();
-  const [allColabs, setAllColabs] = useState(null);
   const [password, setPassword] = useState({
     original: '',
     new: '',
@@ -60,19 +59,6 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
         }
       });
   };
-
-  useEffect(() => {
-    if (allColabs) {
-      allColabs.forEach((data, index) => {
-        const each = document.querySelector(`#colab-${index}`);
-        if (data.status === 200) {
-          each.style.border = undefined;
-        } else {
-          each.style.border = '1px solid red';
-        }
-      });
-    }
-  }, [allColabs]);
 
   return (
     <Modal
