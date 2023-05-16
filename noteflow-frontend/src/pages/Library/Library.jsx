@@ -9,14 +9,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { useFlowStorage } from "../../storage/Storage";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../../hooks/useApp";
+
+import { usePageTab } from "../../hooks/usePageTab";
 
 const Library = () => {
   // const { t } = useTranslation();
+  const { addTab, tabList } = usePageTab();
   const { isMobile } = useApp();
   const nodes = useFlowStorage((state) => state.nodes);
-  const tabList = useFlowStorage((state) => state.tabList);
-  const addTab = useFlowStorage((state) => state.addTab);
   const navigate = useNavigate();
   const NodeButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[100]),

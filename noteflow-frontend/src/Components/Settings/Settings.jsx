@@ -7,7 +7,6 @@ import { BsFillPersonFill } from "react-icons/bs";
 import { MdLanguage } from "react-icons/md";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
@@ -21,7 +20,6 @@ const Settings = () => {
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
-  const navigate = useNavigate();
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     backgroundColor: "#0e1111",

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import produce from 'immer';
-import { userFlows, userFlowNode } from './data';
+import { create } from "zustand";
+import produce from "immer";
+import { userFlows, userFlowNode } from "./data";
 
 const flows = userFlows;
 const tabList = [];
@@ -11,26 +11,6 @@ export const useFlowStorage = create((set) => ({
   tabList: tabList,
   flowNow: {},
   flowNodes: userFlowNode,
-  changeFlowNow: (payload) =>
-    set(
-      produce((state) => {
-        state.flowNow = payload;
-      })
-    ),
-  addTab: (payload) =>
-    set((state) => {
-      return {
-        ...state,
-        tabList: [...state.tabList, payload],
-      };
-    }),
-  closeTab: (payload) =>
-    set((state) => {
-      return {
-        ...state,
-        tabList: state.tabList.filter((item) => item !== payload),
-      };
-    }),
 
   saveNewNode: (payload) =>
     set(
