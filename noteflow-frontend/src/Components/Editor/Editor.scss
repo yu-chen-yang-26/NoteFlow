@@ -46,7 +46,7 @@
       gap: 5px;
       position: absolute;
       right: 3vw;
-      bottom: 20px;
+      bottom: 2vh;
       width: fit-content;
       .user {
         cursor: pointer;
@@ -63,7 +63,7 @@
         }
 
         &:hover {
-          border: black solid 0.2vw;
+          border: black solid 2px;
           transition: 0.2s ease-out;
           transform: scale(130%);
         }

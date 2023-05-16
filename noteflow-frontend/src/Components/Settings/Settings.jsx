@@ -7,13 +7,11 @@ import { BsFillPersonFill } from "react-icons/bs";
 import { MdLanguage } from "react-icons/md";
 import { styled } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import { useFlowStorage } from "../../storage/Storage";
-import { useNavigate } from "react-router-dom";
-import { useApp } from '../../hooks/useApp';
+import { useApp } from "../../hooks/useApp";
 import instance from "../../API/api";
 
 const Settings = () => {
@@ -21,7 +19,6 @@ const Settings = () => {
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
-  const navigate = useNavigate();
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     backgroundColor: "#0e1111",
@@ -102,15 +99,19 @@ const Settings = () => {
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
             <BiLogOut size={25} style={{ marginRight: "15px" }}></BiLogOut>
-            <SettingsButton onClick={() => {
-              if (!user) return;
-              instance.post('/user/logout').then((res) => {
-                if(res.status !== 200) {
-                   alert('Internal server error!');
-                }
-                logout();
-              })
-            }}>{t("Log out")}</SettingsButton>
+            <SettingsButton
+              onClick={() => {
+                if (!user) return;
+                instance.post("/user/logout").then((res) => {
+                  if (res.status !== 200) {
+                    alert("Internal server error!");
+                  }
+                  logout();
+                });
+              }}
+            >
+              {t("Log out")}
+            </SettingsButton>
           </Stack>
         </Stack>
       </Grid>

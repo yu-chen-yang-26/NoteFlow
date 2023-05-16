@@ -1,26 +1,29 @@
-.Flow-container{
+.Flow-container {
   width: 100vw;
   height: 100vh;
+
+  .FlowEditPanel {
+    height: calc(100vh - 55px);
+    display: flex;
+    .NodePanel {
+      font-family: sans-serif;
+      text-align: center;
+      height: 100%;
+      min-height: calc(90vh - 80px);
+    }
+
+    .EditorContainer {
+      width: 60%;
+      z-index: 100000;
+    }
+  }
 }
-.FlowEditPanel{
-  height: calc(100vh - 55px);
-}
-.navbar{
+
+.navbar {
   background-color: white !important;
 }
-.titleInput{
+.titleInput {
   background-color: white !important;
   border: 1px solid black !important;
   color: black !important;
-}
-.NodePanel {
-  font-family: sans-serif;
-  text-align: center;
-  height:100%;
-  min-height: calc(90vh - 80px);
-}
-
-.EditorContainer{
-  width: 60%;
-  z-index: 100000;
 }

@@ -1,7 +1,8 @@
-import sharedb from 'sharedb/lib/client';
-import * as json1 from 'ot-json1';
-import ReconnectingWebsocket from 'reconnecting-websocket';
-import { BASE_URL } from '../API/api';
+import sharedb from "sharedb/lib/client";
+import * as json1 from "ot-json1";
+import ReconnectingWebsocket from "reconnecting-websocket";
+import { BASE_URL } from "../API/api";
+import { type } from "rich-text";
 
 sharedb.types.register(json1.type);
 
@@ -24,20 +25,17 @@ class FlowWebSocket {
     );
     this.socket = socket;
 
-    const collection = 'flow-sharedb';
+    const collection = "flow-sharedb";
     const connection = new sharedb.Connection(socket);
     const flow = connection.get(collection, flowId);
-    console.log('connecting...');
     flow.subscribe((e) => {
       if (e) throw e;
-      console.log('subscribed!');
+      console.log("subscribed!");
       this.flow = flow;
-      this.flow.on('op', (op, source) => {
+      this.flow.on("op", (op, source) => {
         this.lastOp = op;
         callback(this.convertFlowData(this.flow.data));
       });
-
-      // this.lamport.prepareFlow(flow);
       callback(this.convertFlowData(this.flow.data));
     });
   }
@@ -47,9 +45,21 @@ class FlowWebSocket {
     callback(1000);
   }
 
+  editFlowTitle(title) {
+    const op = [json1.replaceOp(["name"], true, title)].reduce(
+      json1.type.compose,
+      null
+    );
+    this.flow.submitOp(op, (error) => {
+      if (error) {
+        this.flow.submitOp(op);
+      }
+    });
+  }
+
   addComponent(component, type) {
     const op = [
-      json1.insertOp([type === 'node' ? 'nodes' : 'edges', component.id], {
+      json1.insertOp([type === "node" ? "nodes" : "edges", component.id], {
         ...component,
       }),
     ].reduce(json1.type.compose, null);
@@ -66,10 +76,10 @@ class FlowWebSocket {
     this.lastUpdated = currentTime;
     let op = [];
     switch (param[0].type) {
-      case 'remove':
+      case "remove":
         // 從 param[0].id 以後全部減一
         op = [
-          json1.removeOp([type === 'node' ? 'nodes' : 'edges', param[0].id]),
+          json1.removeOp([type === "node" ? "nodes" : "edges", param[0].id]),
         ];
         // const flowDataArr = Object.keys(
         //   this.flow.data[type === "node" ? "nodes" : "edges"]
@@ -86,15 +96,15 @@ class FlowWebSocket {
         //   }
         // });
         console.log(op);
-        if (type === 'node') {
-          const edgeArr = Object.keys(this.flow.data['edges']);
+        if (type === "node") {
+          const edgeArr = Object.keys(this.flow.data["edges"]);
           console.log(this.flow.data);
           edgeArr.map((id) => {
             if (
               this.flow.data.edges[id].target === param[0].id ||
               this.flow.data.edges[id].source === param[0].id
             ) {
-              op.push(json1.removeOp(['edges', id]));
+              op.push(json1.removeOp(["edges", id]));
             }
           });
         }
@@ -102,20 +112,20 @@ class FlowWebSocket {
         op = op.reduce(json1.type.compose, null);
 
         break;
-      case 'position':
+      case "position":
         // 如果 dragging == false 就不做事
         if (!param[0].dragging) return;
-        if (type === 'edge') throw Error('看不懂');
+        if (type === "edge") throw Error("看不懂");
 
         let currentNode =
-          this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
+          this.flow.data[type === "node" ? "nodes" : "edges"][param[0].id];
         // ncaught TypeError: this.flow.data[(intermediate value)(intermediate value)(intermediate value)].map is not a function
         currentNode.position = param[0].position
           ? param[0].position
           : currentNode.position;
         op = [
           json1.replaceOp(
-            [type === 'node' ? 'nodes' : 'edges', param[0].id.toString()],
+            [type === "node" ? "nodes" : "edges", param[0].id.toString()],
             true,
             currentNode
           ),

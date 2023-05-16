@@ -43,7 +43,6 @@ const UserProvider = (props) => {
       })
       .catch((e) => {
         navigate("/");
-        console.log(e);
       });
   }, [rerender]);
 

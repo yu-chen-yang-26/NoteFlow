@@ -16,10 +16,44 @@
       align-items: center;
       justify-content: center;
       z-index: 3;
+
+      .flowTitle {
+        background-color: transparent;
+        overflow: hidden;
+        position: relative;
+        border: none;
+        height: 45px;
+        max-width: 250px;
+        font-size: 25px;
+        &:focus-visible {
+          outline: none;
+          border-bottom: 1;
+        }
+        &:focus {
+          outline: none;
+          border-bottom: none;
+        }
+
+        &:focus + .focus-border {
+          width: 250px;
+          transition: 0.4s;
+        }
+      }
+
+      .focus-border {
+        position: absolute;
+        bottom: 15px;
+        left: 60px;
+        width: 0px;
+        height: 2px;
+        background-color: #7b7b7b;
+        transition: 0.4s;
+      }
     }
 
     .mid {
       justify-self: center;
+      transform: translateX(-100px);
       display: flex;
       z-index: 3;
     }
