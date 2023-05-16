@@ -11,11 +11,12 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import { useFlowStorage } from "../../storage/Storage";
+import { useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
 import instance from "../../API/api";
 
 const Settings = () => {
-  const { user, logout } = useApp();
+  const { user, logout, isMobile } = useApp();
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
@@ -23,7 +24,7 @@ const Settings = () => {
     cursor: "pointer",
     backgroundColor: "#0e1111",
     color: "white",
-    width: "25vmin",
+    width: "100%",
     variant: "outlined",
     ":hover": {
       backgroundColor: "lightgrey",
@@ -39,7 +40,7 @@ const Settings = () => {
   };
   return (
     <Grid container columns={12} sx={{ height: "100%" }}>
-      <Grid item xs={7}>
+      <Grid item xs={12} md={6}>
         <Stack
           direction="row"
           justifyContent="center"
@@ -48,8 +49,10 @@ const Settings = () => {
         >
           <div
             style={{
-              width: "350px",
-              height: "350px",
+              // width: "350px",
+              // height: "350px",
+              width: "60%",
+              maxWidth: "300px",
               borderRadius: "50%",
               border: "2px solid black",
               overflow: "hidden",
@@ -66,10 +69,16 @@ const Settings = () => {
           </div>
         </Stack>
       </Grid>
-      <Grid item xs={5}>
+      <Grid
+        item
+        xs={12}
+        md={6}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
         <Stack
           direction="column"
           justifyContent="center"
+          // alignItems={isMobile ? "center" : "left"}
           alignItems="left"
           sx={{ height: "100%", gap: "2vmin" }}
         >

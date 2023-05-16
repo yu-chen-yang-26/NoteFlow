@@ -10,9 +10,10 @@ import { useTranslation } from "react-i18next";
 import { usePageTab } from "../../hooks/usePageTab";
 import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import "./FlowGrid.scss";
+
 export default function FlowGrid() {
   const { t, i18n } = useTranslation();
-  const { user } = useApp();
+  const { isMobile, user } = useApp();
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -93,7 +94,9 @@ export default function FlowGrid() {
     <LoadingScreen />
   ) : (
     <>
-      <div className="flow-container">
+      <div
+        className={`${isMobile ? "flow-container-mobile" : "flow-container"}`}
+      >
         {flows.map((flow, key) => (
           <div className="grid-item" key={key}>
             <FlowButton onClick={() => toFlow(flow)}>

@@ -5,7 +5,7 @@ import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
 import PageTab from "../../Components/PageTab/PageTab.jsx";
 import Library from "../Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
-import Calendar from "../../Components/Calendar/Calendar.jsx";
+import Calendar from "../Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
 import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import { useApp } from "../../hooks/useApp.jsx";

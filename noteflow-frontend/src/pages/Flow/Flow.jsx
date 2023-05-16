@@ -22,6 +22,7 @@ import PageTab from "../../Components/PageTab/PageTab";
 import { Navigate, useLocation } from "react-router-dom";
 import { toPng } from "html-to-image";
 import { QuillProvider } from "../../API/useQuill";
+
 import instance from "../../API/api";
 import { useApp } from "../../hooks/useApp";
 import "./Flow.scss";
@@ -91,6 +92,7 @@ function Flow() {
   const [editorId, setEditorId] = useState(null);
   const searchParams = new URLSearchParams(location.search);
   const flowId = searchParams.get("id");
+
   const { addTab } = usePageTab();
 
   const navigateTo = useNavigate();
@@ -258,6 +260,7 @@ function Flow() {
       {isEdit && (
         <div className="EditorContainer">
           <Node nodeId={editorId} setIsEdit={setIsEdit} />
+
         </div>
       )}
     </div>

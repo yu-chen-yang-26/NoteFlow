@@ -37,6 +37,7 @@ const Node = ({ nodeId, setIsEdit }) => {
     <div className="Node-container">
       {!nodeId && <PageTab />}
       <div className="EditorContainer">
+
         <Editor
           editorId={editorId}
           handleDrawerClose={handleDrawerClose}

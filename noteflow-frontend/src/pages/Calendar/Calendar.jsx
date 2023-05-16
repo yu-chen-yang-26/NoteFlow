@@ -1,20 +1,21 @@
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
+import { StaticDatePicker, MobileDatePicker } from "@mui/x-date-pickers";
 import { styled } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useApp } from "../../hooks/useApp";
 import "./Calendar.scss";
 
 const Calendar = () => {
+  const { isMobile } = useApp();
   // const { t } = useTranslation();
   const NodeButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[100]),
     fontSize: "12px",
-    fontFamily: "Bauhaus",
     backgroundColor: "white",
     border: "1px black solid",
     "&:hover": {
@@ -46,37 +47,42 @@ const Calendar = () => {
 
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: "100%" }}>
-      <Grid
-        item
-        xs={6}
-        sx={{
-          height: "100%",
-          "& .MuiPickersDay-root": {
-            paddingTop: 0.5,
-            ":focus": {
-              backgroundColor: "black",
-              color: "white",
-            },
-          },
-        }}
-      >
+      {/* <Grid item xs={6}> */}
+      <Grid item xs={12} md={6}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <StaticDatePicker defaultValue={dayjs(getDate())} />
+          {isMobile ? (
+            <MobileDatePicker
+              defaultValue={dayjs(getDate())}
+              autoFocus={true}
+              format="YYYY-DD-MM"
+              sx={{ width: "100%" }}
+            />
+          ) : (
+            <StaticDatePicker
+              defaultValue={dayjs(getDate())}
+              autoFocus={true}
+              sx={{ width: "100%" }}
+            />
+          )}
         </LocalizationProvider>
       </Grid>
       <Grid
         item
-        xs={6}
+        xs={12}
+        md={6}
         sx={{
           padding: 2,
-          height: "100%",
-          borderLeft: "1px solid grey",
+          height: "90%",
+          //手機不顯示 border
+          borderLeft: isMobile ? "none" : "1px solid grey",
         }}
       >
-        <Grid container columns={12} spacing={2}>
+        <Grid container columns={12} spacing={"2vw"}>
           {nodes.map((node, id) => (
             <Grid item xs={4} md={4} key={id}>
-              <NodeButton>Last Edit Time: {node.time} hours</NodeButton>
+              <NodeButton sx={{ height: isMobile ? "10vh" : "20vh" }}>
+                Last Edit Time: {node.time} hours
+              </NodeButton>
               <Typography
                 style={{
                   fontSize: "12px",

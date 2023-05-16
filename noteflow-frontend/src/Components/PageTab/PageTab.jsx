@@ -65,6 +65,7 @@ export default function PageTab() {
           backgroundColor: "black",
           paddingBottom: 0,
           height: "7%",
+          maxHeight: "30px",
         }}
         className="toolbar"
         direction="row"

@@ -59,7 +59,7 @@ const UserProvider = (props) => {
 
 const MediaProvider = ({ children }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // console.log(isMobile);
 
   return (
