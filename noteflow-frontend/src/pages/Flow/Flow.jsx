@@ -196,12 +196,14 @@ function Flow() {
 
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
+
+    console.log(node);
     setEditorId(node.editorId);
     setIsEdit(true);
     addTab({
       type: "node",
       objectId: node.editorId,
-      name: node.id ? node.id : "Untitled",
+      name: node.data.label ? node.data.label : ":)",
     });
   });
 
@@ -260,7 +262,6 @@ function Flow() {
       {isEdit && (
         <div className="EditorContainer">
           <Node nodeId={editorId} setIsEdit={setIsEdit} />
-
         </div>
       )}
     </div>
