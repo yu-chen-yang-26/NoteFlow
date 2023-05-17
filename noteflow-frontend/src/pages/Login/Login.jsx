@@ -121,7 +121,13 @@ const Login = () => {
               <h1>Try Me</h1>
             ) : (
               <div>
-                <img src="assets/logo.png" alt="" width="190" height="190" />
+                <img
+                  loading="lazy"
+                  src="assets/logo.png"
+                  alt=""
+                  width="190"
+                  height="190"
+                />
                 <h1>NoteFlow</h1>
               </div>
             )}

@@ -8,7 +8,7 @@ import { useApp } from "../../hooks/useApp";
 import { Colab } from "../../API/Colab";
 import "./Node.scss";
 
-const Node = ({ nodeId, setIsEdit }) => {
+const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const editorId = nodeId ? nodeId : searchParams.get("id");
@@ -34,10 +34,12 @@ const Node = ({ nodeId, setIsEdit }) => {
   }, [editorId]);
 
   return (
-    <div className="Node-container">
+    <div
+      className="Node-container"
+      style={nodeId && { width: `${nodeWidth}px` }}
+    >
       {!nodeId && <PageTab />}
-      <div className="EditorContainer">
-
+      <div className="editor">
         <Editor
           editorId={editorId}
           handleDrawerClose={handleDrawerClose}

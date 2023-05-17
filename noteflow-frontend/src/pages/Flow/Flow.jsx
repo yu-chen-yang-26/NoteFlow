@@ -17,11 +17,11 @@ import ReactFlow, {
 import CustomNode from "../../Components/Flow/Node";
 import ToolBar from "../../Components/Flow/ToolBar";
 import StyleBar from "../../Components/Flow/StyleBar";
-import Drawer from "@mui/material/Drawer";
 import PageTab from "../../Components/PageTab/PageTab";
 import { Navigate, useLocation } from "react-router-dom";
 import { toPng } from "html-to-image";
-import { QuillProvider } from "../../API/useQuill";
+import { Resizable } from "react-resizable";
+import "react-resizable/css/styles.css";
 
 import instance from "../../API/api";
 import { useApp } from "../../hooks/useApp";
@@ -88,7 +88,7 @@ function Flow() {
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [flowWebSocket, setFlowWebSocket] = useState(null);
-  const { user } = useApp();
+  const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
   const searchParams = new URLSearchParams(location.search);
   const flowId = searchParams.get("id");
@@ -97,10 +97,14 @@ function Flow() {
 
   const navigateTo = useNavigate();
 
+  const onResize = (event, { element, size, handle }) => {
+    setNodeWidth(size.width);
+    console.log(size.width);
+  };
+
   useEffect(() => {
     const flowConnection = new FlowWebSocket(flowId, (data) => {
       if (data.error) {
-        console.log(data.error);
         navigateTo("/error");
       } else rerender(data);
     });
@@ -210,59 +214,73 @@ function Flow() {
   return (
     <div className="FlowEditPanel">
       {!back ? (
-        <>
-          <ReactFlow
-            className="NodePanel"
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={(param) => {
-              onNodesChange(param);
-              flowWebSocket.editComponent(param, "node");
+        <ReactFlow
+          className="NodePanel"
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={(param) => {
+            onNodesChange(param);
+            flowWebSocket.editComponent(param, "node");
+          }}
+          onEdgesChange={(param) => {
+            onEdgesChange(param);
+            flowWebSocket.editComponent(param, "edge");
+          }}
+          onEdgeUpdate={(param) => {
+            onEdgeUpdate(param);
+            console.log("2");
+          }}
+          onConnect={(param) => {
+            onConnect(param);
+            flowWebSocket.addComponent(
+              { ...param, id: edgeId.current.toString() },
+              "edge"
+            );
+            console.log(param);
+          }}
+          // onInit={setRfInstance}
+          onNodeDoubleClick={onNodeDoubleClick}
+          nodeTypes={nodeTypes}
+          // edgeTypes={edgeTypes}
+        >
+          <ToolBar
+            setTitle={setTitle}
+            title={title}
+            addNode={onAdd}
+            onSave={onSave}
+            changeBackground={(bgStyle) => {
+              setBgVariant(bgStyle);
             }}
-            onEdgesChange={(param) => {
-              onEdgesChange(param);
-              flowWebSocket.editComponent(param, "edge");
-            }}
-            onEdgeUpdate={(param) => {
-              onEdgeUpdate(param);
-              console.log("2");
-            }}
-            onConnect={(param) => {
-              onConnect(param);
-              flowWebSocket.addComponent(
-                { ...param, id: edgeId.current.toString() },
-                "edge"
-              );
-              console.log(param);
-            }}
-            // onInit={setRfInstance}
-            onNodeDoubleClick={onNodeDoubleClick}
-            nodeTypes={nodeTypes}
-            // edgeTypes={edgeTypes}
-          >
-            <ToolBar
-              setTitle={setTitle}
-              title={title}
-              addNode={onAdd}
-              onSave={onSave}
-              changeBackground={(bgStyle) => {
-                setBgVariant(bgStyle);
-              }}
-              flowWebSocket={flowWebSocket}
-            />
-            {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
-            <MiniMap nodeStrokeWidth={10} zoomable pannable />
-            <Controls />
-            <Background color="#ccc" variant={bgVariant} />
-          </ReactFlow>
-        </>
+            flowWebSocket={flowWebSocket}
+          />
+          {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
+          <MiniMap nodeStrokeWidth={10} zoomable pannable />
+          <Controls />
+          <Background color="#ccc" variant={bgVariant} />
+        </ReactFlow>
       ) : (
         <Navigate to="/home" />
       )}
       {isEdit && (
-        <div className="EditorContainer">
-          <Node nodeId={editorId} setIsEdit={setIsEdit} />
-        </div>
+        // <div className="EditorContainer">
+        <Resizable
+          className="box"
+          height={Infinity}
+          width={nodeWidth}
+          onResize={onResize}
+          resizeHandles={["w"]}
+          minConstraints={[400, Infinity]}
+          maxConstraints={[window.innerWidth * 0.7, Infinity]}
+        >
+          <div style={{ width: `${nodeWidth}px` }}>
+            <Node
+              nodeId={editorId}
+              setIsEdit={setIsEdit}
+              nodeWidth={nodeWidth}
+            />
+          </div>
+        </Resizable>
+        // </div>
       )}
     </div>
   );

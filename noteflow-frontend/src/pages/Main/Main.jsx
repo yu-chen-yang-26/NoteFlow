@@ -7,7 +7,7 @@ import Library from "../Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
-import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
+// import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import { useApp } from "../../hooks/useApp.jsx";
 import { usePageTab } from "../../hooks/usePageTab.jsx";
 
@@ -30,7 +30,7 @@ export default function Main() {
         <PageTab />
         <div className="Flow-grid" ref={containerRef}>
           {mode === 0 ? (
-            <FlowGrid />
+            <FlowGrid containerRef={containerRef} />
           ) : mode === 1 ? (
             <Library />
           ) : mode === 2 ? (
@@ -38,15 +38,6 @@ export default function Main() {
           ) : (
             <Settings />
           )}
-          {/* {containerRef.current && (
-            <BackToTopButton containerRef={containerRef} />
-          )} */}
-
-          {isMobile
-            ? null
-            : containerRef.current && (
-                <BackToTopButton containerRef={containerRef} />
-              )}
         </div>
       </div>
     </div>
