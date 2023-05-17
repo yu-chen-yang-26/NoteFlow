@@ -138,7 +138,6 @@ const Login = () => {
           </CSSTransition>
         </SwitchTransition>
       </div>
-
         <div className="info">
           <h2>Login</h2>
           <div className="infoContainer">
@@ -197,7 +196,7 @@ const Login = () => {
                 onClick={() => navigateTo("/forgotPassword")}
               >
                 Forgot password?
-              </Link>
+                </Button>
               <Link
                 variant="body2"
                 style={{ color: "#414a4c", cursor: "pointer" }}
@@ -205,15 +204,14 @@ const Login = () => {
               >
                 {"Don't have an account? Sign Up"}
               </Link>
+              </Box>
             </div>
-          </Box>
         </div>
         <div className="horizontalLine">
           <span>OR</span>
         </div>
         <div id="signInDiv" ref={divRef}></div>
       </div>
-    </div>
   );
 };
 
