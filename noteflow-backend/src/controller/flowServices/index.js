@@ -4,6 +4,8 @@ import createFlow from './createFlow.js';
 import newNode from './newNode.js';
 import getColabList from './getColabList.js';
 import reviseColabList from './reviseColabList.js';
+import setTitle from './setTitle.js';
+import getTitle from './getTitle.js';
 
 const flow = {
   getFlows,
@@ -12,6 +14,8 @@ const flow = {
   newNode,
   getColabList,
   reviseColabList,
+  setTitle,
+  getTitle,
 };
 
 export default flow;

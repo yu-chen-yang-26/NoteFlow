@@ -17,28 +17,22 @@ class Flows {
     };
 
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
     if (await collection.findOne({ user: result.user })) {
       return; // We have created for this user.
     }
     await collection.insertOne(result);
-
-    await mongoClient.close();
   }
 
   async addFlow() {
     const mongoClient = getMongoClient();
     const flowId = await Flow.generateFlowId();
-    await mongoClient.connect();
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
     const flow = new Flow(flowId, '', this.user);
     await collection.insertOne({ ...flow });
-
-    await mongoClient.close();
   }
 
   static async fetchFlowsByFlowList(flowList) {
@@ -51,12 +45,12 @@ class Flows {
     });
 
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
+
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
     let result = [];
-    for (let key of Object.keys(request_mapper)) {
+    for (const key of Object.keys(requestMapper)) {
       const resolved = await collection
         .aggregate([
           { $match: { user: key } },
@@ -80,14 +74,11 @@ class Flows {
       result = result.concat(resolved);
     }
 
-    await mongoClient.close();
-
     return result;
   }
 
   static async fetchColaborators(owner, flowId) {
     const mongoClient = getMongoClient();
-    await mongoClient.connect();
 
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
@@ -101,8 +92,6 @@ class Flows {
         { $replaceRoot: { newRoot: '$flows' } },
       ])
       .toArray();
-
-    await mongoClient.close();
 
     return resolved[0].colaborators;
   }

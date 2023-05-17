@@ -23,12 +23,15 @@ const Login = () => {
   const divRef = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [alarms, setAlarms] = useState("");
   const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user } = useApp();
+
   useEffect(() => {
     if (user) navigateTo("/home");
   }, [user]);
+
   useEffect(() => {
     instance
       .get("/user/who-am-i")
@@ -39,9 +42,10 @@ const Login = () => {
         }
       })
       .catch((e) => {
-        console.log(e);
+        // console.log('error', e);
       });
   }, []); // user 是 google 回傳的 object, 可以拿去 render profile 頁面
+
   const handleCallbackResponse = (res) => {
     const userObject = jwt_decode(res.credential);
     instance
@@ -74,8 +78,12 @@ const Login = () => {
         navigateTo("/home");
       })
       .catch((e) => {
-        console.log(e);
-        console.log("Login error");
+        if(e.response.status === 401) {
+          setAlarms('*Account or password error')
+        } else if(Math.floor(e.response.status / 100) === 5) {
+          setAlarms('*Internal server error')
+        }
+       
       });
 
     // navigateTo("/home");
@@ -131,70 +139,60 @@ const Login = () => {
         </SwitchTransition>
       </div>
 
-      <div className={`${isMobile ? "info" : "info"}`}>
-        <h2>Login</h2>
-        <div className="infoContainer">
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            style={{ margin: "10px 15px" }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              size="small"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              size="small"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 2, mb: 2 }}
-              style={{
-                backgroundColor: "#0e1111",
-                color: "white",
-                paddingTop: "2%",
-                textTransform: "none",
-              }}
+        <div className="info">
+          <h2>Login</h2>
+          <div className="infoContainer">
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              style={{ margin: "10px 15px" }}
             >
-              Login
-            </Button>
-            <div
-              className="links"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Link
-                variant="body2"
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                size="small"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                size="small"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+              <div style={{
+                color: 'red',
+                height: '18px',
+                // border: '1px solid black',
+                textAlign: 'left',
+                padding: '0 5px 0 5px',
+              }}>{alarms}</div>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 2, mb: 2 }}
                 style={{
-                  color: "#414a4c",
-                  cursor: "pointer",
+                  backgroundColor: "#0e1111",
+                  color: "white",
+                  paddingTop: "1%",
+                  textTransform: "none",
                 }}
                 onClick={() => navigateTo("/forgotPassword")}
               >

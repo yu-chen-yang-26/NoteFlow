@@ -1,62 +1,76 @@
-import React, { useEffect, useRef } from "react";
-import ReactQuill, { Quill } from "react-quill";
-import EditorToolbar, { modules, formats } from "./EditorToolbar";
-import "react-quill/dist/quill.snow.css";
-import "./Editor.scss";
-import { IoIosArrowBack } from "react-icons/io";
-import IconButton from "@mui/material/IconButton";
-import { useState } from "react";
-import { useFlowStorage } from "../../storage/Storage";
-import katex from "katex";
-import "katex/dist/katex.min.css";
-import { useQuill } from "../../API/useQuill";
-import { useApp, getRandomPicture } from "../../hooks/useApp";
-import { Colab } from "../../API/Colab.js";
+import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import EditorToolbar, { modules, formats } from './EditorToolbar';
+import 'react-quill/dist/quill.snow.css';
+import './Editor.scss';
+import { IoIosArrowBack } from 'react-icons/io';
+import IconButton from '@mui/material/IconButton';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import { useQuill } from '../../API/useQuill';
+import { Colab } from '../../API/Colab.js';
+import { useApp, getRandomPicture } from '../../hooks/useApp';
+import Button from 'react-bootstrap/Button';
+import { BsShare } from 'react-icons/bs';
+import Settings from './Settings';
+import instance from '../../API/api';
 
 window.katex = katex;
 
 const Editor = ({ handleDrawerClose, editorId }) => {
-  // const saveNode = useFlowStorage((state) => state.saveNode);
   const { user } = useApp();
+  const {
+    OpenEditor,
+    QuillRef,
+    setOnline,
+    title,
+    setTitle,
+    newTitle,
+    setNewTitle,
+  } = useQuill();
+
   const [colab, setColab] = useState([]);
   const [colabWebSocket, setColabWebSocket] = useState(null);
-  const { OpenEditor, QuillRef, colabs } = useQuill();
+  const [showSettings, setShowSettings] = useState(false);
+  // const [rerender, setRerender] = useState(false);
+  const [state, setState] = useState({
+    value: '',
+  });
+
   useEffect(() => {
     OpenEditor(editorId);
-    console.log("open editor");
     const connection = new Colab(editorId, user.email, (members) => {
       setColab(members);
     });
     setColabWebSocket(connection);
-    // setColab();
-    setState({
-      title: "",
-      value: "",
+    instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
+      setTitle(res.data);
+      setNewTitle(res.data);
     });
   }, []);
 
-  const [state, setState] = useState({
-    title: "",
-    value: "",
-  });
+  useEffect(() => {
+    setOnline(colab);
+  }, [colab]);
 
-  const handleChange = (value) => {
-    console.log(state.value);
-    setState({ ...state, value });
-  };
+  useEffect(() => {
+    // quill-editor, editor-settings
+    const toolbar = document.querySelector('#toolbar');
+    const editor = document.querySelector('#quill-editor');
 
-  const onSave = () => {
-    // console.log(state.value);
-    // saveNode({
-    //   flow_id: flowId,
-    //   node_id: nodeId,
-    //   title: state.title,
-    //   value: state.value,
-    // });
-    //connect to backend
-  };
+    console.log(editor.style.display);
+    if (showSettings) {
+      toolbar.style.pointerEvents = 'none';
+      toolbar.style.opacity = '0.5';
 
-  // shareDB
+      editor.style.display = 'none';
+    } else {
+      toolbar.style.pointerEvents = 'auto';
+      toolbar.style.opacity = '1';
+
+      editor.style.display = '';
+    }
+  }, [showSettings]);
 
   return (
     <div className="editor">
@@ -66,7 +80,6 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           onClick={() => {
             handleDrawerClose();
             colabWebSocket.close();
-            onSave();
           }}
         >
           <IoIosArrowBack size={20} />
@@ -75,13 +88,29 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           className="title-input"
           type="text"
           placeholder="Untitled..."
-          value={state.title}
+          value={newTitle}
           onChange={(e) => {
-            setState({ ...state, title: e.target.value });
+            setNewTitle(e.target.value);
           }}
-        ></input>
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              setTitle(newTitle);
+              instance.post('/nodes/set-title', {
+                id: editorId,
+                title: newTitle,
+              });
+            }
+          }}
+        />
+        <Button
+          variant="dark"
+          onClick={() => setShowSettings((state) => !state)}
+          className="toolBarButton"
+        >
+          <BsShare size={18} />
+        </Button>
         <span className="focus-border"></span>
-        {/* 需限制 user 數量 */}
         <div className="users">
           {colab.map((element, index) => {
             return (
@@ -94,14 +123,16 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       </div>
       <div className="text-editor">
         <EditorToolbar />
+        {showSettings ? <Settings editorId={editorId} /> : <></>}
         <ReactQuill
           theme="snow"
-          value={state.value}
-          onChange={handleChange}
-          placeholder={"Write something awesome..."}
+          value={state}
+          onChange={setState}
+          placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}
           className="editor-input"
+          id="quill-editor"
           ref={QuillRef}
         />
       </div>

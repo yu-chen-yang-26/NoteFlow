@@ -12,7 +12,8 @@ const getFlows = async (ctx) => {
     ctx.body = JSON.stringify(result);
   } catch (err) {
     // 在 Model 階段出現任何錯誤
-    ctx.throw(404, JSON.stringify(err));
+
+    ctx.throw(500, JSON.stringify(err));
   }
 };
 

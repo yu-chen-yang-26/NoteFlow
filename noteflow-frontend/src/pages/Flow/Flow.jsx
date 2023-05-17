@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import ReactFlow, {
   Position,
-  Handle,
   Controls,
   Background,
   MiniMap,
@@ -23,16 +22,13 @@ import { Editor } from '../../Components/Editor/Editor';
 import PageTab from '../../Components/PageTab/PageTab';
 import { useFlowStorage } from '../../storage/Storage';
 import { Navigate, useLocation } from 'react-router-dom';
-import { toPng } from 'html-to-image';
 import { QuillProvider } from '../../API/useQuill';
-// import { FlowProvider, useFlow } from "../../API/useFlow";
 import instance from '../../API/api';
 import { useApp } from '../../hooks/useApp';
 import './Flow.scss';
 import 'reactflow/dist/style.css';
 import FlowWebSocket from '../../hooks/flowConnection';
 import { useNavigate } from 'react-router-dom';
-// import { getConnection } from "../../hooks/flowConnection";
 
 const nodeTypes = {
   CustomNode,
@@ -58,24 +54,7 @@ function downloadImage(dataUrl) {
   a.click();
 }
 
-// const onDownload = () => {
-//   toPng(document.querySelector('.react-flow'), {
-//     filter: (node) => {
-//       // we don't want to add the minimap and the controls to the image
-//       if (
-//         node?.classList?.contains('react-flow__minimap')
-//         node?.classList?.contains('react-flow__controls')
-//       ) {
-//         return false;
-//       }
-
-//       return true;
-//     },
-//   }).then(downloadImage);
-// };
-
-function Flow({flowId}) {
-
+function Flow({ flowId }) {
   const rfInstance = useReactFlow();
   const xPos = useRef(50);
   const yPos = useRef(0);
@@ -91,17 +70,14 @@ function Flow({flowId}) {
   const [isEdit, setIsEdit] = useState(false);
   const [flowWebSocket, setFlowWebSocket] = useState(null);
   const saveFlow = useFlowStorage((state) => state.saveFlow);
-  const { user } = useApp();
-  const [activeNodeId, setActiveNodeId] = useState(null);
+
   const [editorId, setEditorId] = useState(null);
 
   const navigateTo = useNavigate();
 
   useEffect(() => {
     const flowConnection = new FlowWebSocket(flowId, (data) => {
-      console.log(data);
       if (data.error) {
-        console.log(data.error);
         navigateTo('/error');
       } else rerender(data);
     });
@@ -109,6 +85,8 @@ function Flow({flowId}) {
   }, []);
   //
   const rerender = (data) => {
+    console.log('nodes', data.nodes);
+    console.log('edges', data.edges);
     setNodes(data.nodes);
     setEdges(data.edges);
     setTitle(data.name);
@@ -128,12 +106,12 @@ function Flow({flowId}) {
     (params) => {
       setEdges((eds) => addEdge(params, eds));
     },
-    [setEdges]
+    [setEdges],
   );
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) =>
       setEdges((els) => updateEdge(oldEdge, newConnection, els)),
-    []
+    [],
   );
 
   const onNodesDelete = useCallback(
@@ -144,20 +122,20 @@ function Flow({flowId}) {
           const outgoers = getOutgoers(node, nodes, edges);
           const connectedEdges = getConnectedEdges([node], edges);
           const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge)
+            (edge) => !connectedEdges.includes(edge),
           );
           const createdEdges = incomers.flatMap(({ id: source }) =>
             outgoers.map(({ id: target }) => ({
               id: `${source}->${target}`,
               source,
               target,
-            }))
+            })),
           );
           return [...remainingEdges, ...createdEdges];
-        }, edges)
+        }, edges),
       );
     },
-    [nodes, edges]
+    [nodes, edges],
   );
 
   const onAdd = useCallback(() => {
@@ -169,7 +147,6 @@ function Flow({flowId}) {
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        console.log('res:', res.data);
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
@@ -203,18 +180,35 @@ function Flow({flowId}) {
         //connect to backend
       }
     },
-    [rfInstance]
+    [rfInstance],
   );
+
+  const [restart, setRestart] = useState(false);
 
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
-    console.log('node:', node);
+    // if (isEdit && node.editorId !== editorId) {
+    //   setEditorId(node.editorId);
+    //   setIsEdit(false);
+    //   setRestart(true);
+    // } else {
+    //   setEditorId(node.editorId);
+    //   setIsEdit(true);
+    // }
+
     setEditorId(node.editorId);
     setIsEdit(true);
   });
 
+  // useEffect(() => {
+  //   if (restart) {
+  //     setIsEdit(true);
+  //     setRestart(false);
+  //   }
+  // }, [restart]);
+
   return (
-    <div className='FlowEditPanel'>
+    <div className="FlowEditPanel">
       {!back ? (
         <>
           <ToolBar
@@ -227,7 +221,7 @@ function Flow({flowId}) {
             flowId={flowId}
           />
           <ReactFlow
-            className='NodePanel'
+            className="NodePanel"
             nodes={nodes}
             edges={edges}
             onNodesChange={(param) => {
@@ -240,15 +234,13 @@ function Flow({flowId}) {
             }}
             onEdgeUpdate={(param) => {
               onEdgeUpdate(param);
-              console.log('2');
             }}
             onConnect={(param) => {
               onConnect(param);
               flowWebSocket.addComponent(
                 { ...param, id: edgeId.current.toString() },
-                'edge'
+                'edge',
               );
-              console.log(param);
             }}
             // onInit={setRfInstance}
             onNodeDoubleClick={onNodeDoubleClick}
@@ -258,14 +250,14 @@ function Flow({flowId}) {
             {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
             <MiniMap nodeStrokeWidth={10} zoomable pannable />
             <Controls />
-            <Background color='#ccc' variant={bgVariant} />
+            <Background color="#ccc" variant={bgVariant} />
           </ReactFlow>
         </>
       ) : (
-        <Navigate to='/home' />
+        <Navigate to="/home" />
       )}
       {isEdit && (
-        <div className='EditorContainer'>
+        <div className="EditorContainer">
           <Drawer
             sx={{
               width: '50%',
@@ -274,8 +266,8 @@ function Flow({flowId}) {
                 width: '50%',
               },
             }}
-            variant='persistent'
-            anchor='right'
+            variant="persistent"
+            anchor="right"
             open={isEdit}
           >
             <QuillProvider>
@@ -293,14 +285,13 @@ function Flow({flowId}) {
 }
 
 function FlowWithProvider(...props) {
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const flowId = searchParams.get('id');
 
   return (
-    <div className='Flow-container'>
-      <PageTab flowId={flowId}/>
+    <div className="Flow-container">
+      <PageTab flowId={flowId} />
       <ReactFlowProvider>
         <Flow flowId={flowId} />
       </ReactFlowProvider>

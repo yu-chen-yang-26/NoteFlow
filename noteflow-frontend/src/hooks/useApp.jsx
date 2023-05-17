@@ -1,7 +1,7 @@
-import { useContext, createContext, useState, useEffect } from "react";
-import crc32 from "crc-32";
-import instance from "../API/api";
-import { useNavigate } from "react-router-dom";
+import { useContext, createContext, useState, useEffect } from 'react';
+import crc32 from 'crc-32';
+import instance from '../API/api';
+import { useNavigate } from 'react-router-dom';
 
 const UserContext = createContext({
   user: {},
@@ -23,8 +23,8 @@ const UserProvider = (props) => {
   const navigate = useNavigate();
 
   const logout = () => {
-    setUser("");
-    navigate("/");
+    setUser('');
+    navigate('/');
   };
   useEffect(() => {
     instance
@@ -37,8 +37,7 @@ const UserProvider = (props) => {
         setUser(user);
       })
       .catch((e) => {
-        navigate("/");
-        console.log(e);
+        navigate('/');
       });
   }, [rerender]);
 
