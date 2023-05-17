@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./FlowEditor.scss";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
-import "./ToolBar.scss"
+import "./ToolBar.scss";
 import {
   BsDot,
   BsNodePlus,
@@ -15,18 +15,41 @@ import { BiFirstPage, BiCross } from "react-icons/bi";
 import { AiOutlineBorderlessTable } from "react-icons/ai";
 
 export default function ToolBar({
+  setTitle,
   addNode,
-  flowTitle,
+  title,
   changeBackground,
   onSave,
+  flowWebSocket,
 }) {
   const [show, setShow] = useState(false);
-  const [title, setTitle] = useState(flowTitle);
-
+  const inputRef = useRef(null);
+  const [isFocus, setIsFocus] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  useEffect(() => {
+    function checkFocus() {
+      if (document.activeElement === inputRef.current) {
+        setIsFocus(true);
+      } else {
+        setIsFocus(false);
+      }
+    }
+    document.addEventListener("click", checkFocus);
+    return () => {
+      document.removeEventListener("click", checkFocus);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isFocus && flowWebSocket) {
+      flowWebSocket.editFlowTitle(title);
+    }
+  }, [isFocus]);
+
   return (
-    <div className ="toolbar">
+    <div className="toolbar">
       <nav className="navbar">
         <div className="left">
           <Button
@@ -37,11 +60,15 @@ export default function ToolBar({
             <BiFirstPage size={18} />
           </Button>
           <input
-            className="titleInput"
+            className="flowTitle"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => {
+              setTitle(event.target.value);
+            }}
             type="text"
+            ref={inputRef}
           />
+          <span className="focus-border"></span>
         </div>
         <div className="mid">
           <div>

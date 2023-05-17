@@ -72,15 +72,17 @@ const Calendar = () => {
         md={6}
         sx={{
           padding: 2,
-          height: "100%",
+          height: "90%",
           //手機不顯示 border
           borderLeft: isMobile ? "none" : "1px solid grey",
         }}
       >
-        <Grid container columns={12} spacing={2}>
+        <Grid container columns={12} spacing={"2vw"}>
           {nodes.map((node, id) => (
             <Grid item xs={4} md={4} key={id}>
-              <NodeButton>Last Edit Time: {node.time} hours</NodeButton>
+              <NodeButton sx={{ height: isMobile ? "10vh" : "20vh" }}>
+                Last Edit Time: {node.time} hours
+              </NodeButton>
               <Typography
                 style={{
                   fontSize: "12px",

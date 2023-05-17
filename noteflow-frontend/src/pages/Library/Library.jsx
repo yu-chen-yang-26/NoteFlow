@@ -9,12 +9,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { useFlowStorage } from "../../storage/Storage";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "../../hooks/useApp";
+import { usePageTab } from "../../hooks/usePageTab";
 
 const Library = () => {
   // const { t } = useTranslation();
+  const { addTab, tabList } = usePageTab();
+  const { isMobile } = useApp();
   const nodes = useFlowStorage((state) => state.nodes);
-  const tabList = useFlowStorage((state) => state.tabList);
-  const addTab = useFlowStorage((state) => state.addTab);
   const navigate = useNavigate();
   const NodeButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[100]),
@@ -106,13 +108,15 @@ const Library = () => {
         container
         justifyContent="left"
         sx={{ paddingLeft: 2, paddingRight: 2 }}
-        spacing={2}
+        spacing={"2vw"}
         columns={15}
-        style={{ width: "100%" }}
       >
         {nodes.map((node, id) => (
           <Grid item xs={5} md={3} key={id}>
-            <NodeButton onClick={() => toNode(node)}>
+            <NodeButton
+              sx={{ height: isMobile ? "10vh" : "20vh" }}
+              onClick={() => toNode(node)}
+            >
               {/* {t("Last Edit Time:")} {node.time} {t("hours")} */}
             </NodeButton>
             <Typography style={{ fontSize: "14px", paddingTop: "2%" }}>

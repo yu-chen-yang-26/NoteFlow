@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import "./Main.scss";
 import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
@@ -7,15 +7,20 @@ import Library from "../Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
-import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
+// import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import { useApp } from "../../hooks/useApp.jsx";
+import { usePageTab } from "../../hooks/usePageTab.jsx";
 
 export default function Main() {
   const mode = useFlowStorage((state) => state.mode);
+  const { setActiveTab } = usePageTab();
   const containerRef = useRef(null);
 
   //rwd
   const { isMobile } = useApp();
+  useEffect(() => {
+    setActiveTab(null);
+  }, []);
 
   return (
     // <div className="App">
@@ -25,7 +30,7 @@ export default function Main() {
         <PageTab />
         <div className="Flow-grid" ref={containerRef}>
           {mode === 0 ? (
-            <FlowGrid />
+            <FlowGrid containerRef={containerRef} />
           ) : mode === 1 ? (
             <Library />
           ) : mode === 2 ? (
@@ -33,18 +38,8 @@ export default function Main() {
           ) : (
             <Settings />
           )}
-          {/* {containerRef.current && (
-            <BackToTopButton containerRef={containerRef} />
-          )} */}
-
-          {isMobile
-            ? null
-            : containerRef.current && (
-                <BackToTopButton containerRef={containerRef} />
-              )}
         </div>
       </div>
     </div>
-    // </div>
   );
 }

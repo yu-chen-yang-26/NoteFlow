@@ -42,7 +42,6 @@ class Flows {
   }
 
   static async fetchFlowsByFlowList(flowList, page) {
-    console.log(page);
     const request_mapper = {};
     flowList.forEach((element) => {
       if (!(element.owner in request_mapper)) {
