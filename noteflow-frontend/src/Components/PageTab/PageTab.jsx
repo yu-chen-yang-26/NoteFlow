@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import instance from "../../API/api";
 import { useApp } from "../../hooks/useApp";
 import { usePageTab } from "../../hooks/usePageTab";
+import { FaPen, FaBook, FaCalendarAlt } from "react-icons/fa";
 
 export default function PageTab() {
   const { tabList, addTab, closeTab, toTab, activeTab } = usePageTab();
@@ -93,6 +94,7 @@ export default function PageTab() {
                   }}
                   style={{
                     backgroundColor: tab.tabId == activeTab && "#ffffff",
+                    position: "relative",
                   }}
                 >
                   <Typography
@@ -100,6 +102,18 @@ export default function PageTab() {
                   >
                     {tabTitle}
                   </Typography>
+                  <div
+                    className="tabIcon"
+                    style={{
+                      position: "absolute",
+                      top: "20%",
+                      right: "3px",
+                      padding: 0,
+                      margin: 0,
+                    }}
+                  >
+                    {tab.type == "node" ? <FaBook /> : <FaPen />}
+                  </div>
                 </TabButton>
                 <CloseButton
                   size="small"
