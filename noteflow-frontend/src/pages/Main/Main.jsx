@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useEffect, useRef } from "react";
+=======
+import { useRef } from "react";
+>>>>>>> yoho
 import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import "./Main.scss";
 import FlowGrid from "../../Components/FlowGrid/FlowGrid.jsx";
@@ -7,9 +11,13 @@ import Library from "../Library/Library.jsx";
 import { useFlowStorage } from "../../storage/Storage";
 import Calendar from "../Calendar/Calendar.jsx";
 import Settings from "../../Components/Settings/Settings.jsx";
+<<<<<<< HEAD
 // import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import { useApp } from "../../hooks/useApp.jsx";
 import { usePageTab } from "../../hooks/usePageTab.jsx";
+=======
+import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
+>>>>>>> yoho
 
 export default function Main() {
   const mode = useFlowStorage((state) => state.mode);
@@ -23,6 +31,7 @@ export default function Main() {
   }, []);
 
   return (
+<<<<<<< HEAD
     // <div className="App">
     <div className={`${isMobile ? "App-container-mobile" : "App-container"}`}>
       <Sidebar />
@@ -38,6 +47,27 @@ export default function Main() {
           ) : (
             <Settings />
           )}
+=======
+    <div className="App">
+      <div className="App-container">
+        <Sidebar />
+        <div className="App-tab">
+          <PageTab />
+          <div className="Flow-grid" ref={containerRef}>
+            {mode === 0 ? (
+              <FlowGrid />
+            ) : mode === 1 ? (
+              <Library />
+            ) : mode === 2 ? (
+              <Calendar />
+            ) : (
+              <Settings />
+            )}
+            {containerRef.current && (
+              <BackToTopButton containerRef={containerRef} />
+            )}
+          </div>
+>>>>>>> yoho
         </div>
       </div>
     </div>

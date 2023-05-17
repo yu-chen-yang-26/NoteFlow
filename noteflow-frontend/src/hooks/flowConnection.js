@@ -21,7 +21,7 @@ class FlowWebSocket {
 
   getConnection(flowId, callback) {
     const socket = new ReconnectingWebsocket(
-      `wss://${BASE_URL}/ws/flow?id=${flowId}`
+      `wss://${BASE_URL}/ws/flow?id=${flowId}`,
     );
     this.socket = socket;
 
@@ -32,7 +32,11 @@ class FlowWebSocket {
       if (e) throw e;
       console.log("subscribed!");
       this.flow = flow;
+<<<<<<< HEAD
       this.flow.on("op", (op, source) => {
+=======
+      this.flow.on('op', (op) => {
+>>>>>>> yoho
         this.lastOp = op;
         callback(this.convertFlowData(this.flow.data));
       });
@@ -75,12 +79,18 @@ class FlowWebSocket {
     if (currentTime - this.lastUpdated < 20) return;
     this.lastUpdated = currentTime;
     let op = [];
+    let currentNode;
     switch (param[0].type) {
+<<<<<<< HEAD
       case "remove":
         // 從 param[0].id 以後全部減一
+=======
+      case 'remove':
+>>>>>>> yoho
         op = [
           json1.removeOp([type === "node" ? "nodes" : "edges", param[0].id]),
         ];
+<<<<<<< HEAD
         // const flowDataArr = Object.keys(
         //   this.flow.data[type === "node" ? "nodes" : "edges"]
         // );
@@ -98,6 +108,10 @@ class FlowWebSocket {
         console.log(op);
         if (type === "node") {
           const edgeArr = Object.keys(this.flow.data["edges"]);
+=======
+        if (type === 'node') {
+          const edgeArr = Object.keys(this.flow.data['edges']);
+>>>>>>> yoho
           console.log(this.flow.data);
           edgeArr.map((id) => {
             if (
@@ -114,25 +128,56 @@ class FlowWebSocket {
         break;
       case "position":
         // 如果 dragging == false 就不做事
+<<<<<<< HEAD
         if (!param[0].dragging) return;
         if (type === "edge") throw Error("看不懂");
 
         let currentNode =
           this.flow.data[type === "node" ? "nodes" : "edges"][param[0].id];
+=======
+        if (type === 'edge') throw Error('窩看不懂');
+
+        currentNode =
+          this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
+>>>>>>> yoho
         // ncaught TypeError: this.flow.data[(intermediate value)(intermediate value)(intermediate value)].map is not a function
         currentNode.position = param[0].position
           ? param[0].position
           : currentNode.position;
+
+        if (!param[0].dragging) {
+          // currentNode.style.border = '2px solid black';
+          // console.log('black!');
+        }
         op = [
           json1.replaceOp(
             [type === "node" ? "nodes" : "edges", param[0].id.toString()],
             true,
-            currentNode
+            currentNode,
+          ),
+        ].reduce(json1.type.compose, null);
+
+        break;
+      case 'select':
+        // if (type === 'edges') return console.log('窩還沒做 qq');
+        currentNode =
+          this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
+        if (param[0].selected) {
+          currentNode.style.border = '2px solid orange';
+        } else {
+          currentNode.style.border = '2px solid black';
+        }
+
+        op = [
+          json1.replaceOp(
+            [type === 'node' ? 'nodes' : 'edges', param[0].id.toString()],
+            true,
+            currentNode,
           ),
         ].reduce(json1.type.compose, null);
         break;
       default:
-        return;
+        break;
     }
     this.flow.submitOp(op, (error) => {
       if (error) {

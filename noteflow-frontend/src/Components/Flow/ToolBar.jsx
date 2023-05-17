@@ -1,18 +1,30 @@
+<<<<<<< HEAD
 import React, { useState, useRef, useEffect } from "react";
 import "./FlowEditor.scss";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import "./ToolBar.scss";
+=======
+import React, { useState } from 'react';
+import './FlowEditor.scss';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+// import Modal from "react-bootstrap/Modal";
+
+import './ToolBar.scss';
+>>>>>>> yoho
 import {
   BsDot,
   BsNodePlus,
   BsArrowCounterclockwise,
   BsShare,
   BsPalette,
-} from "react-icons/bs";
-import { BiFirstPage, BiCross } from "react-icons/bi";
-import { AiOutlineBorderlessTable } from "react-icons/ai";
+} from 'react-icons/bs';
+import { BiFirstPage, BiCross } from 'react-icons/bi';
+import { AiOutlineBorderlessTable } from 'react-icons/ai';
+
+import Colabs from './Colabs';
 
 export default function ToolBar({
   setTitle,
@@ -20,12 +32,17 @@ export default function ToolBar({
   title,
   changeBackground,
   onSave,
+<<<<<<< HEAD
   flowWebSocket,
+=======
+  flowId,
+>>>>>>> yoho
 }) {
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
   const [isFocus, setIsFocus] = useState(false);
   const handleClose = () => setShow(false);
+<<<<<<< HEAD
   const handleShow = () => setShow(true);
 
   useEffect(() => {
@@ -47,6 +64,11 @@ export default function ToolBar({
       flowWebSocket.editFlowTitle(title);
     }
   }, [isFocus]);
+=======
+  const handleShow = () => {
+    setShow(true);
+  };
+>>>>>>> yoho
 
   return (
     <div className="toolbar">
@@ -119,11 +141,12 @@ export default function ToolBar({
           </Button>
         </div>
       </nav>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Coming Soon</Modal.Title>
-        </Modal.Header>
-      </Modal>
+      <Colabs
+        show={show}
+        setShow={setShow}
+        flowId={flowId}
+        handleClose={handleClose}
+      />
     </div>
   );
 }

@@ -9,7 +9,13 @@
     align-items: center;
     position: relative;
 
+    .toolBarButton {
+      border-radius: 15px;
+      border: none;
+    }
+
     .title-input {
+      width: 40%;
       margin-left: 10px;
       margin-bottom: 0;
       font-size: 30px;
@@ -17,8 +23,7 @@
       border: none;
       background: transparent;
       color: #1e1e1e;
-      // border-bottom: black solid 1px;
-      width: 50vw;
+      border-bottom: black solid 1px;
 
       &:focus {
         outline: none;
@@ -72,9 +77,11 @@
   }
   .text-editor {
     height: calc(100vh - 80px);
+    position: relative;
 
     .editor-input {
       height: calc(100% - 80px);
+      position: relative;
     }
   }
 }

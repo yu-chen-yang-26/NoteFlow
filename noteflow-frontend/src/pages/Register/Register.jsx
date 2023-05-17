@@ -17,6 +17,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
+  const [alarms, setAlarms] = useState("");
   const navigateTo = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -30,19 +31,33 @@ const Register = () => {
         password: passwordHashed,
       },
     };
+<<<<<<< HEAD
     console.log(email);
     console.log(password);
+=======
+
+>>>>>>> yoho
     if (passwordHashed !== checkPasswordHashed) {
       alert("Wrong password");
     }
     instance
       .post("/user/register", request)
       .then((res) => {
+<<<<<<< HEAD
         console.log(res.data);
+=======
+>>>>>>> yoho
         navigateTo("/");
       })
       .catch((e) => {
-        console.log("Login error");
+        switch (e.response.status) {
+          case 400:
+            return setAlarms("Some forms are left unfilled.")
+          case 401:
+            return setAlarms("This email has already taken.")
+          default:
+            return setAlarms("Internal server error.")
+        }
       });
 
     //
@@ -121,6 +136,13 @@ const Register = () => {
                       setCheckPassword(e.target.value);
                     }}
                   />
+                   <div style={{
+                    color: 'red',
+                    height: '18px',
+                    // border: '1px solid black',
+                    textAlign: 'left',
+                    padding: '0 10px 0 10px',
+                  }}>{alarms}</div>
                   <div
                     style={{
                       display: "flex",
@@ -146,9 +168,9 @@ const Register = () => {
                       {t("Register")}
                     </Button>
                   </div>
-                </Box>
-              </>
-            )}
+                </Button>
+              </div>
+            </Box>
           </div>
         </div>
       </div>
