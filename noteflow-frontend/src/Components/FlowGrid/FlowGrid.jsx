@@ -9,9 +9,10 @@ import { useApp } from "../../hooks/useApp";
 import { useTranslation } from "react-i18next";
 import { usePageTab } from "../../hooks/usePageTab";
 import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
 import "./FlowGrid.scss";
 
-export default function FlowGrid() {
+export default function FlowGrid({ containerRef }) {
   const { t, i18n } = useTranslation();
   const { isMobile, user } = useApp();
   const [flows, setFlows] = useState([]);
@@ -100,11 +101,21 @@ export default function FlowGrid() {
         {flows.map((flow, key) => (
           <div className="grid-item" key={key}>
             <FlowButton onClick={() => toFlow(flow)}>
-              {t("Last Edit Time:")} {flow.time} {t("hours")}
+              {flow.thumbnail !== "" ? (
+                <img style={{ objectFit: "cover" }} loading="lazy">
+                  flow.thumbnail
+                </img>
+              ) : (
+                `${t("Last Edit Time")}: ${flow.updateAt} ${t("hours")}`
+              )}
             </FlowButton>
             <Typography>{flow.name}</Typography>
           </div>
         ))}
+
+        {containerRef?.current && (
+          <BackToTopButton containerRef={containerRef} />
+        )}
 
         <div
           className="loading-checkpoint"

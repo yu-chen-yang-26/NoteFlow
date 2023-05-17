@@ -2,13 +2,12 @@
   width: 100vw;
   height: 100vh;
 
-  .EditorContainer {
+  .editor {
     font-family: sans-serif;
     text-align: center;
     display: flex;
     justify-content: center;
     height: calc(100vh - 7%);
-    width: 100vw;
+    width: 100%;
   }
-
 }

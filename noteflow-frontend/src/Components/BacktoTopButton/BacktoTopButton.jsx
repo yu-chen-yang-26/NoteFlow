@@ -3,9 +3,8 @@ import "./BackToTopButton.scss";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 
 const BackToTopButton = ({ containerRef }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const toggleVisibility = () => {
-    console.log(containerRef.current.scrollTop);
     if (containerRef.current.scrollTop < 300) setVisible(false);
     else setVisible(true);
   };
