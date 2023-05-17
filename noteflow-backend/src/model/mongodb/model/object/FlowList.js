@@ -34,8 +34,6 @@ class FlowList {
         user: this.user,
       })
     ).flowList;
-
-    console.log(this.flowList);
   }
 
   async addSomebodyToFlowList(userEmail, flowId) {

@@ -79,6 +79,7 @@ class NodeRepo {
 
       const database = mongoClient.db('noteflow');
       const collection = database.collection('nodeRepository');
+      // eslint-disable-next-line no-await-in-loop
       const result = await collection.findOne({
         user: this.user,
         nodes: { $elemMatch: { nodeId: newUuid } },
@@ -138,6 +139,8 @@ class NodeRepo {
         $set: { 'nodes.$.name': newTitle },
       },
     );
+
+    return result.lastErrorObject.updatedExisting;
   }
 
   static async getTitle(nodeId) {

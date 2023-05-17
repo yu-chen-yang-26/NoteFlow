@@ -14,7 +14,7 @@ const forgotPassword = async (ctx) => {
     ctx.throw(400, 'You did not provide sufficient data.');
   }
 
-  const result = db('users').first().where({ email });
+  const result = await db('users').first().where({ email });
   if (!result) {
     ctx.throw(401, 'This email does not exist.');
   }
@@ -25,7 +25,7 @@ const forgotPassword = async (ctx) => {
   const message = `${EMAIL_HOST}/api/user/reset-password-auth?token=${token}?email=${email}`;
   try {
     sendEmail({
-      subject: '[Noteflow] 修改密碼通知',
+      subject: '[Noteflow] Edit Your Password Now!',
       text: message,
       to: email,
       from: EMAIL_USER,
@@ -35,6 +35,7 @@ const forgotPassword = async (ctx) => {
     await redisClient.set(`reset-password-${token}`, 1, 'EX', 86400);
 
     ctx.status = 200;
+    // ctx.body = return html 回去
   } catch (e) {
     ctx.throw(500, 'Internal server error');
   }
@@ -73,6 +74,8 @@ const forgotPasswordRenew = async (ctx) => {
     const { email, resetPassword } = ctx.session;
 
     ctx.assert(resetPassword, 408, 'Request timeout.');
+
+    // TODO
   }
 
   ctx.status = 200;

@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import errors from '../lib/errors.js';
 
 export default async (ctx, next) => {
   try {

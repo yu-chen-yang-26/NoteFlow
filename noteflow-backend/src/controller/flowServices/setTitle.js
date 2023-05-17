@@ -4,12 +4,13 @@ const setTitle = async (ctx) => {
   const { id, title } = ctx.request.body;
 
   try {
-    await NodeRepo.setTitle(id, title);
+    const result = await NodeRepo.setTitle(id, title);
+
+    ctx.status = 200;
+    ctx.body = JSON.stringify(result);
   } catch (e) {
     ctx.throw(500, 'Internal server error');
   }
-  ctx.status = 200;
-  ctx.body = JSON.stringify(title);
 };
 
 export default setTitle;
