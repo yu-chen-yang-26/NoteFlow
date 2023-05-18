@@ -1,30 +1,38 @@
-import React, { useEffect, useRef } from "react";
-import ReactQuill, { Quill } from "react-quill";
-import EditorToolbar, { modules, formats } from "./EditorToolbar";
-import "react-quill/dist/quill.snow.css";
-import "./Editor.scss";
-import { IoIosArrowBack} from "react-icons/io";
-import { BsShare } from "react-icons/bs";
-import { useState } from "react";
-import katex from "katex";
-import "katex/dist/katex.min.css";
-import { getRandomPicture } from "../../hooks/useApp";
-import {Button, IconButton} from "@mui/material"
-import instance from "../../API/api";
-import EditorSettings from "./EditorSettings"
+import React, { useEffect, useRef } from 'react';
+import ReactQuill, { Quill } from 'react-quill';
+import EditorToolbar, { modules, formats } from './EditorToolbar';
+import 'react-quill/dist/quill.snow.css';
+import './Editor.scss';
+import { IoIosArrowBack } from 'react-icons/io';
+import { BsShare } from 'react-icons/bs';
+import { useState } from 'react';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import { getRandomPicture } from '../../hooks/useApp';
+import { Button, IconButton } from '@mui/material';
+import instance from '../../API/api';
+import EditorSettings from './EditorSettings';
 
 window.katex = katex;
-const Editor = ({ handleDrawerClose, QuillRef, colab, editorId , newTitle, setNewTitle, setTitle}) => {
+const Editor = ({
+  handleDrawerClose,
+  QuillRef,
+  colab,
+  editorId,
+  newTitle,
+  setNewTitle,
+  setTitle,
+}) => {
   const [state, setState] = useState({
-    title: "",
-    value: "",
+    title: '',
+    value: '',
   });
-  const [showSettings, setShowSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     setState({
-      title: "",
-      value: "",
+      title: '',
+      value: '',
     });
   }, []);
 
@@ -50,7 +58,6 @@ const Editor = ({ handleDrawerClose, QuillRef, colab, editorId , newTitle, setNe
       editor.style.display = '';
     }
   }, [showSettings]);
-
 
   return (
     <div className="editor">

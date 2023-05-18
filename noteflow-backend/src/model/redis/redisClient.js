@@ -8,4 +8,11 @@ const redisClient = new Redis({
   port: REDIS_PORT,
 });
 
+const newRedisClient = () =>
+  new Redis({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+  });
+
 export default redisClient;
+export { newRedisClient };

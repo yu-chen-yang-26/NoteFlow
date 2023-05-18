@@ -1,8 +1,8 @@
-import { useContext, createContext, useState, useEffect } from "react";
-import crc32 from "crc-32";
-import instance from "../API/api";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { useContext, createContext, useState, useEffect } from 'react';
+import crc32 from 'crc-32';
+import instance from '../API/api';
+import { useNavigate } from 'react-router-dom';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 const UserContext = createContext({
   user: {},
@@ -33,7 +33,7 @@ const UserProvider = (props) => {
   };
   useEffect(() => {
     instance
-      .get("/user/who-am-i")
+      .get('/user/who-am-i')
       .then((res) => {
         const user = res.data;
         if (!user.picture) {
@@ -42,7 +42,7 @@ const UserProvider = (props) => {
         setUser(user);
       })
       .catch((e) => {
-        navigate("/");
+        navigate('/');
       });
   }, [rerender]);
 
@@ -59,7 +59,7 @@ const UserProvider = (props) => {
 
 const MediaProvider = ({ children }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   // console.log(isMobile);
 
   return (

@@ -48,7 +48,6 @@ async function getSession(cookieString) {
   if (!mapper || mapper._expire > Date.now()) {
     return null;
   }
-
   return JSON.parse(mapper);
 }
 

@@ -1,21 +1,21 @@
-import { Button } from "@mui/material";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { BsFillPersonFill } from "react-icons/bs";
-import { MdLanguage } from "react-icons/md";
-import { styled } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { AiOutlineMail } from "react-icons/ai";
-import { BiLogOut } from "react-icons/bi";
-import { useFlowStorage } from "../../storage/Storage";
-import { useNavigate } from "react-router-dom";
-import { useApp } from "../../hooks/useApp";
-import instance from "../../API/api";
-import ResetModal from "./ResetModal"
-import { useState } from "react";
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { BsFillPersonFill } from 'react-icons/bs';
+import { MdLanguage } from 'react-icons/md';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+import { RiLockPasswordLine } from 'react-icons/ri';
+import { AiOutlineMail } from 'react-icons/ai';
+import { BiLogOut } from 'react-icons/bi';
+import { useFlowStorage } from '../../storage/Storage';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from '../../hooks/useApp';
+import instance from '../../API/api';
+import ResetModal from './ResetModal';
+import { useState } from 'react';
 
 const Settings = () => {
   const { user, logout, isMobile } = useApp();
@@ -24,13 +24,13 @@ const Settings = () => {
   const setLang = useFlowStorage((state) => state.setLang);
   const [show, setShow] = useState(false);
   const SettingsButton = styled(Button)(({ theme }) => ({
-    cursor: "pointer",
-    backgroundColor: "#0e1111",
-    color: "white",
-    width: "100%",
-    variant: "outlined",
-    ":hover": {
-      backgroundColor: "lightgrey",
+    cursor: 'pointer',
+    backgroundColor: '#0e1111',
+    color: 'white',
+    width: '100%',
+    variant: 'outlined',
+    ':hover': {
+      backgroundColor: 'lightgrey',
     },
   }));
 
@@ -43,7 +43,7 @@ const Settings = () => {
     }
   };
   return (
-    <Grid container columns={12} sx={{ height: "100%" }}>
+    <Grid container columns={12} sx={{ height: '100%' }}>
       <Grid item xs={12} md={6}>
         <Stack
           direction="row"
@@ -55,11 +55,11 @@ const Settings = () => {
             style={{
               // width: "350px",
               // height: "350px",
-              width: "60%",
-              maxWidth: "300px",
-              borderRadius: "50%",
-              border: "2px solid black",
-              overflow: "hidden",
+              width: '60%',
+              maxWidth: '300px',
+              borderRadius: '50%',
+              border: '2px solid black',
+              overflow: 'hidden',
             }}
           >
             <BsFillPersonFill
@@ -77,7 +77,7 @@ const Settings = () => {
         item
         xs={12}
         md={6}
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
         <Stack
           direction="column"
@@ -113,23 +113,27 @@ const Settings = () => {
             </SettingsButton>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
-            <BiLogOut size={25} style={{ marginRight: "15px" }}></BiLogOut>
+            <BiLogOut size={25} style={{ marginRight: '15px' }}></BiLogOut>
             <SettingsButton
               onClick={() => {
                 if (!user) return;
-                instance.post("/user/logout").then((res) => {
+                instance.post('/user/logout').then((res) => {
                   if (res.status !== 200) {
-                    alert("Internal server error!");
+                    alert('Internal server error!');
                   }
                   logout();
                 });
               }}
             >
-              {t("Log out")}
+              {t('Log out')}
             </SettingsButton>
           </Stack>
         </Stack>
-        <ResetModal show={show} setShow={setShow} handleClose={() => setShow(false)} />
+        <ResetModal
+          show={show}
+          setShow={setShow}
+          handleClose={() => setShow(false)}
+        />
       </Grid>
     </Grid>
   );

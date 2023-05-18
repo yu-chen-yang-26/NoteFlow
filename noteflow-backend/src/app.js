@@ -16,7 +16,7 @@ import koaStatic from 'koa-static';
 import send from 'koa-send';
 
 import sharedb from './model/mongodb/sharedb.js';
-import redisClient from './model/redis/redisClient.js';
+import redisClient, { newRedisClient } from './model/redis/redisClient.js';
 import routes from './routes/index.js';
 import redisSession from './model/redis/redisSession.js';
 import WsRouter from './routes/ws-router.js';
@@ -86,7 +86,38 @@ const router = new WsRouter()
       }
     });
   })
-  .session('/flow', 'Flow', (ws) => {
+  .session('/flow/mouse-sub', (ws) => {
+    // 上面的 ws 會一直都是原本的那一個，所以可以直接在上面加入 ws.email = email
+    const redisListener = newRedisClient();
+    const redisPublisher = newRedisClient();
+    const channelName = ws.params.get('id');
+
+    // 訂閱 Redis, 讓我們可以收到同一個 Flow 中其他用戶的訊息
+    redisListener.subscribe(channelName, (err) => {
+      if (err) {
+        ws.close(1001);
+        return;
+      }
+      // 直接轉送其他用戶的位置
+      redisListener.on('message', (_, message) => {
+        ws.send(message);
+      });
+
+      // 跟前端 bind 住，讓後端可以收到來自特定用戶的訊息，以發送給 Channel 上其他人
+      ws.on('message', async (message) => {
+        // 每次他們送 x, y 來的時候, 還會送到指定的 channel 上（nodeId）
+        const query = JSON.parse(message.toString('utf-8'));
+        await redisPublisher.publish(
+          channelName,
+          JSON.stringify({
+            email: ws.email,
+            ...query,
+          }),
+        );
+      });
+    });
+  })
+  .session('/flow', (ws) => {
     const stream = new WebSocketJSONStream(ws);
     sharedb.listen(stream);
   })

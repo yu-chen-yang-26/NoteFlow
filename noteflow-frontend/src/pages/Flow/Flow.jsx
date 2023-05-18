@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import ReactFlow, {
   Position,
   Controls,
@@ -13,24 +13,25 @@ import ReactFlow, {
   getIncomers,
   getOutgoers,
   getConnectedEdges,
-} from "reactflow";
-import CustomNode from "../../Components/Flow/Node";
-import ToolBar from "../../Components/Flow/ToolBar";
-import StyleBar from "../../Components/Flow/StyleBar";
-import PageTab from "../../Components/PageTab/PageTab";
-import { Navigate, useLocation } from "react-router-dom";
-import { toPng } from "html-to-image";
-import { Resizable } from "react-resizable";
-import "react-resizable/css/styles.css";
+  useViewport,
+} from 'reactflow';
+import CustomNode from '../../Components/Flow/Node';
+import ToolBar from '../../Components/Flow/ToolBar';
+import StyleBar from '../../Components/Flow/StyleBar';
+import PageTab from '../../Components/PageTab/PageTab';
+import { Navigate, useLocation } from 'react-router-dom';
+import { toPng } from 'html-to-image';
+import { Resizable } from 'react-resizable';
+import 'react-resizable/css/styles.css';
 
-import instance from "../../API/api";
-import { useApp } from "../../hooks/useApp";
-import "./Flow.scss";
-import "reactflow/dist/style.css";
-import FlowWebSocket from "../../hooks/flowConnection";
-import { useNavigate } from "react-router-dom";
-import { usePageTab } from "../../hooks/usePageTab";
-import Node from "../Node/Node";
+import instance from '../../API/api';
+import { useApp } from '../../hooks/useApp';
+import './Flow.scss';
+import 'reactflow/dist/style.css';
+import FlowWebSocket from '../../hooks/flowConnection';
+import { useNavigate } from 'react-router-dom';
+import { usePageTab } from '../../hooks/usePageTab';
+import Node from '../Node/Node';
 
 const nodeTypes = {
   CustomNode,
@@ -41,18 +42,18 @@ const nodeTypes = {
 // };
 
 const defaultNodeStyle = {
-  border: "2px solid",
-  background: "white",
+  border: '2px solid',
+  background: 'white',
   borderRadius: 10,
   height: 50,
   width: 150,
 };
 
 function downloadImage(dataUrl) {
-  const a = document.createElement("a");
+  const a = document.createElement('a');
 
-  a.setAttribute("download", "reactflow.png");
-  a.setAttribute("href", dataUrl);
+  a.setAttribute('download', 'reactflow.png');
+  a.setAttribute('href', dataUrl);
   a.click();
 }
 
@@ -63,10 +64,10 @@ function Flow() {
   const nodeId = useRef(0);
   const edgeId = useRef(0);
 
-  const [bgVariant, setBgVariant] = useState("line");
+  const [bgVariant, setBgVariant] = useState('line');
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -74,7 +75,7 @@ function Flow() {
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
   const searchParams = new URLSearchParams(location.search);
-  const flowId = searchParams.get("id");
+  const flowId = searchParams.get('id');
 
   const { addTab } = usePageTab();
 
@@ -88,15 +89,13 @@ function Flow() {
   useEffect(() => {
     const flowConnection = new FlowWebSocket(flowId, (data) => {
       if (data.error) {
-        navigateTo("/error");
+        navigateTo('/error');
       } else rerender(data);
     });
     setFlowWebSocket(flowConnection);
   }, [flowId]);
   //
   const rerender = (data) => {
-    console.log('nodes', data.nodes);
-    console.log('edges', data.edges);
     setNodes(data.nodes);
     setEdges(data.edges);
     setTitle(data.name);
@@ -155,20 +154,20 @@ function Flow() {
       xPos.current += 150;
     }
     instance
-      .post("/nodes/new-node")
+      .post('/nodes/new-node')
       .then((res) => {
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
-          data: { label: "Untitle", toolbarPosition: Position.Top },
-          type: "CustomNode",
+          data: { label: 'Untitle', toolbarPosition: Position.Top },
+          type: 'CustomNode',
           position: { x: xPos.current, y: yPos.current },
           style: defaultNodeStyle,
-          class: "Node",
+          class: 'Node',
           editorId: editorId,
         };
         // webSocket
-        flowWebSocket.addComponent(newNode, "node");
+        flowWebSocket.addComponent(newNode, 'node');
       })
       .catch((e) => console.log(e));
   }, [setNodes, flowWebSocket]);
@@ -186,26 +185,86 @@ function Flow() {
 
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
-
-    console.log(node);
     setEditorId(node.editorId);
     setIsEdit(true);
     addTab({
-      type: "node",
+      type: 'node',
       objectId: node.editorId,
-      name: node.data.label ? node.data.label : ":)",
+      name: node.data.label ? node.data.label : ':)',
     });
   });
 
-  // useEffect(() => {
-  //   if (restart) {
-  //     setIsEdit(true);
-  //     setRestart(false);
-  //   }
-  // }, [restart]);
+  const canvasRef = useRef();
+  const { x, y, zoom } = useViewport();
+
+  useEffect(() => {
+    if (flowWebSocket && flowWebSocket.self) {
+      flowWebSocket.updateInfo({
+        xPort: x,
+        yPort: y,
+        zoom: zoom,
+      });
+    }
+  }, [x, y, flowWebSocket]);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const canvasX = -x + clientX - canvasRect.left;
+    const canvasY = -y + clientY - canvasRect.top;
+
+    flowWebSocket.updateInfo({
+      x: canvasX,
+      y: canvasY,
+      left: canvasRect.left,
+      top: canvasRect.top,
+      width: canvasRect.width,
+      height: canvasRect.height,
+    });
+
+    // 這個時候就要嘗試送資料出去給大家了
+    /*
+      我送的資料包括
+      { x: canvasX, y: canvasY, xPort: x, yPort:y, zoom: zoom }
+      我在 render 游標的時候, 我會先看一下自己的可視範圍到哪裡。
+      可視範圍：
+      x 的範圍：[xPort, (xPort + width) / zoom]
+      y 的範圍：[yPort, (yPort + height) / zoom]
+
+      對方點點：(xPort + (x / zoom), yPort + (y / zoom)) 如果介在我的可視範圍裡面的話
+      我就：
+      1. 如果直接透過瀏覽器 render：render 一個紫色箭頭在 clientX, client Y 的地方
+      2. 如果透過 React flow render：render 一個紫色箭頭在 canvasRect.left + xPort + (x/zoom), canvasRect.top + yPort + (y/zoom) 的地方
+    */
+    // 目前只考慮“只有滑鼠移動”，並沒有考慮拖動整個 flow 的情況，
+    // 因為這並不會觸發 handleMouseMove
+
+    flowWebSocket.sendLocation({
+      x: canvasX,
+      y: canvasY,
+      xPort: x,
+      yPort: y,
+      zoom: zoom,
+    });
+  };
+
+  useEffect(() => {
+    const flowConnection = new FlowWebSocket(flowId, (data) => {
+      if (data.error) {
+        navigateTo('/error');
+      } else {
+        rerender(data);
+      }
+    });
+    setFlowWebSocket(flowConnection);
+  }, []);
 
   return (
-    <div className="FlowEditPanel">
+    <div
+      className="FlowEditPanel"
+      onMouseMove={handleMouseMove}
+      ref={canvasRef}
+    >
       {!back ? (
         <ReactFlow
           className="NodePanel"
@@ -213,21 +272,21 @@ function Flow() {
           edges={edges}
           onNodesChange={(param) => {
             onNodesChange(param);
-            flowWebSocket.editComponent(param, "node");
+            flowWebSocket.editComponent(param, 'node');
           }}
           onEdgesChange={(param) => {
             onEdgesChange(param);
-            flowWebSocket.editComponent(param, "edge");
+            flowWebSocket.editComponent(param, 'edge');
           }}
           onEdgeUpdate={(param) => {
             onEdgeUpdate(param);
-            console.log("2");
+            console.log('2');
           }}
           onConnect={(param) => {
             onConnect(param);
             flowWebSocket.addComponent(
               { ...param, id: edgeId.current.toString() },
-              "edge"
+              'edge',
             );
             console.log(param);
           }}
@@ -262,7 +321,7 @@ function Flow() {
           height={Infinity}
           width={nodeWidth}
           onResize={onResize}
-          resizeHandles={["w"]}
+          resizeHandles={['w']}
           minConstraints={[400, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
