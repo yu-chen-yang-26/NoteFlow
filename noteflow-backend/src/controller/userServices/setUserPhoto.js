@@ -6,13 +6,7 @@ import path from 'path';
 
 const { PHOTO_FS } = process.env;
 
-const instance = axios.create({
-  baseURL: `http://${PHOTO_FS}`,
-});
-
 const BASE_PATH = path.join(process.cwd(), 'images');
-
-console.log('photo fs', PHOTO_FS);
 
 const setUserPhoto = async (ctx) => {
   const { image } = ctx.request.files;

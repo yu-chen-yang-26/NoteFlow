@@ -1,4 +1,5 @@
 import tinycolor from 'tinycolor2';
+import { allocateColor } from './Colab';
 
 class QuillEvent {
   constructor() {
@@ -48,15 +49,15 @@ class QuillEvent {
   Receive = (id, range) => {
     if (id === this.user.email) return;
     this.presenceHook(id, range, () => {
-      this.colors[id] = this.colors[id] || tinycolor.random().toHexString();
+      this.colors[id] =
+        this.colors[id] || allocateColor(this.user.email).toHexString();
       const name = (range && range.name) || 'Anonymous';
-      this.cursors.createCursor(id, name, colors[id]);
+      this.cursors.createCursor(id, name, this.colors[id]);
       this.cursors.moveCursor(id, range);
     });
   };
 
   on = (quill, editor, presence, user) => {
-    console.log('on');
     this.quill = quill;
     this.editor = editor;
     this.presence = presence;

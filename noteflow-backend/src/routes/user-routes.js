@@ -1,9 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import Router from 'koa-router';
+import multer from '@koa/multer';
 import { user, flow } from '../controller/index.js';
 import logined from '../middleware/logined-middleware.js';
 import authorized from '../middleware/flow-auth-middleware.js';
 import redisClient from '../model/redis/redisClient.js';
-import multer from '@koa/multer';
 
 const upload = multer();
 

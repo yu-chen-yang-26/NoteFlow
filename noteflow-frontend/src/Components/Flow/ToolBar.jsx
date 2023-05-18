@@ -25,6 +25,7 @@ export default function ToolBar({
   flowWebSocket,
   flowId,
   subRef,
+  isEdit,
 }) {
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
@@ -113,7 +114,11 @@ export default function ToolBar({
         </Dropdown>
       </div>
       <div className="right">
-        <div ref={subRef} className="mouse-dot-subscribe"></div>
+        {!isEdit ? (
+          <div ref={subRef} className="mouse-dot-subscribe"></div>
+        ) : (
+          <></>
+        )}
         <Button
           variant="dark"
           onClick={handleShow}

@@ -93,7 +93,6 @@ function Flow() {
     (tracker) => {
       // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
       // 創一個 child element
-      console.log(subRef);
       Object.keys(tracker).forEach((email, index) => {
         let instance = document.querySelector(`#sub-flow-${email}`);
         if (!instance) {
@@ -340,6 +339,7 @@ function Flow() {
             flowWebSocket={flowWebSocket}
             flowId={flowId}
             subRef={subRef}
+            isEdit={isEdit}
           />
           {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
           <MiniMap nodeStrokeWidth={10} zoomable pannable />
