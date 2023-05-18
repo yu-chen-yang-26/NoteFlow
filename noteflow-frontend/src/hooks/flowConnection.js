@@ -60,13 +60,13 @@ class FlowWebSocket {
         divElement = document.createElement('div');
         divElement.className = 'mouse-dot';
         divElement.id = `mouse-dot-${email}`;
-
         divElement.style.backgroundColor = 'pink';
+        divElement.textContent = `${email}`;
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
       // console.log(divElement.style, divElement.style.left);
-      console.log(divElement.style.top)
+      // console.log(divElement.style.top)
       const other = this.mouseTracker[email];
 
       const { xPort, yPort, left, top, width, height, zoom } = this.self;
