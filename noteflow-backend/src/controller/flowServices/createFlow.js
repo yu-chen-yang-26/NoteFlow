@@ -1,4 +1,4 @@
-import Flow from '../../model/mongodb/model/object/Flow.js';
+import { Flow } from '../../model/mongodb/model/index.js';
 
 const createFlow = async (ctx) => {
   const owner = ctx.session.email;

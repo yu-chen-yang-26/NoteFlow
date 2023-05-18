@@ -95,6 +95,62 @@ class Flows {
 
     return resolved[0].colaborators;
   }
+
+  static async setTitle(flowId, newTitle) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flows');
+
+    const owner = flowId.split('-')[0];
+
+    const result = await collection.findOneAndUpdate(
+      {
+        user: owner,
+        'flows.id': flowId,
+      },
+      {
+        $set: { 'flows.$.name': newTitle },
+      },
+    );
+
+    return result.lastErrorObject.updatedExisting;
+  }
+
+  static async getTitle(flowId) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flows');
+
+    const owner = flowId.split('-')[0];
+    const resolved = await collection
+      .aggregate([
+        { $match: { user: owner } },
+        { $limit: 1 },
+        { $unwind: '$flows' },
+        { $match: { 'flows.id': flowId } },
+      ])
+      .toArray();
+
+    return resolved[0].flows ? resolved[0].flows.name : null;
+  }
+
+  static async deleteFlow(flowId) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('flows');
+
+    const owner = flowId.split('-')[0];
+
+    const result = await collection.findOneAndDelete({
+      user: owner,
+      'flows.id': flowId,
+    });
+
+    return result.lastErrorObject.updatedExisting;
+  }
 }
 
 export default Flows;

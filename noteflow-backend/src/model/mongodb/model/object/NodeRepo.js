@@ -159,7 +159,7 @@ class NodeRepo {
       ])
       .toArray();
 
-    return resolved[0].nodes.name;
+    return resolved[0].nodes ? resolved[0].nodes.name : null;
   }
 }
 

@@ -1,11 +1,11 @@
-import NodeRepo from '../../model/mongodb/model/object/NodeRepo.js';
+import { Flows } from '../../model/mongodb/model/index.js';
 
-const getTitle = async (ctx) => {
+const getFlowTitle = async (ctx) => {
   const { id } = ctx.query;
 
   let resolved;
   try {
-    resolved = await NodeRepo.getTitle(id);
+    resolved = await Flows.getTitle(id);
   } catch (e) {
     ctx.throw(500, 'Internal server error');
   }
@@ -14,4 +14,4 @@ const getTitle = async (ctx) => {
   ctx.body = JSON.stringify(resolved);
 };
 
-export default getTitle;
+export default getFlowTitle;

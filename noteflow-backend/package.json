@@ -28,6 +28,7 @@
     "@teamwork/websocket-json-stream": "^2.0.0",
     "argon2": "^0.30.3",
     "aws-sdk": "^2.1359.0",
+    "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "config": "^3.3.9",
     "cross-env": "^7.0.3",

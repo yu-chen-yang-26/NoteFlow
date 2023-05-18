@@ -1,10 +1,10 @@
-import NodeRepo from '../../model/mongodb/model/object/NodeRepo.js';
+import { Flows } from '../../model/mongodb/model/index.js';
 
-const setTitle = async (ctx) => {
+const setFlowTitle = async (ctx) => {
   const { id, title } = ctx.request.body;
 
   try {
-    const result = await NodeRepo.setTitle(id, title);
+    const result = await Flows.setTitle(id, title);
 
     ctx.status = 200;
     ctx.body = JSON.stringify(result);
@@ -13,4 +13,4 @@ const setTitle = async (ctx) => {
   }
 };
 
-export default setTitle;
+export default setFlowTitle;

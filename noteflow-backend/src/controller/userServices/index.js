@@ -10,6 +10,8 @@ import {
   forgotPasswordAuth,
   forgotPasswordRenew,
 } from './forgotPassword.js';
+import getUserPhoto from './getUserPhoto.js';
+import setUserPhoto from './setUserPhoto.js';
 
 const service = {
   googleLogin,
@@ -22,6 +24,8 @@ const service = {
   forgotPassword,
   forgotPasswordAuth,
   forgotPasswordRenew,
+  getUserPhoto,
+  setUserPhoto,
 };
 
 export default service;
