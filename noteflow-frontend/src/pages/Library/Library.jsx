@@ -1,46 +1,61 @@
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
 import { styled, alpha } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
-import { BsSortDown } from "react-icons/bs";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
-import { useFlowStorage } from "../../storage/Storage";
-import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Editor } from "../../Components/Editor/Editor";
+import { useQuill } from "../../API/useQuill";
 import { useApp } from "../../hooks/useApp";
-import { usePageTab } from "../../hooks/usePageTab";
+import { Colab } from "../../API/Colab";
+import { useState, useEffect } from "react";
+import instance from "../../API/api";
 
 const Library = () => {
-  // const { t } = useTranslation();
-  const { addTab, tabList } = usePageTab();
-  const { isMobile } = useApp();
-  const nodes = useFlowStorage((state) => state.nodes);
-  const navigate = useNavigate();
-  const NodeButton = styled(Button)(({ theme }) => ({
+  const { t } = useTranslation();
+  const { user, isMobile } = useApp();
+  const [nodes, setNodes] = useState([]);
+  const { OpenEditor, QuillRef } = useQuill();
+  const [editorId, setEditorId] = useState(null);
+  const NodeButton = styled(Button)(({ theme, selected }) => ({
     color: theme.palette.getContrastText(grey[100]),
     fontSize: "12px",
-    backgroundColor: "white",
-    border: "1px black solid",
+    backgroundColor: selected ? "#E0E0E0" : "white",
+    borderRadius: selected ? "5px" : "0",
     "&:hover": {
-      backgroundColor: grey[100],
-      border: "1px grey solid",
+      backgroundColor: selected ? "#E0E0E0" : grey[100],
     },
-    width: "100%",
-    height: 150,
+    width: "90%",
+    height: 70,
+    "&:after": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "95%",
+      height: "1px",
+      backgroundColor: "#E0E0E0",
+    },
   }));
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    borderRadius: "0",
     "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
+      backgroundColor: grey[100],
     },
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "auto",
+    width: "90%",
+    "&:after": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "95%",
+      height: "1px",
+      backgroundColor: "#E0E0E0",
     },
   }));
   const SearchIconWrapper = styled("div")(({ theme }) => ({
@@ -68,26 +83,47 @@ const Library = () => {
       },
     },
   }));
-  const toNode = (node) => {
-    console.log(node);
-    if (!tabList.find((f) => f.id == node.id)) {
-      addTab({ id: node.id, title: node.name });
-    }
-    navigate("/node", { state: node });
+  const toNode = (id) => {
+    setEditorId(id);
   };
-
+  const [colab, setColab] = useState([]);
+  useEffect(() => {
+    instance
+      .get("/library")
+      .then((res) => {
+        setNodes([...nodes, ...res.data]);
+        setEditorId([...nodes, ...res.data][0].id);
+        console.log(res.data);
+        console.log("ok!");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+  useEffect(() => {
+    if (!editorId) return;
+    OpenEditor(editorId);
+    const connection = new Colab(editorId, user.email, (members) => {
+      console.log(members);
+      setColab(members);
+    });
+    return () => {
+      console.log("CLOSING colab connection");
+      connection.close();
+    };
+  }, [editorId]);
   return (
-    <Stack direction="column" justifyContent="center" alignItems="center">
-      <Stack
-        direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
+    <Grid container columns={12} sx={{ height: "100%" }}>
+      <Grid
+        item
+        md={2}
         sx={{
-          marginTop: "1vmin",
-          marginBottom: "1vmin",
-          alignSelf: "flex-end",
-          paddingLeft: 2,
-          paddingRight: 2,
+          // borderRight: "1px solid lightgrey",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "top",
+          alignItems: "center",
         }}
       >
         <Search>
@@ -99,33 +135,26 @@ const Library = () => {
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
-        <Button style={{ color: "black" }}>
-          <BsSortDown size={20} style={{ marginRight: "3px" }} />
-          <Typography>Newest to oldest</Typography>
-        </Button>
-      </Stack>
-      <Grid
-        container
-        justifyContent="left"
-        sx={{ paddingLeft: 2, paddingRight: 2 }}
-        spacing={"2vw"}
-        columns={15}
-      >
-        {nodes.map((node, id) => (
-          <Grid item xs={5} md={3} key={id}>
-            <NodeButton
-              sx={{ height: isMobile ? "10vh" : "20vh" }}
-              onClick={() => toNode(node)}
-            >
-              {/* {t("Last Edit Time:")} {node.time} {t("hours")} */}
-            </NodeButton>
-            <Typography style={{ fontSize: "14px", paddingTop: "2%" }}>
-              {node.name}
-            </Typography>
-          </Grid>
+        {nodes.map((node) => (
+          <NodeButton
+            className="node-button"
+            onClick={() => toNode(node.id)}
+            key={node.id}
+            selected={node.id === editorId}
+          >
+            {node.name} {t("Last Edit Time:")} {node.time} {t("hours")}
+          </NodeButton>
         ))}
+      </Grid>{" "}
+      <Grid item md={10}>
+        <Editor
+          editorId={editorId}
+          handleDrawerClose={() => {}}
+          QuillRef={QuillRef}
+          colab={colab}
+        />
       </Grid>
-    </Stack>
+    </Grid>
   );
 };
 export default Library;
