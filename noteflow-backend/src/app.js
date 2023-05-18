@@ -12,7 +12,6 @@ import cors from '@koa/cors';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import path from 'path';
 import fs from 'fs';
-import koaStatic from 'koa-static';
 import send from 'koa-send';
 
 import sharedb from './model/mongodb/sharedb.js';
@@ -22,6 +21,10 @@ import redisSession from './model/redis/redisSession.js';
 import WsRouter from './routes/ws-router.js';
 
 const app = new Koa();
+
+if (!fs.existsSync(path.join(process.cwd(), 'images'))) {
+  fs.mkdirSync(path.join(process.cwd(), 'images'));
+}
 
 const { default: sslify } = koaSslify;
 app.use(sslify());
