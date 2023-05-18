@@ -90,7 +90,9 @@ class Flow {
       ])
       .toArray();
 
-    return resolved[0].flows.colaborators.includes(target);
+    return resolved && resolved[0]
+      ? resolved[0].flows.colaborators.includes(target)
+      : false;
   }
 
   static async generateFlowId(owner) {

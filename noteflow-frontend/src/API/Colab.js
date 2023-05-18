@@ -51,7 +51,7 @@ class Colab {
 }
 
 function allocateColor(id, hourly = false) {
-  let crcId = crc32.str(id);
+  let crcId = Math.abs(crc32.str(id));
 
   if (hourly) {
     crcId += Date.now() / 3600000;

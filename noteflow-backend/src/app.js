@@ -67,10 +67,12 @@ app.use(async (ctx, next) => {
 });
 
 app.use(routes.routes());
-// app.use(koaServe({ rootPath: '/', rootDir: 'dist' }));
-app.use(koaStatic(path.join(process.cwd(), 'dist')));
+// app.use(koaServe({ rootPath: '/', rootDir: 'images' }));
+// app.use(koaStatic(path.join(process.cwd(), 'images')));
 app.use(async (ctx) => {
-  await send(ctx, 'index.html', { root: path.join(process.cwd(), 'dist') });
+  const url = ctx.request.url.split('/');
+  const image = url[url.length - 1];
+  await send(ctx, image, { root: path.join(process.cwd(), 'images') });
 });
 
 const router = new WsRouter()

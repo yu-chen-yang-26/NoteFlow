@@ -1,37 +1,32 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import axios from 'axios';
 import db from '../../lib/db.js';
+import fs from 'fs';
+import path from 'path';
 
 const { PHOTO_FS } = process.env;
 
 const instance = axios.create({
-  url: `http://${PHOTO_FS}`,
+  baseURL: `http://${PHOTO_FS}`,
 });
 
+const BASE_PATH = path.join(process.cwd(), 'images');
+
+console.log('photo fs', PHOTO_FS);
+
 const setUserPhoto = async (ctx) => {
-  const { photo } = ctx.request.body;
+  const { image } = ctx.request.files;
   const { email } = ctx.session;
 
-  const formData = new FormData();
-  formData.append('photo', photo, 'photo.jpg');
-  formData.append('email', email);
+  const by = image[0].mimetype.split('/')[1];
+  const filename = `${email}-${Date.now()}.${by}`;
 
-  const res = await instance.post('/fs/new-photo', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  fs.writeFileSync(path.join(BASE_PATH, filename), image[0].buffer, {});
 
-  if (res.status !== 200) {
-    ctx.throw(418, 'Photo not accepted.');
-  }
-
-  const path = JSON.parse(res.data); // path that the photo can be found.
-
-  await db('users').update({ picture: path }).where({ email });
+  await db('users').update({ picture: filename }).where({ email });
 
   ctx.status = 200;
-  ctx.body = res.data;
+  ctx.body = filename;
 };
 
 export default setUserPhoto;

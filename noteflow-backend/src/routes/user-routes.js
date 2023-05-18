@@ -3,6 +3,9 @@ import { user, flow } from '../controller/index.js';
 import logined from '../middleware/logined-middleware.js';
 import authorized from '../middleware/flow-auth-middleware.js';
 import redisClient from '../model/redis/redisClient.js';
+import multer from '@koa/multer';
+
+const upload = multer();
 
 const router = new Router();
 router
@@ -26,7 +29,17 @@ router
   .post('/user/google-login', user.googleLogin)
   .get('/user/who-am-i', user.whoAmI)
   .post('/user/update', logined, user.updateUserInfo)
-  .post('/user/set-photo', logined, user.setUserPhoto)
+  .post(
+    '/user/set-photo',
+    logined,
+    upload.fields([
+      {
+        name: 'image',
+        maxCount: 1,
+      },
+    ]),
+    user.setUserPhoto,
+  )
   .get('/user/get-photo-url', user.getUserPhoto)
   .post('/user/reset-password-send-email', user.forgotPassword)
   .post('/user/reset-password-auth', user.forgotPasswordAuth)

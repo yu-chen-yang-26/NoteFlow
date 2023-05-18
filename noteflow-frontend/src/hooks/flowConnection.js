@@ -3,15 +3,18 @@ import * as json1 from 'ot-json1';
 import ReconnectingWebsocket from 'reconnecting-websocket';
 import { BASE_URL } from '../API/api';
 import { type } from 'rich-text';
+import { getRandomPicture } from './useApp';
+import { allocateColor } from '../API/Colab';
 
 sharedb.types.register(json1.type);
 
 class FlowWebSocket {
-  constructor(flowId, updateData, receiveLocation) {
+  constructor(flowId, email, updateData, subscribeToToolbar) {
     this.nodeAndEdgeSub(flowId, updateData);
-    this.mouseMovementSub(flowId, receiveLocation);
+    this.mouseMovementSub(flowId);
+    this.subscribeToToolbar = subscribeToToolbar;
     this.lastUpdated = Date.now();
-
+    this.email = email;
     this.mouseTracker = {};
     this.self = {
       xPort: 0,
@@ -51,17 +54,13 @@ class FlowWebSocket {
       2. 如果透過 React flow render：render 一個紫色箭頭在 canvasRect.left + xPort + (x/zoom), canvasRect.top + yPort + (y/zoom) 的地方
     */
     // 嘗試收自己的訊息，讓紅點點能夠 track 我，也不錯
-    const background = document.querySelector('.FlowEditPanel');
+    const background = document.querySelector('.NodePanel');
     if (!background) return;
     if (email in this.mouseTracker) {
       // let divElement = document.createElement('div');
       let divElement = document.querySelector(`#mouse-dot-${email}`);
       if (!divElement) {
-        divElement = document.createElement('div');
-        divElement.className = 'mouse-dot';
-        divElement.id = `mouse-dot-${email}`;
-        divElement.style.backgroundColor = 'pink';
-        divElement.textContent = `${email}`;
+        divElement = FlowWebSocket.createInstance(email, 'mouse-dot');
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
@@ -69,34 +68,63 @@ class FlowWebSocket {
       // console.log(divElement.style.top)
       const other = this.mouseTracker[email];
 
-      const { xPort, yPort, left, top, width, height, zoom } = this.self;
+      const { xPort, yPort, left, top, width, height, zoom, x, y } = this.self;
+
       const myScope = {
-        xMin: xPort,
-        xMax: (xPort + width) / zoom,
-        yMin: yPort,
-        yMax: (yPort + height) / zoom,
+        xMin: xPort / zoom - 100,
+        xMax: (xPort + width) / zoom + 100,
+        yMin: yPort / zoom - 100,
+        yMax: (yPort + height) / zoom + 100,
       };
-      const hisScope = {
-        x: (other.xPort + other.x) / other.zoom,
-        y: (other.yPort + other.y) / other.zoom,
+
+      const xOffset = other.xPort - xPort / zoom;
+      const yOffset = other.yPort - yPort / zoom;
+
+      const heInMyScope = {
+        x: (other.x + xOffset) * zoom,
+        y: (other.y + yOffset) * zoom,
       };
       // 符合我們的 scope
       // console.log(hisScope, myScope);
+      // if (
+      //   hisScope.x >= myScope.xMin &&
+      //   hisScope.x <= myScope.xMax &&
+      //   hisScope.y >= myScope.yMin &&
+      //   hisScope.y <= myScope.yMax
+      // ) {
+      //   // 透過 jquery 應該可以直接呈現在螢幕上。
+      //   // console.log('conform!');
+      //   divElement.style.left = `${(hisScope.x - myScope.xMin) * zoom}px`;
+      //   divElement.style.top = `${(hisScope.y - myScope.yMin) * zoom}px`;
+      // }
+
       if (
-        hisScope.x >= myScope.xMin &&
-        hisScope.x <= myScope.xMax &&
-        hisScope.y >= myScope.yMin &&
-        hisScope.y <= myScope.yMax
+        heInMyScope.x >= myScope.xMin &&
+        heInMyScope.x <= myScope.xMax &&
+        heInMyScope.y >= myScope.yMin &&
+        heInMyScope.y <= myScope.yMax
       ) {
-        // 透過 jquery 應該可以直接呈現在螢幕上。
-        console.log('conform!');
-        divElement.style.left = `${hisScope.x}px`;
-        divElement.style.top = `${hisScope.y}px`;
+        divElement.style.left = `${heInMyScope.x - 25}px`;
+        divElement.style.top = `${heInMyScope.y - 25}px`;
       }
     }
   }
 
-  mouseMovementSub(flowId, receiveLocation) {
+  static createInstance(email, className) {
+    let divElement = document.createElement('div');
+    divElement.className = className;
+    divElement.id = `${className}-${email}`;
+    divElement.style.border = `${allocateColor(deconvert(email))} solid 2px`;
+
+    const imgElement = document.createElement('img');
+    imgElement.className = `${className}-img`;
+    imgElement.src = getRandomPicture(deconvert(email));
+    divElement.appendChild(imgElement);
+
+    return divElement;
+  }
+
+  mouseMovementSub(flowId) {
     // mouse
     // 這個會追蹤 mouse 並定期上傳其位置
     this.mouseSocket = new ReconnectingWebsocket(
@@ -111,11 +139,11 @@ class FlowWebSocket {
         ...position,
         lastUpdate: Date.now(),
       };
-      if (receiveLocation) {
-        receiveLocation(email);
-      } else {
+      if (email !== convert(this.email)) {
         this.receiveLocation(email);
       }
+
+      this.subscribeToToolbar(this.mouseTracker);
     });
   }
 
@@ -152,9 +180,9 @@ class FlowWebSocket {
     });
   }
 
-  close(callback) {
+  close() {
     this.socket.close();
-    callback(1000);
+    this.mouseSocket.close();
   }
 
   editFlowTitle(title) {

@@ -15,7 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
 import instance from '../../API/api';
 import ResetModal from './ResetModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import './Settings.scss';
+
+import { BASE_URL } from '../../API/api';
 
 const Settings = () => {
   const { user, logout, isMobile } = useApp();
@@ -23,6 +26,7 @@ const Settings = () => {
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
   const [show, setShow] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: 'pointer',
     backgroundColor: '#0e1111',
@@ -34,6 +38,21 @@ const Settings = () => {
     },
   }));
 
+  useEffect(() => {
+    const imgInput = document.getElementById('avatar');
+    imgInput.addEventListener('change', uploadPhoto);
+    instance.get('/user/get-photo-url').then((res) => {
+      if (res.status == 200) {
+        const url = res.data;
+        console.log(url);
+        setPhotoUrl(`/api/${url}`);
+      }
+    });
+    return () => {
+      imgInput.removeEventListener('change', uploadPhoto);
+    };
+  }, []);
+
   const changeLang = () => {
     i18n.changeLanguage(lang);
     if (lang === 'zh') {
@@ -42,6 +61,17 @@ const Settings = () => {
       setLang('zh');
     }
   };
+
+  const uploadPhoto = async () => {
+    const imgInput = document.getElementById('avatar');
+    const file = imgInput.files[0];
+    console.log(imgInput.files);
+    const formData = new FormData();
+    formData.append('image', file);
+    console.log(formData);
+    await instance.post('/user/set-photo', formData);
+  };
+
   return (
     <Grid container columns={12} sx={{ height: '100%' }}>
       <Grid item xs={12} md={6}>
@@ -51,25 +81,33 @@ const Settings = () => {
           alignItems="center"
           sx={{ height: '100%' }}
         >
-          <div
-            style={{
-              // width: "350px",
-              // height: "350px",
-              width: '60%',
-              maxWidth: '300px',
-              borderRadius: '50%',
-              border: '2px solid black',
-              overflow: 'hidden',
-            }}
-          >
-            <BsFillPersonFill
-              color="black"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
+          <div className="avatar-container">
+            <div className="custom-file-upload">
+              <input
+                type="file"
+                id="avatar"
+                name="avatar"
+                accept="image/png, image/jpeg"
+                hidden
+              ></input>
+              <label htmlFor="avatar" className="avatar-label">
+                {/* <span>Select your avatar</span> */}
+                {!photoUrl ? (
+                  <BsFillPersonFill
+                    color="black"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  <div className="avatar-img-div">
+                    <img src={photoUrl} className="avatar-img" alt=""></img>
+                  </div>
+                )}
+              </label>
+            </div>
           </div>
         </Stack>
       </Grid>

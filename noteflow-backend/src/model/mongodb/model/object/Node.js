@@ -43,7 +43,9 @@ class Node {
       ])
       .toArray();
 
-    return resolved[0].nodes.colaborators.includes(target);
+    return resolved && resolved[0]
+      ? resolved[0].nodes.colaborators.includes(target)
+      : false;
   }
 
   static async fetchColaborators(owner, nodeId) {

@@ -14,6 +14,7 @@ import ReactFlow, {
   getOutgoers,
   getConnectedEdges,
   useViewport,
+  isEdge,
 } from 'reactflow';
 import CustomNode from '../../Components/Flow/Node';
 import ToolBar from '../../Components/Flow/ToolBar';
@@ -63,6 +64,7 @@ function Flow() {
   const yPos = useRef(0);
   const nodeId = useRef(0);
   const edgeId = useRef(0);
+  const subRef = useRef(null);
 
   const [bgVariant, setBgVariant] = useState('line');
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -75,6 +77,7 @@ function Flow() {
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
   const searchParams = new URLSearchParams(location.search);
+  const { user } = useApp();
   const flowId = searchParams.get('id');
 
   const { addTab } = usePageTab();
@@ -86,14 +89,52 @@ function Flow() {
     console.log(size.width);
   };
 
+  const trackerCallback = useCallback(
+    (tracker) => {
+      // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
+      // 創一個 child element
+      console.log(subRef);
+      Object.keys(tracker).forEach((email, index) => {
+        let instance = document.querySelector(`#sub-flow-${email}`);
+        if (!instance) {
+          instance = FlowWebSocket.createInstance(email, 'sub-flow');
+          subRef.current.appendChild(instance);
+        } else {
+          // 有沒有在閒置
+          if (tracker[email].lastUpdate - Date.now() >= 60000) {
+            instance.style.opacity = 0.5;
+          } else {
+            instance.style.opacity = 1;
+          }
+        }
+      });
+    },
+    [subRef],
+  );
+
   useEffect(() => {
-    const flowConnection = new FlowWebSocket(flowId, (data) => {
-      if (data.error) {
-        navigateTo('/error');
-      } else rerender(data);
-    });
+    if (!flowId) {
+      navigateTo('/home');
+    }
+    if (!user) return;
+
+    const flowConnection = new FlowWebSocket(
+      flowId,
+      user.email,
+      (data) => {
+        if (data.error) {
+          navigateTo('/error');
+          navigateTo('/home');
+        } else rerender(data);
+      },
+      trackerCallback,
+    );
     setFlowWebSocket(flowConnection);
-  }, [flowId]);
+
+    return () => {
+      flowConnection.close();
+    };
+  }, [flowId, user]);
   //
   const rerender = (data) => {
     setNodes(data.nodes);
@@ -198,20 +239,24 @@ function Flow() {
   const { x, y, zoom } = useViewport();
 
   useEffect(() => {
+    console.log('x: ', x);
+    console.log('y:', y);
+
     if (flowWebSocket && flowWebSocket.self) {
       flowWebSocket.updateInfo({
-        xPort: x,
-        yPort: y,
+        xPort: -x,
+        yPort: -y,
         zoom: zoom,
       });
     }
   }, [x, y, flowWebSocket]);
 
   const handleMouseMove = (e) => {
+    if (isEdit || !flowWebSocket) return;
     const { clientX, clientY } = e;
     const canvasRect = canvasRef.current.getBoundingClientRect();
-    const canvasX = -x + clientX - canvasRect.left;
-    const canvasY = -y + clientY - canvasRect.top;
+    const canvasX = clientX - canvasRect.left;
+    const canvasY = clientY - canvasRect.top;
 
     flowWebSocket.updateInfo({
       x: canvasX,
@@ -240,24 +285,13 @@ function Flow() {
     // 因為這並不會觸發 handleMouseMove
 
     flowWebSocket.sendLocation({
-      x: canvasX,
-      y: canvasY,
-      xPort: x,
-      yPort: y,
-      zoom: zoom,
+      x: canvasX / zoom,
+      y: canvasY / zoom,
+      xPort: -x / zoom,
+      yPort: -y / zoom,
+      // zoom: zoom,
     });
   };
-
-  useEffect(() => {
-    const flowConnection = new FlowWebSocket(flowId, (data) => {
-      if (data.error) {
-        navigateTo('/error');
-      } else {
-        rerender(data);
-      }
-    });
-    setFlowWebSocket(flowConnection);
-  }, []);
 
   return (
     <div
@@ -305,6 +339,7 @@ function Flow() {
             }}
             flowWebSocket={flowWebSocket}
             flowId={flowId}
+            subRef={subRef}
           />
           {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
           <MiniMap nodeStrokeWidth={10} zoomable pannable />
@@ -333,7 +368,6 @@ function Flow() {
             />
           </div>
         </Resizable>
-        // </div>
       )}
     </div>
   );
