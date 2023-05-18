@@ -19,15 +19,8 @@ window.katex = katex;
 
 const Editor = ({ handleDrawerClose, editorId }) => {
   const { user } = useApp();
-  const {
-    OpenEditor,
-    QuillRef,
-    setOnline,
-    title,
-    setTitle,
-    newTitle,
-    setNewTitle,
-  } = useQuill();
+  const { OpenEditor, QuillRef, setOnline, setTitle, newTitle, setNewTitle } =
+    useQuill();
 
   const [colab, setColab] = useState([]);
   const [colabWebSocket, setColabWebSocket] = useState(null);

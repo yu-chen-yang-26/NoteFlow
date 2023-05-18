@@ -13,6 +13,7 @@ import ReactFlow, {
   getIncomers,
   getOutgoers,
   getConnectedEdges,
+  useViewport,
 } from 'reactflow';
 import CustomNode from '../../Components/Flow/Node';
 import ToolBar from '../../Components/Flow/ToolBar';
@@ -74,19 +75,8 @@ function Flow({ flowId }) {
   const [editorId, setEditorId] = useState(null);
 
   const navigateTo = useNavigate();
-
-  useEffect(() => {
-    const flowConnection = new FlowWebSocket(flowId, (data) => {
-      if (data.error) {
-        navigateTo('/error');
-      } else rerender(data);
-    });
-    setFlowWebSocket(flowConnection);
-  }, []);
   //
   const rerender = (data) => {
-    console.log('nodes', data.nodes);
-    console.log('edges', data.edges);
     setNodes(data.nodes);
     setEdges(data.edges);
     setTitle(data.name);
@@ -207,8 +197,38 @@ function Flow({ flowId }) {
   //   }
   // }, [restart]);
 
+  const canvasRef = useRef();
+  const { x, y, zoom } = useViewport();
+
+  // console.log('viewport:', x, y, zoom);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const canvasX = -x + clientX - canvasRect.left;
+    const canvasY = -y + clientY - canvasRect.top;
+
+    // console.log(clientX, clientY);s
+    // FlowWebSocket
+  };
+
+  useEffect(() => {
+    const flowConnection = new FlowWebSocket(flowId, (data) => {
+      if (data.error) {
+        navigateTo('/error');
+      } else {
+        rerender(data);
+      }
+    });
+    setFlowWebSocket(flowConnection);
+  }, []);
+
   return (
-    <div className="FlowEditPanel">
+    <div
+      className="FlowEditPanel"
+      onMouseMove={handleMouseMove}
+      ref={canvasRef}
+    >
       {!back ? (
         <>
           <ToolBar
@@ -225,6 +245,7 @@ function Flow({ flowId }) {
             nodes={nodes}
             edges={edges}
             onNodesChange={(param) => {
+              // console.log(param);
               onNodesChange(param);
               flowWebSocket.editComponent(param, 'node');
             }}

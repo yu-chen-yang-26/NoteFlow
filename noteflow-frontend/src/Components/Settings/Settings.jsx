@@ -25,9 +25,6 @@ const Settings = () => {
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleModal = () => {
-    setShow(true);
-  };
 
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: 'pointer',
@@ -100,7 +97,7 @@ const Settings = () => {
               size={25}
               style={{ marginRight: '15px' }}
             ></RiLockPasswordLine>
-            <SettingsButton onClick={handleModal}>
+            <SettingsButton onClick={() => setShow(true)}>
               {t('Reset Password')}
             </SettingsButton>
           </Stack>

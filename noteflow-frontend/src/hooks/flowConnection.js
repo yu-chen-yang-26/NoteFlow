@@ -6,40 +6,48 @@ import { BASE_URL } from '../API/api';
 sharedb.types.register(json1.type);
 
 class FlowWebSocket {
-  constructor(flowId, callback) {
-    this.getConnection(flowId, callback);
-    // this.lamport = new MutualExclusion();
+  constructor(flowId, updateData, sendLocation, receiveLocation) {
+    this.getConnection(flowId, updateData, sendLocation, receiveLocation);
     this.lastUpdated = Date.now();
-  }
-  convertFlowData(flow) {
-    const toReturn = JSON.parse(JSON.stringify(flow));
-    toReturn.edges = Object.values(toReturn.edges);
-    toReturn.nodes = Object.values(toReturn.nodes);
-    return toReturn;
+    this.mouseList = [];
+    // [{email: ..., name: ..., x: ..., y: ...}]
   }
 
-  getConnection(flowId, callback) {
-    const socket = new ReconnectingWebsocket(
+  getConnection(flowId, updateData, sendLocation, receiveLocation) {
+    // sharedb
+    this.socket = new ReconnectingWebsocket(
       `wss://${BASE_URL}/ws/flow?id=${flowId}`,
     );
-    this.socket = socket;
 
     const collection = 'flow-sharedb';
-    const connection = new sharedb.Connection(socket);
+    const connection = new sharedb.Connection(this.socket);
     const flow = connection.get(collection, flowId);
-    console.log('connecting...');
     flow.subscribe((e) => {
       if (e) throw e;
-      console.log('subscribed!');
       this.flow = flow;
       this.flow.on('op', (op) => {
         this.lastOp = op;
-        callback(this.convertFlowData(this.flow.data));
+        updateData(this.convertFlowData(this.flow.data));
       });
 
-      // this.lamport.prepareFlow(flow);
-      callback(this.convertFlowData(this.flow.data));
+      updateData(this.convertFlowData(this.flow.data));
     });
+
+    // mouse
+    // 這個會追蹤 mouse 並定期上傳其位置
+    // this.mouseSocket = new ReconnectingWebsocket(
+    //   `wss://${BASE_URL}/ws/flow-mouse?id=${nodeId}`,
+    // );
+    // this.mouseSocket.addEventListener('message', (msg) => {
+    //   const message = JSON.parse(msg.data.toString('utf-8'));
+    //   let userList = new Array(message.length);
+    //   message.forEach((m, id) => {
+    //     const newList = m.split('-');
+    //     const singleUser = newList[newList.length - 1];
+    //     userList[id] = singleUser;
+    //   });
+    //   updateData(userList);
+    // });
   }
 
   close(callback) {
@@ -49,9 +57,10 @@ class FlowWebSocket {
 
   addComponent(component, type) {
     const op = [
-      json1.insertOp([type === 'node' ? 'nodes' : 'edges', component.id], {
-        ...component,
-      }),
+      json1.insertOp(
+        [type === 'node' ? 'nodes' : 'edges', component.id],
+        component,
+      ),
     ].reduce(json1.type.compose, null);
     this.flow.submitOp(op, (error) => {
       if (error) {
@@ -83,7 +92,6 @@ class FlowWebSocket {
             }
           });
         }
-        console.log(op);
         op = op.reduce(json1.type.compose, null);
 
         break;
@@ -98,8 +106,10 @@ class FlowWebSocket {
           ? param[0].position
           : currentNode.position;
 
+        console.log(param[0].dragging);
         if (!param[0].dragging) {
-          // currentNode.style.border = '2px solid black';
+          console.log('black');
+          currentNode.style.border = '2px solid black';
           // console.log('black!');
         }
         op = [
@@ -115,11 +125,9 @@ class FlowWebSocket {
         // if (type === 'edges') return console.log('窩還沒做 qq');
         currentNode =
           this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
-        if (param[0].selected) {
-          currentNode.style.border = '2px solid orange';
-        } else {
-          currentNode.style.border = '2px solid black';
-        }
+        // if (param[0].selected) {
+        //   currentNode.style.border = '2px solid orange';
+        // }
 
         op = [
           json1.replaceOp(
@@ -138,6 +146,22 @@ class FlowWebSocket {
         this.flow.submitOp(op);
       }
     });
+  }
+
+  sendLocation(x, y) {
+    this.mouseSocket.send(
+      JSON.stringify({
+        x,
+        y,
+      }),
+    );
+  }
+
+  convertFlowData(flow) {
+    const toReturn = JSON.parse(JSON.stringify(flow));
+    toReturn.edges = Object.values(toReturn.edges);
+    toReturn.nodes = Object.values(toReturn.nodes);
+    return toReturn;
   }
 }
 
