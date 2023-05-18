@@ -10,16 +10,13 @@ import { useTranslation } from "react-i18next";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
-import { useFlowStorage } from "../../storage/Storage";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
 import instance from "../../API/api";
 
 const Settings = () => {
-  const { user, logout, isMobile } = useApp();
-  const { t, i18n } = useTranslation();
-  const lang = useFlowStorage((state) => state.lang);
-  const setLang = useFlowStorage((state) => state.setLang);
+  const { user, logout, isMobile, changeLang } = useApp();
+  const { t } = useTranslation();
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     backgroundColor: "#0e1111",
@@ -30,14 +27,6 @@ const Settings = () => {
       backgroundColor: "lightgrey",
     },
   }));
-  const changeLang = () => {
-    i18n.changeLanguage(lang);
-    if (lang === "zh") {
-      setLang("en");
-    } else {
-      setLang("zh");
-    }
-  };
   return (
     <Grid container columns={12} sx={{ height: "100%" }}>
       <Grid item xs={12} md={6}>
@@ -103,7 +92,7 @@ const Settings = () => {
           <Stack direction="row" justifyContent="left" alignItems="center">
             <MdLanguage size={25} style={{ marginRight: "15px" }}></MdLanguage>
             <SettingsButton onClick={() => changeLang()}>
-              {t("Switch to " + (lang === "zh" ? "Chinese" : "English"))}
+              {t("Switch to Chinese")}
             </SettingsButton>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">

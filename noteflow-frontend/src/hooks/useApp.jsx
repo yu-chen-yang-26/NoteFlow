@@ -3,6 +3,7 @@ import crc32 from "crc-32";
 import instance from "../API/api";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const UserContext = createContext({
   user: {},
@@ -21,6 +22,8 @@ const getRandomPicture = (name) => {
 
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
+  const [lang, setLang] = useState("zh");
+  const { i18n } = useTranslation();
 
   // console.log(user);
   const [rerender, setRerender] = useState(false);
@@ -49,9 +52,17 @@ const UserProvider = (props) => {
   const refetchFromLocalStorage = () => {
     setRerender((prev) => !prev);
   };
+  const changeLang = () => {
+    i18n.changeLanguage(lang);
+    if (lang === "zh") {
+      setLang("en");
+    } else {
+      setLang("zh");
+    }
+  };
   return (
     <UserContext.Provider
-      value={{ user, refetchFromLocalStorage, logout }}
+      value={{ user, refetchFromLocalStorage, logout, changeLang }}
       {...props}
     />
   );
