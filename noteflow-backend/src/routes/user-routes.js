@@ -44,8 +44,8 @@ router
   .post('/nodes/new-node', logined, flow.newNode)
   .get('/nodes/get-colab-list', logined, authorized, flow.getColabList)
   .post('/nodes/revise-colab-list', logined, authorized, flow.reviseColabList)
-  .get('/nodes/get-title', logined, flow.getTitle)
-  .post('/nodes/set-title', logined, authorized, flow.setTitle);
+  .get('/nodes/get-title', logined, flow.getNodeTitle)
+  .post('/nodes/set-title', logined, authorized, flow.setNodeTitle);
 // .get('/nodes/access-node, service.accessNode) // 是否可以進入這個 node 修改 // 變成 middleware 做在 ws 裡面
 // .put('/nodes/add-colab, service.addColab)
 // .put('/nodes/remove-colab, service.removeColab);
