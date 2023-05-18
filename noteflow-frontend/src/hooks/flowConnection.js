@@ -51,7 +51,7 @@ class FlowWebSocket {
       2. 如果透過 React flow render：render 一個紫色箭頭在 canvasRect.left + xPort + (x/zoom), canvasRect.top + yPort + (y/zoom) 的地方
     */
     // 嘗試收自己的訊息，讓紅點點能夠 track 我，也不錯
-    const background = document.querySelector('.Flow-container');
+    const background = document.querySelector('.FlowEditPanel');
     if (!background) return;
     if (email in this.mouseTracker) {
       // let divElement = document.createElement('div');
@@ -60,15 +60,13 @@ class FlowWebSocket {
         divElement = document.createElement('div');
         divElement.className = 'mouse-dot';
         divElement.id = `mouse-dot-${email}`;
-        divElement.position = 'absolute';
-        divElement.style.width = '5px';
-        divElement.style.height = '5px';
 
         divElement.style.backgroundColor = 'pink';
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
-      console.log(divElement.style, divElement.style.left);
+      // console.log(divElement.style, divElement.style.left);
+      console.log(divElement.style.top)
       const other = this.mouseTracker[email];
 
       const { xPort, yPort, left, top, width, height, zoom } = this.self;
@@ -92,8 +90,8 @@ class FlowWebSocket {
       ) {
         // 透過 jquery 應該可以直接呈現在螢幕上。
         console.log('conform!');
-        divElement.style.left = `${hisScope.x + 50}px`;
-        divElement.style.top = `${hisScope.y + 50}px`;
+        divElement.style.left = `${hisScope.x}px`;
+        divElement.style.top = `${hisScope.y}px`;
       }
     }
   }
