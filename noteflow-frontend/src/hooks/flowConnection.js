@@ -32,11 +32,7 @@ class FlowWebSocket {
       if (e) throw e;
       console.log("subscribed!");
       this.flow = flow;
-<<<<<<< HEAD
-      this.flow.on("op", (op, source) => {
-=======
       this.flow.on('op', (op) => {
->>>>>>> yoho
         this.lastOp = op;
         callback(this.convertFlowData(this.flow.data));
       });
@@ -81,37 +77,12 @@ class FlowWebSocket {
     let op = [];
     let currentNode;
     switch (param[0].type) {
-<<<<<<< HEAD
-      case "remove":
-        // 從 param[0].id 以後全部減一
-=======
       case 'remove':
->>>>>>> yoho
         op = [
           json1.removeOp([type === "node" ? "nodes" : "edges", param[0].id]),
         ];
-<<<<<<< HEAD
-        // const flowDataArr = Object.keys(
-        //   this.flow.data[type === "node" ? "nodes" : "edges"]
-        // );
-        // console.log(flowDataArr);
-        // flowDataArr.map((element, index) => {
-        //   if (index > Number(param[0].id)) {
-        //     op.push(
-        //       json1.moveOp(
-        //         [type === "node" ? "nodes" : "edges", index.toString()],
-        //         [type === "node" ? "nodes" : "edges", (index - 1).toString()]
-        //       )
-        //     );
-        //   }
-        // });
-        console.log(op);
-        if (type === "node") {
-          const edgeArr = Object.keys(this.flow.data["edges"]);
-=======
         if (type === 'node') {
           const edgeArr = Object.keys(this.flow.data['edges']);
->>>>>>> yoho
           console.log(this.flow.data);
           edgeArr.map((id) => {
             if (
@@ -128,18 +99,10 @@ class FlowWebSocket {
         break;
       case "position":
         // 如果 dragging == false 就不做事
-<<<<<<< HEAD
-        if (!param[0].dragging) return;
-        if (type === "edge") throw Error("看不懂");
-
-        let currentNode =
-          this.flow.data[type === "node" ? "nodes" : "edges"][param[0].id];
-=======
         if (type === 'edge') throw Error('窩看不懂');
 
         currentNode =
           this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
->>>>>>> yoho
         // ncaught TypeError: this.flow.data[(intermediate value)(intermediate value)(intermediate value)].map is not a function
         currentNode.position = param[0].position
           ? param[0].position

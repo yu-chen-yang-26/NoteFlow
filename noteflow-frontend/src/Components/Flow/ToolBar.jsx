@@ -1,19 +1,9 @@
-<<<<<<< HEAD
 import React, { useState, useRef, useEffect } from "react";
 import "./FlowEditor.scss";
 import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import Modal from "react-bootstrap/Modal";
 import "./ToolBar.scss";
-=======
-import React, { useState } from 'react';
-import './FlowEditor.scss';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-// import Modal from "react-bootstrap/Modal";
-
-import './ToolBar.scss';
->>>>>>> yoho
 import {
   BsDot,
   BsNodePlus,
@@ -32,17 +22,13 @@ export default function ToolBar({
   title,
   changeBackground,
   onSave,
-<<<<<<< HEAD
   flowWebSocket,
-=======
-  flowId,
->>>>>>> yoho
+  flowId
 }) {
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);
   const [isFocus, setIsFocus] = useState(false);
   const handleClose = () => setShow(false);
-<<<<<<< HEAD
   const handleShow = () => setShow(true);
 
   useEffect(() => {
@@ -64,11 +50,6 @@ export default function ToolBar({
       flowWebSocket.editFlowTitle(title);
     }
   }, [isFocus]);
-=======
-  const handleShow = () => {
-    setShow(true);
-  };
->>>>>>> yoho
 
   return (
     <div className="toolbar">

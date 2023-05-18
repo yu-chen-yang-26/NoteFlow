@@ -15,7 +15,8 @@ const reviseColabList = async (ctx) => {
   const added = [];
   const removed = [];
   try {
-    colabs.map(async (data, index) => {
+    for (let index = 0; index < colabs.length; index++) {
+      const data = colabs[index];
       if (data.type === 'new') {
         // 應該要先確認有沒有這一個人
         const result = await db('users').first().where({ email: data.email });
@@ -49,7 +50,7 @@ const reviseColabList = async (ctx) => {
           }
         }
       }
-    });
+    }
 
     if (schema) {
       await Flow.refreshColabs(id, added, removed);

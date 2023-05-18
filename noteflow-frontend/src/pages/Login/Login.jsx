@@ -23,11 +23,7 @@ const Login = () => {
   const [alarms, setAlarms] = useState("");
   const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
-<<<<<<< HEAD
   const { refetchFromLocalStorage, user, isMobile } = useApp();
-=======
-  const { refetchFromLocalStorage, user } = useApp();
->>>>>>> yoho
 
   useEffect(() => {
     if (user) navigateTo("/home");
@@ -145,7 +141,8 @@ const Login = () => {
           </CSSTransition>
         </SwitchTransition>
       </div>
-        <div className="info">
+        
+      <div className="info">
           <h2>Login</h2>
           <div className="infoContainer">
             <Box
@@ -200,24 +197,41 @@ const Login = () => {
                   paddingTop: "1%",
                   textTransform: "none",
                 }}
-                onClick={() => navigateTo("/forgotPassword")}
               >
-                Forgot password?
-                </Button>
-              <Link
-                variant="body2"
-                style={{ color: "#414a4c", cursor: "pointer" }}
-                onClick={() => navigateTo("/register")}
+                Login
+              </Button>
+              <div
+                className="links"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                {"Don't have an account? Sign Up"}
-              </Link>
-              </Box>
-            </div>
+                <Link
+                  variant="body2"
+                  style={{
+                    color: "#414a4c",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => navigateTo("/forgotPassword")}
+                >
+                  Forgot password?
+                </Link>
+                <Link
+                  variant="body2"
+                  style={{ color: "#414a4c", cursor: "pointer" }}
+                  onClick={() => navigateTo("/register")}
+                >
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </div>
+            </Box>
+          </div>
+          <div className="horizontalLine">
+            <span>OR</span>
+          </div>
+          <div id="signInDiv" ref={divRef}></div>
         </div>
-        <div className="horizontalLine">
-          <span>OR</span>
-        </div>
-        <div id="signInDiv" ref={divRef}></div>
       </div>
   );
 };

@@ -7,12 +7,13 @@ import { useState, useEffect } from "react";
 import { useApp } from "../../hooks/useApp";
 import { Colab } from "../../API/Colab";
 import "./Node.scss";
+import instance from "../../API/api";
 
 const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const editorId = nodeId ? nodeId : searchParams.get("id");
-  const { OpenEditor, QuillRef } = useQuill();
+  const { OpenEditor, QuillRef, newTitle, setNewTitle, setTitle } = useQuill();
   const [colab, setColab] = useState([]);
   const { user } = useApp();
   const navigateTo = useNavigate();
@@ -24,6 +25,10 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
   useEffect(() => {
     if (!editorId) return;
     OpenEditor(editorId);
+    instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
+      setTitle(res.data)
+      setNewTitle(res.data)
+    })
     const connection = new Colab(editorId, user.email, (members) => {
       setColab(members);
     });
@@ -45,6 +50,9 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
           handleDrawerClose={handleDrawerClose}
           QuillRef={QuillRef}
           colab={colab}
+          newTitle={newTitle}
+          setNewTitle={setNewTitle}
+          setTitle={setTitle}
         />
       </div>
     </div>

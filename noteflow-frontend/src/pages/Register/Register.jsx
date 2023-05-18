@@ -31,22 +31,12 @@ const Register = () => {
         password: passwordHashed,
       },
     };
-<<<<<<< HEAD
-    console.log(email);
-    console.log(password);
-=======
-
->>>>>>> yoho
     if (passwordHashed !== checkPasswordHashed) {
       alert("Wrong password");
     }
     instance
       .post("/user/register", request)
       .then((res) => {
-<<<<<<< HEAD
-        console.log(res.data);
-=======
->>>>>>> yoho
         navigateTo("/");
       })
       .catch((e) => {
@@ -168,12 +158,13 @@ const Register = () => {
                       {t("Register")}
                     </Button>
                   </div>
-                </Button>
-              </div>
-            </Box>
+                  </Box>
+                  </>)}
+
+
           </div>
         </div>
-      </div>
+    </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Backdrop, Box, Fade, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
-import './Settings.scss';
+import './EditorSettings.scss';
 import instance from '../../API/api';
 
 const Settings = ({ editorId }) => {

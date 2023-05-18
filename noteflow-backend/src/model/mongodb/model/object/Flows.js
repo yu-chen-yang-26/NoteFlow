@@ -36,7 +36,7 @@ class Flows {
   }
 
   static async fetchFlowsByFlowList(flowList, page) {
-    const request_mapper = {};
+    const requestMapper = {};
     flowList.forEach((element) => {
       if (!(element.owner in requestMapper)) {
         requestMapper[element.owner] = [];
@@ -56,7 +56,7 @@ class Flows {
           { $match: { user: key } },
           { $limit: 1 },
           { $unwind: '$flows' },
-          { $match: { 'flows.id': { $in: request_mapper[key] } } },
+          { $match: { 'flows.id': { $in: requestMapper[key] } } },
           { $skip: 10 * page },
           { $limit: 10 },
           // 篩選

@@ -13,7 +13,6 @@ import ReactFlow, {
   getIncomers,
   getOutgoers,
   getConnectedEdges,
-<<<<<<< HEAD
 } from "reactflow";
 import CustomNode from "../../Components/Flow/Node";
 import ToolBar from "../../Components/Flow/ToolBar";
@@ -32,24 +31,6 @@ import FlowWebSocket from "../../hooks/flowConnection";
 import { useNavigate } from "react-router-dom";
 import { usePageTab } from "../../hooks/usePageTab";
 import Node from "../Node/Node";
-=======
-} from 'reactflow';
-import CustomNode from '../../Components/Flow/Node';
-import ToolBar from '../../Components/Flow/ToolBar';
-import StyleBar from '../../Components/Flow/StyleBar';
-import Drawer from '@mui/material/Drawer';
-import { Editor } from '../../Components/Editor/Editor';
-import PageTab from '../../Components/PageTab/PageTab';
-import { useFlowStorage } from '../../storage/Storage';
-import { Navigate, useLocation } from 'react-router-dom';
-import { QuillProvider } from '../../API/useQuill';
-import instance from '../../API/api';
-import { useApp } from '../../hooks/useApp';
-import './Flow.scss';
-import 'reactflow/dist/style.css';
-import FlowWebSocket from '../../hooks/flowConnection';
-import { useNavigate } from 'react-router-dom';
->>>>>>> yoho
 
 const nodeTypes = {
   CustomNode,
@@ -75,7 +56,7 @@ function downloadImage(dataUrl) {
   a.click();
 }
 
-function Flow({ flowId }) {
+function Flow() {
   const rfInstance = useReactFlow();
   const xPos = useRef(50);
   const yPos = useRef(0);
@@ -90,18 +71,12 @@ function Flow({ flowId }) {
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [flowWebSocket, setFlowWebSocket] = useState(null);
-<<<<<<< HEAD
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
   const searchParams = new URLSearchParams(location.search);
   const flowId = searchParams.get("id");
 
   const { addTab } = usePageTab();
-=======
-  const saveFlow = useFlowStorage((state) => state.saveFlow);
-
-  const [editorId, setEditorId] = useState(null);
->>>>>>> yoho
 
   const navigateTo = useNavigate();
 
@@ -113,11 +88,7 @@ function Flow({ flowId }) {
   useEffect(() => {
     const flowConnection = new FlowWebSocket(flowId, (data) => {
       if (data.error) {
-<<<<<<< HEAD
         navigateTo("/error");
-=======
-        navigateTo('/error');
->>>>>>> yoho
       } else rerender(data);
     });
     setFlowWebSocket(flowConnection);
@@ -186,10 +157,6 @@ function Flow({ flowId }) {
     instance
       .post("/nodes/new-node")
       .then((res) => {
-<<<<<<< HEAD
-        console.log("res:", res.data);
-=======
->>>>>>> yoho
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
@@ -210,47 +177,17 @@ function Flow({ flowId }) {
     setIsStyleBarOpen(true);
   };
 
-<<<<<<< HEAD
   const onSave = (title) => {
     flowWebSocket.editFlowTitle(title);
     setBack(true);
   };
-=======
-  const onSave = useCallback(
-    (title) => {
-      if (rfInstance) {
-        const flow = rfInstance.toObject();
-        setBack(true);
-        saveFlow({
-          id: flowId,
-          flow: flow,
-          title: title,
-        });
-        //connect to backend
-      }
-    },
-    [rfInstance],
-  );
->>>>>>> yoho
 
   const [restart, setRestart] = useState(false);
 
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
-<<<<<<< HEAD
 
     console.log(node);
-=======
-    // if (isEdit && node.editorId !== editorId) {
-    //   setEditorId(node.editorId);
-    //   setIsEdit(false);
-    //   setRestart(true);
-    // } else {
-    //   setEditorId(node.editorId);
-    //   setIsEdit(true);
-    // }
-
->>>>>>> yoho
     setEditorId(node.editorId);
     setIsEdit(true);
     addTab({
@@ -307,56 +244,18 @@ function Flow({ flowId }) {
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle);
             }}
-<<<<<<< HEAD
             flowWebSocket={flowWebSocket}
+            flowId={flowId}
           />
           {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
           <MiniMap nodeStrokeWidth={10} zoomable pannable />
           <Controls />
           <Background color="#ccc" variant={bgVariant} />
         </ReactFlow>
-=======
-            flowId={flowId}
-          />
-          <ReactFlow
-            className="NodePanel"
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={(param) => {
-              onNodesChange(param);
-              flowWebSocket.editComponent(param, 'node');
-            }}
-            onEdgesChange={(param) => {
-              onEdgesChange(param);
-              flowWebSocket.editComponent(param, 'edge');
-            }}
-            onEdgeUpdate={(param) => {
-              onEdgeUpdate(param);
-            }}
-            onConnect={(param) => {
-              onConnect(param);
-              flowWebSocket.addComponent(
-                { ...param, id: edgeId.current.toString() },
-                'edge',
-              );
-            }}
-            // onInit={setRfInstance}
-            onNodeDoubleClick={onNodeDoubleClick}
-            nodeTypes={nodeTypes}
-            // edgeTypes={edgeTypes}
-          >
-            {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
-            <MiniMap nodeStrokeWidth={10} zoomable pannable />
-            <Controls />
-            <Background color="#ccc" variant={bgVariant} />
-          </ReactFlow>
-        </>
->>>>>>> yoho
       ) : (
         <Navigate to="/home" />
       )}
       {isEdit && (
-<<<<<<< HEAD
         // <div className="EditorContainer">
         <Resizable
           className="box"
@@ -376,30 +275,6 @@ function Flow({ flowId }) {
           </div>
         </Resizable>
         // </div>
-=======
-        <div className="EditorContainer">
-          <Drawer
-            sx={{
-              width: '50%',
-              flexShrink: 0,
-              '& .MuiDrawer-paper': {
-                width: '50%',
-              },
-            }}
-            variant="persistent"
-            anchor="right"
-            open={isEdit}
-          >
-            <QuillProvider>
-              <Editor
-                nodes={nodes}
-                editorId={editorId}
-                handleDrawerClose={() => setIsEdit(false)}
-              />
-            </QuillProvider>
-          </Drawer>
-        </div>
->>>>>>> yoho
       )}
     </div>
   );
@@ -412,11 +287,7 @@ function FlowWithProvider(...props) {
 
   return (
     <div className="Flow-container">
-<<<<<<< HEAD
       <PageTab />
-=======
-      <PageTab flowId={flowId} />
->>>>>>> yoho
       <ReactFlowProvider>
         <Flow flowId={flowId} />
       </ReactFlowProvider>

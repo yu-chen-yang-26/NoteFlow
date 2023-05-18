@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -15,33 +14,15 @@ import { useFlowStorage } from "../../storage/Storage";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
 import instance from "../../API/api";
-=======
-import { Button } from '@mui/material';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { BsFillPersonFill } from 'react-icons/bs';
-import { MdLanguage } from 'react-icons/md';
-import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { RiLockPasswordLine } from 'react-icons/ri';
-import { AiOutlineMail } from 'react-icons/ai';
-import { BiLogOut } from 'react-icons/bi';
-import { useFlowStorage } from '../../storage/Storage';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../hooks/useApp';
-import instance from '../../API/api';
-import ResetModal from './ResetModal';
->>>>>>> yoho
+import ResetModal from "./ResetModal"
+import { useState } from "react";
 
 const Settings = () => {
   const { user, logout, isMobile } = useApp();
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
-<<<<<<< HEAD
+  const [show, setShow] = useState(false);
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     backgroundColor: "#0e1111",
@@ -50,23 +31,6 @@ const Settings = () => {
     variant: "outlined",
     ":hover": {
       backgroundColor: "lightgrey",
-=======
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleModal = () => {
-    setShow(true);
-  };
-
-  const SettingsButton = styled(Button)(({ theme }) => ({
-    cursor: 'pointer',
-    backgroundColor: '#0e1111',
-    color: 'white',
-    width: '25vmin',
-    variant: 'outlined',
-    ':hover': {
-      backgroundColor: 'lightgrey',
->>>>>>> yoho
     },
   }));
 
@@ -79,13 +43,8 @@ const Settings = () => {
     }
   };
   return (
-<<<<<<< HEAD
     <Grid container columns={12} sx={{ height: "100%" }}>
       <Grid item xs={12} md={6}>
-=======
-    <Grid container columns={12} sx={{ height: '100%' }}>
-      <Grid item xs={7}>
->>>>>>> yoho
         <Stack
           direction="row"
           justifyContent="center"
@@ -94,7 +53,6 @@ const Settings = () => {
         >
           <div
             style={{
-<<<<<<< HEAD
               // width: "350px",
               // height: "350px",
               width: "60%",
@@ -102,13 +60,6 @@ const Settings = () => {
               borderRadius: "50%",
               border: "2px solid black",
               overflow: "hidden",
-=======
-              width: '350px',
-              height: '350px',
-              borderRadius: '50%',
-              border: '2px solid black',
-              overflow: 'hidden',
->>>>>>> yoho
             }}
           >
             <BsFillPersonFill
@@ -151,7 +102,7 @@ const Settings = () => {
               size={25}
               style={{ marginRight: '15px' }}
             ></RiLockPasswordLine>
-            <SettingsButton onClick={handleModal}>
+            <SettingsButton onClick={() => setShow(true)}>
               {t('Reset Password')}
             </SettingsButton>
           </Stack>
@@ -162,7 +113,6 @@ const Settings = () => {
             </SettingsButton>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
-<<<<<<< HEAD
             <BiLogOut size={25} style={{ marginRight: "15px" }}></BiLogOut>
             <SettingsButton
               onClick={() => {
@@ -170,29 +120,16 @@ const Settings = () => {
                 instance.post("/user/logout").then((res) => {
                   if (res.status !== 200) {
                     alert("Internal server error!");
-=======
-            <BiLogOut size={25} style={{ marginRight: '15px' }}></BiLogOut>
-            <SettingsButton
-              onClick={() => {
-                if (!user) return;
-                instance.post('/user/logout').then((res) => {
-                  if (res.status !== 200) {
-                    alert('Internal server error!');
->>>>>>> yoho
                   }
                   logout();
                 });
               }}
             >
-<<<<<<< HEAD
               {t("Log out")}
-=======
-              {t('Log out')}
->>>>>>> yoho
             </SettingsButton>
           </Stack>
         </Stack>
-        <ResetModal show={show} setShow={setShow} handleClose={handleClose} />
+        <ResetModal show={show} setShow={setShow} handleClose={() => setShow(false)} />
       </Grid>
     </Grid>
   );

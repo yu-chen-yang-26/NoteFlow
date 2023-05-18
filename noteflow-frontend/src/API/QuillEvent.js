@@ -5,7 +5,25 @@ class QuillEvent {
     this.ON = false;
     this.quill = null;
     this.editor = null;
+
+    this.hooks = {};
   }
+
+  presenceHook = async (id, range, callback) => {
+    // server
+    switch (range.type) {
+      case 'disable':
+        delete this.colors[range.email];
+        this.cursors.removeCursor(range.email);
+        return; // ...
+      case 'change-title':
+        this.hooks.setTitle(range.title);
+        this.hooks.setNewTitle(range.title);
+        return;
+      default:
+        return callback();
+    }
+  };
   TextChange = (delta, oldDelta, source) => {
     if (source !== "user") return; // ?
     this.editor.submitOp(delta);
@@ -28,10 +46,14 @@ class QuillEvent {
   // presence
   // local presence
   Receive = (id, range) => {
-    this.colors[id] = this.colors[id] || tinycolor.random().toHexString();
-    const name = (range && range.name) || "Anonymous";
-    this.cursors.createCursor(id, name, colors[id]);
-    this.cursors.moveCursor(id, range);
+    if(id === this.user.email) return;
+    this.presenceHook(id, range, () => {
+      this.colors[id] = this.colors[id] || tinycolor.random().toHexString();
+      const name = (range && range.name) || "Anonymous";
+      this.cursors.createCursor(id, name, colors[id]);
+      this.cursors.moveCursor(id, range);
+    })
+
   };
 
   on = (quill, editor, presence, user) => {
@@ -59,7 +81,8 @@ class QuillEvent {
     this.ON = false;
   };
 
-  offon = (quill, editor, presence, user) => {
+  offon = (quill, editor, presence, user, hooks) => {
+    this.hooks = hooks;
     if (this.ON) {
       this.off();
     }
