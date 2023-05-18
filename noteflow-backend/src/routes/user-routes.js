@@ -26,21 +26,26 @@ router
   .post('/user/google-login', user.googleLogin)
   .get('/user/who-am-i', user.whoAmI)
   .post('/user/update', logined, user.updateUserInfo)
+  .post('/user/set-photo', logined, user.setUserPhoto)
+  .get('/user/get-photo-url', user.getUserPhoto)
   .post('/user/reset-password-send-email', user.forgotPassword)
   .post('/user/reset-password-auth', user.forgotPasswordAuth)
   .post('/user/reset-password-renew', user.forgotPasswordRenew)
   .get('/flows', logined, flow.getFlows)
   .post('/flows/create', logined, flow.createFlow)
+  .post('/flows/delete-flow', logined, authorized, flow.deleteFlow)
   .get('/flows/get-colab-list', logined, authorized, flow.getColabList)
   .post('/flows/revise-colab-list', logined, authorized, flow.reviseColabList)
+  .get('/flows/get-title', logined, flow.getFlowTitle)
+  .get('/flows/set-tile', logined, authorized, flow.setFlowTitle)
   .get('/library', logined, flow.getLibrary)
   // .put('/library/add-node, service.addNodeToLibrary)
   // .put('/library/remove-node, service.removeNodeFromLibrary')
   .post('/nodes/new-node', logined, flow.newNode)
   .get('/nodes/get-colab-list', logined, authorized, flow.getColabList)
   .post('/nodes/revise-colab-list', logined, authorized, flow.reviseColabList)
-  .get('/nodes/get-title', logined, flow.getTitle)
-  .post('/nodes/set-title', logined, authorized, flow.setTitle);
+  .get('/nodes/get-title', logined, flow.getNodeTitle)
+  .post('/nodes/set-title', logined, authorized, flow.setNodeTitle);
 // .get('/nodes/access-node, service.accessNode) // 是否可以進入這個 node 修改 // 變成 middleware 做在 ws 裡面
 // .put('/nodes/add-colab, service.addColab)
 // .put('/nodes/remove-colab, service.removeColab);
