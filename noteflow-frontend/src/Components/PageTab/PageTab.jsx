@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
 import { styled, createTheme } from "@mui/material/styles";
-import { grey } from "@mui/material/colors";
+// import { grey } from "@mui/material/colors";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import { Toolbar, Typography } from "@mui/material";
@@ -14,30 +14,47 @@ import instance from "../../API/api";
 import { useApp } from "../../hooks/useApp";
 import { usePageTab } from "../../hooks/usePageTab";
 import { FaPen, FaBook, FaCalendarAlt } from "react-icons/fa";
+import "./PageTab.scss";
 
 export default function PageTab() {
   const { tabList, addTab, closeTab, toTab, activeTab } = usePageTab();
+  const [isHovered, setIsHovered] = useState(false);
   const { user } = useApp();
   const navigate = useNavigate();
+
   const TabButton = styled(Button)(({ theme }) => ({
-    backgroundColor: grey[700],
-    border: "0px",
-    borderColor: grey[700],
+    // backgroundColor: grey[700],
+    // border: "0px",
+    border: "1px solid white",
+    // borderColor: grey[700],
+    // borderRight: "0",
+    paddingRight: "20%",
     "&:hover": {
-      backgroundColor: grey[600],
-      border: "0px",
+      // backgroundColor: grey[600],
+      backgroundColor: "white",
+      // border: "0px",
+      "& > icon": {
+        color: "black",
+      },
+      "& > p": {
+        color: "black",
+      },
     },
-    width: 120,
+    width: 130,
     height: 35,
   }));
 
   const CloseButton = styled(Button)(({ theme }) => ({
-    color: theme.palette.getContrastText(grey[100]),
-    backgroundColor: grey[700],
-    border: "0px",
+    // color: theme.palette.getContrastText(grey[100]),
+    // backgroundColor: grey[700],
+    // border: "0px",
+    border: "1px solid white",
+    borderLeft: "0",
     "&:hover": {
-      backgroundColor: grey[600],
-      border: "0px",
+      // backgroundColor: grey[600],
+      backgroundColor: "white",
+      // color: "black",
+      // border: "0px",
     },
     width: 40,
     height: 35,
@@ -67,6 +84,7 @@ export default function PageTab() {
           paddingBottom: 0,
           height: "7%",
           maxHeight: "30px",
+          overflowX: "scroll",
         }}
         className="toolbar"
         direction="row"
@@ -89,6 +107,7 @@ export default function PageTab() {
             return (
               <ButtonGroup color="primary" variant="outlined" key={i}>
                 <TabButton
+                  className="singleTab"
                   onClick={() => {
                     toTab(tab.tabId);
                   }}
@@ -99,6 +118,7 @@ export default function PageTab() {
                 >
                   <Typography
                     color={tab.tabId == activeTab ? "black" : "white"}
+                    style={{ overflow: "hidden" }}
                   >
                     {tabTitle}
                   </Typography>
@@ -107,9 +127,10 @@ export default function PageTab() {
                     style={{
                       position: "absolute",
                       top: "20%",
-                      right: "3px",
+                      right: "8%",
                       padding: 0,
                       margin: 0,
+                      color: tab.tabId === activeTab ? "black" : "",
                     }}
                   >
                     {tab.type == "node" ? <FaBook /> : <FaPen />}
@@ -117,13 +138,15 @@ export default function PageTab() {
                 </TabButton>
                 <CloseButton
                   size="small"
-                  style={{
-                    backgroundColor: tab.tabId == activeTab && "#ffffff",
-                  }}
+                  // style={{
+                  // backgroundColor: tab.tabId == activeTab && "#ffffff",
+                  // }}
+                  className="crossTab"
                   onClick={() => closeTab(tab.tabId)}
                 >
                   <RxCross2
-                    color={tab.tabId == activeTab ? "black" : "white"}
+                    // color={tab.tabId == activeTab ? "black" : "white"}
+                    className="cross"
                     size={15}
                   />
                 </CloseButton>
