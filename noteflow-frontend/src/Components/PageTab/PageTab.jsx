@@ -60,16 +60,16 @@ export default function PageTab() {
     height: 35,
   }));
   const backToHome = () => {
-    navigate("/home");
+    navigate('/home');
   };
 
   const addNewFlow = () => {
     instance
-      .post("flows/create", { user })
+      .post('flows/create', { user })
       .then(async (res) => {
         if (res.status === 200) {
           navigate(`/flow?id=${res.data}`);
-          addTab({ type: "flow", objectId: res.data, name: "undefined" }); // name 應該在 flows/create 拿
+          addTab({ type: 'flow', objectId: res.data, name: 'undefined' }); // name 應該在 flows/create 拿
         }
       })
       .catch((e) => console.log(e));
@@ -80,7 +80,7 @@ export default function PageTab() {
       {/* {changeTab && <Navigate to="/flow" state={{ flowNow }}/>} */}
       <Toolbar
         sx={{
-          backgroundColor: "black",
+          backgroundColor: 'black',
           paddingBottom: 0,
           height: "7%",
           maxHeight: "30px",
@@ -93,7 +93,7 @@ export default function PageTab() {
         <IconButton
           size="medium"
           onClick={backToHome}
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: '10px' }}
         >
           <FaHome color="white" size={20} />
         </IconButton>
@@ -101,7 +101,7 @@ export default function PageTab() {
           {tabList.map((tab, i) => {
             let tabTitle = tab.name;
             if (tabTitle?.length > 15) {
-              tabTitle = tabTitle.substring(0, 14) + "...";
+              tabTitle = tabTitle.substring(0, 14) + '...';
             }
 
             return (
@@ -112,8 +112,8 @@ export default function PageTab() {
                     toTab(tab.tabId);
                   }}
                   style={{
-                    backgroundColor: tab.tabId == activeTab && "#ffffff",
-                    position: "relative",
+                    backgroundColor: tab.tabId == activeTab && '#ffffff',
+                    position: 'relative',
                   }}
                 >
                   <Typography
@@ -133,7 +133,7 @@ export default function PageTab() {
                       color: tab.tabId === activeTab ? "black" : "",
                     }}
                   >
-                    {tab.type == "node" ? <FaBook /> : <FaPen />}
+                    {tab.type == 'node' ? <FaBook /> : <FaPen />}
                   </div>
                 </TabButton>
                 <CloseButton
