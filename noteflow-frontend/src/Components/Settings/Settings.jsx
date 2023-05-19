@@ -69,7 +69,11 @@ const Settings = () => {
     const formData = new FormData();
     formData.append('image', file);
     console.log(formData);
-    await instance.post('/user/set-photo', formData);
+    await instance.post('/user/set-photo', formData).then((res) => {
+      if (res.status === 200) {
+        setPhotoUrl(`/api/${res.data}`);
+      }
+    });
   };
 
   return (
