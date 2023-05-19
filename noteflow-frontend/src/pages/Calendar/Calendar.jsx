@@ -89,7 +89,7 @@ const Calendar = () => {
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
       {/* <Grid item xs={6}> */}
-      <Grid item xs={12} md={3}>
+      <Grid item xs={12} md={4}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           {isMobile ? (
             <MobileDatePicker
@@ -113,10 +113,10 @@ const Calendar = () => {
       <Grid
         item
         xs={12}
-        md={2}
+        md={3}
         sx={{
           //手機不顯示 border
-          borderLeft: isMobile ? 'none' : '1px solid grey',
+          borderLeft: isMobile ? 'none' : '1px solid black',
           paddingTop: '1vmin',
           display: 'flex',
           flexDirection: 'column',
@@ -146,16 +146,15 @@ const Calendar = () => {
       <Grid
         item
         xs={12}
-        md={7}
+        md={5}
         sx={{
           //手機不顯示 border
           borderLeft: isMobile ? 'none' : 'none',
+
+          height: `calc(100% - 10px)`,
           display:
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
         }}
-        // style={{
-
-        // }}
       >
         <Editor
           editorId={editorId}
@@ -164,6 +163,7 @@ const Calendar = () => {
           }}
           QuillRef={QuillRef}
           colab={colab}
+          // sx={{ height: '100%' }}
         />
       </Grid>
     </Grid>
