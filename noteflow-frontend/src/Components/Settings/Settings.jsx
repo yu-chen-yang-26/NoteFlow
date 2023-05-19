@@ -77,7 +77,7 @@ const Settings = () => {
   };
 
   return (
-    <Grid container columns={12} sx={{ height: '100%' }}>
+    <Grid container columns={12} sx={{ height: isMobile ? "80vh" : "100%" }}>
       <Grid item xs={12} md={6}>
         <Stack
           direction="row"

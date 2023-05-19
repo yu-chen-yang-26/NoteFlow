@@ -124,12 +124,11 @@ const Library = () => {
         xs={12}
         sx={{
           // borderRight: "1px solid lightgrey",
-          height: mobileEditorDisplay ? '' : '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'top',
-          display: mobileEditorDisplay ? 'none' : 'flex',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "top",
+          display: mobileEditorDisplay ? "none" : "flex",
+          alignItems: "center",
         }}
       >
         <Search>
