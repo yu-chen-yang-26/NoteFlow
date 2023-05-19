@@ -3,6 +3,7 @@ import crc32 from 'crc-32';
 import instance from '../API/api';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const UserContext = createContext({
   user: {},
