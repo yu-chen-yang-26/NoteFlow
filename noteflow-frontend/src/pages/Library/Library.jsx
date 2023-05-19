@@ -19,6 +19,10 @@ const Library = () => {
   const [nodes, setNodes] = useState([]);
   const { OpenEditor, QuillRef } = useQuill();
   const [editorId, setEditorId] = useState(null);
+
+  //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
+  const [mobileEditorDisplay, setMobileEditorDisplay] = useState(false);
+
   const NodeButton = styled(Button)(({ theme, selected }) => ({
     color: theme.palette.getContrastText(grey[100]),
     fontSize: "12px",
@@ -117,12 +121,14 @@ const Library = () => {
       <Grid
         item
         md={2}
+        xs={12}
         sx={{
           // borderRight: "1px solid lightgrey",
-          height: "100%",
+          height: mobileEditorDisplay ? "" : "100vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "top",
+          display: mobileEditorDisplay ? "none" : "flex",
           alignItems: "center",
         }}
       >
@@ -138,7 +144,12 @@ const Library = () => {
         {nodes.map((node) => (
           <NodeButton
             className="node-button"
-            onClick={() => toNode(node.id)}
+            onClick={() => {
+              toNode(node.id);
+              if (isMobile === true) {
+                setMobileEditorDisplay(true);
+              }
+            }}
             key={node.id}
             selected={node.id === editorId}
           >
@@ -146,10 +157,19 @@ const Library = () => {
           </NodeButton>
         ))}
       </Grid>{" "}
-      <Grid item md={10}>
+      <Grid
+        item
+        md={10}
+        style={{
+          display:
+            !isMobile || (isMobile && mobileEditorDisplay) ? "flex" : "none",
+        }}
+      >
         <Editor
           editorId={editorId}
-          handleDrawerClose={() => {}}
+          handleDrawerClose={() => {
+            setMobileEditorDisplay(false);
+          }}
           QuillRef={QuillRef}
           colab={colab}
         />

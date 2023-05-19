@@ -9,9 +9,12 @@ import { useState } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { getRandomPicture } from "../../hooks/useApp";
+import { useApp } from "../../hooks/useApp";
 
 window.katex = katex;
 const Editor = ({ handleDrawerClose, QuillRef, colab }) => {
+  const { isMobile } = useApp();
+
   const [state, setState] = useState({
     title: "",
     value: "",
@@ -29,7 +32,7 @@ const Editor = ({ handleDrawerClose, QuillRef, colab }) => {
   };
 
   return (
-    <div className="editor">
+    <div className={`${isMobile ? "editor-mobile" : "editor"}`}>
       <div className="header">
         <IconButton
           size="large"
