@@ -9,6 +9,7 @@ import { useApp } from '../../hooks/useApp';
 import { useTranslation } from 'react-i18next';
 import { usePageTab } from '../../hooks/usePageTab';
 import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import BackToTopButton from '../BackToTopButton/BackToTopButton';
 import './FlowGrid.scss';
 
 export default function FlowGrid({ containerRef }) {

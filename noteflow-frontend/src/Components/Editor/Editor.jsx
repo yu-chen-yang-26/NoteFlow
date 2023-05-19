@@ -21,6 +21,7 @@ const Editor = ({ handleDrawerClose, QuillRef, colab, editorId }) => {
     value: '',
   });
   const [showSettings, setShowSettings] = useState(false);
+  const { isMobile } = useApp();
 
   useEffect(() => {
     setState({
