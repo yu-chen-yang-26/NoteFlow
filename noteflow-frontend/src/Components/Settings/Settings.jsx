@@ -27,6 +27,7 @@ const Settings = () => {
   const setLang = useFlowStorage((state) => state.setLang);
   const [show, setShow] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
+
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: 'pointer',
     backgroundColor: '#0e1111',
@@ -41,13 +42,7 @@ const Settings = () => {
   useEffect(() => {
     const imgInput = document.getElementById('avatar');
     imgInput.addEventListener('change', uploadPhoto);
-    instance.get('/user/get-photo-url').then((res) => {
-      if (res.status == 200) {
-        const url = res.data;
-        console.log(url);
-        setPhotoUrl(`/api/${url}`);
-      }
-    });
+    setPhotoUrl(user.picture);
     return () => {
       imgInput.removeEventListener('change', uploadPhoto);
     };

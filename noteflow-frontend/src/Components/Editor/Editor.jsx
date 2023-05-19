@@ -15,7 +15,13 @@ import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
 
 window.katex = katex;
-const Editor = ({ handleDrawerClose, QuillRef, colab, editorId }) => {
+const Editor = ({
+  handleDrawerClose,
+  QuillRef,
+  colab,
+  colabPicture,
+  editorId,
+}) => {
   const [state, setState] = useState({
     title: '',
     value: '',
@@ -67,7 +73,6 @@ const Editor = ({ handleDrawerClose, QuillRef, colab, editorId }) => {
           placeholder="Untitled..."
           value={newTitle}
           onChange={(e) => {
-            console.log('e', e.target.value);
             setNewTitle(e.target.value);
           }}
           onKeyDown={(e) => {
@@ -97,7 +102,7 @@ const Editor = ({ handleDrawerClose, QuillRef, colab, editorId }) => {
           {colab.map((element, index) => {
             return (
               <div className="user" key={index}>
-                <img src={getRandomPicture(element)} alt="" />
+                <img src={colabPicture[element]} alt="" />
               </div>
             );
           })}

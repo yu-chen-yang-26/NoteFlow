@@ -1,7 +1,7 @@
 import sharedb from 'sharedb/lib/client';
 import * as json1 from 'ot-json1';
 import ReconnectingWebsocket from 'reconnecting-websocket';
-import { BASE_URL } from '../API/api';
+import instance, { BASE_URL } from '../API/api';
 import { type } from 'rich-text';
 import { getRandomPicture } from './useApp';
 import { allocateColor } from '../API/Colab';
@@ -110,7 +110,7 @@ class FlowWebSocket {
     }
   }
 
-  static createInstance(email, className) {
+  static async createInstance(email, className) {
     let divElement = document.createElement('div');
     divElement.className = className;
     divElement.id = `${className}-${email}`;
@@ -118,7 +118,19 @@ class FlowWebSocket {
 
     const imgElement = document.createElement('img');
     imgElement.className = `${className}-img`;
-    imgElement.src = getRandomPicture(deconvert(email));
+
+    try {
+      const res = await instance.get(
+        `/user/get-photo-url?email=${deconvert(email)}`,
+      );
+      if (res.data) {
+        imgElement.src = `/api/${res.data}`;
+      } else {
+        imgElement.src = getRandomPicture(deconvert(email));
+      }
+    } catch (e) {
+      imgElement.src = getRandomPicture(deconvert(email));
+    }
     divElement.appendChild(imgElement);
 
     return divElement;

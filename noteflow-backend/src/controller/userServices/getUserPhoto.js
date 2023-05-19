@@ -1,7 +1,10 @@
 import db from '../../lib/db.js';
 
 const getUserPhoto = async (ctx) => {
-  const { email } = ctx.session;
+  let { email } = ctx.query;
+  if (!email) {
+    email = ctx.session.email;
+  }
 
   const result = await db('users').first().where({ email });
 

@@ -31,17 +31,17 @@ class Library {
     // 不需要 try：有問題 controller 層會 catch
 
     const database = mongoClient.db('noteflow');
-    const collection = database.collection('library');
+    const collection = database.collection('nodeRepository');
 
     // 先拿到 { userId: ..., nodes: ...}
     const result = await collection.findOne(query, options);
 
-    const nodeRepo = new NodeRepo(user);
-    await nodeRepo.fetchNodes();
+    // const nodeRepo = new NodeRepo(user);
+    // await nodeRepo.fetchNodes();
 
-    this.nodes = new Array(result.nodes.length);
+    // this.nodes = new Array(result.nodes.length);
     result.nodes.forEach((element) => {
-      this.nodes.push(nodeRepo.nodes[element.ref]);
+      this.nodes.push(element);
     });
   }
 }

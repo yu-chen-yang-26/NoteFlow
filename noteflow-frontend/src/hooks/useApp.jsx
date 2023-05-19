@@ -42,7 +42,10 @@ const UserProvider = (props) => {
         if (!user.picture) {
           user.picture = getRandomPicture(user.name);
         }
-        setUser(user);
+        setUser({
+          ...user,
+          picture: `/api/${user.picture}`,
+        });
       })
       .catch((e) => {
         navigate('/');

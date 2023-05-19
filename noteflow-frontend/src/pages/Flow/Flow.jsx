@@ -90,14 +90,18 @@ function Flow() {
   };
 
   const trackerCallback = useCallback(
-    (tracker) => {
+    async (tracker) => {
       // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
       // 創一個 child element
       Object.keys(tracker).forEach((email, index) => {
         let instance = document.querySelector(`#sub-flow-${email}`);
         if (!instance) {
-          instance = FlowWebSocket.createInstance(email, 'sub-flow');
-          subRef.current.appendChild(instance);
+          FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
+            const ins = document.querySelector(`#sub-flow-${email}`);
+            if (!ins) {
+              subRef.current.appendChild(instance);
+            }
+          });
         } else {
           // 有沒有在閒置
           if (tracker[email].lastUpdate - Date.now() >= 60000) {
