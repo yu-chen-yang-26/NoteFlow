@@ -163,6 +163,7 @@ const Library = () => {
         item
         md={10}
         style={{
+          height: '100%',
           display:
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
         }}
