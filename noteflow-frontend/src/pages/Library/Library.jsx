@@ -129,6 +129,7 @@ const Library = () => {
           flexDirection: "column",
           justifyContent: "top",
           display: mobileEditorDisplay ? "none" : "flex",
+          alignItems: "center",
         }}
       >
         <Search>
