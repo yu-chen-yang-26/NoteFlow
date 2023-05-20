@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -6,10 +6,34 @@ import Box from '@mui/material/Box';
 import { SHA256 } from 'crypto-js';
 import instance from '../../API/api';
 import './ResetPage.scss';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function ResetPage() {
-  const [count, setCount] = useState(0);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get('token');
+  const email = searchParams.get('email');
+
+  if (!email || !token) {
+    console.log('qq');
+    navigate('/');
+  }
+
+  useEffect(() => {
+    // 想辦法先阻斷 useApp() 的 navigation->送請求過去
+    instance
+      .post('/user/reset-password-auth', { token, email })
+      .then((res) => {
+        if (res.status !== 200) {
+          alert('The token has broken. Please resend email to us again.');
+          navigate('/');
+        }
+      })
+      .catch((e) => {
+        alert('Request Timeout. Please resend email to us again.');
+        navigate('/');
+      });
+  }, []);
 
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
@@ -21,14 +45,17 @@ function ResetPage() {
     if (password !== checkPassword) return;
     const passwordHashed = SHA256(password).toString();
     const request = {
-      password: passwordHashed,
+      newPassword: passwordHashed,
     };
-    instance.post('/user/reset-password-renew', { request }).then((res) => {
-      if (res.status === 200) navigate('/');
+    instance.post('/user/reset-password-renew', request).then((res) => {
+      if (res.status === 200) {
+        alert('Success! You can log in with your new password!');
+        navigate('/');
+      }
     });
   };
 
-  return (
+  return email && token ? (
     <div className="login">
       <div className="login-container">
         <div className="logo">
@@ -113,6 +140,8 @@ function ResetPage() {
         </div>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }
 

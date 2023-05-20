@@ -53,6 +53,7 @@ router
   .get('/flows/get-title', logined, flow.getFlowTitle)
   .get('/flows/set-tile', logined, authorized, flow.setFlowTitle)
   .get('/library', logined, node.getLibrary)
+  .get('/library/is-favorite', logined, node.isFavorite)
   .post('/library/add-node', logined, node.addNodeToLibrary)
   .post('/library/remove-node', logined, node.removeNodeFromLibrary)
   .post('/nodes/new-node', logined, flow.newNode)

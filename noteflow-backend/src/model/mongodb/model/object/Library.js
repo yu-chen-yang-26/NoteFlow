@@ -46,6 +46,19 @@ class Library {
     return nodes;
   }
 
+  static async isFavorite(user, nodeId) {
+    const mongoClient = getMongoClient();
+    // 不需要 try：有問題 controller 層會 catch
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    // 先拿到 { userId: ..., nodes: ...}
+    const result = await collection.findOne({ user, 'nodes.id': nodeId });
+
+    return !!result;
+  }
+
   static async addNode(id, email) {
     const mongoClient = getMongoClient();
 

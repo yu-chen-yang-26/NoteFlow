@@ -52,6 +52,11 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       setTitle(res.data);
       setNewTitle(res.data);
     });
+    instance.get(`/library/is-favorite?id=${editorId}`).then((res) => {
+      if (res.status === 200) {
+        setFavorite(res.data);
+      }
+    });
 
     const connection = new Colab(editorId, user, (members) => {
       setColab(members);

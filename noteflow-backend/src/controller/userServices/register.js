@@ -4,12 +4,8 @@ import _ from 'lodash';
 import argon2 from 'argon2';
 import crypto from 'crypto-js';
 import db from '../../lib/db.js';
-import sendEmail from '../../lib/email.js';
-import HTML_TEMPLATE from '../../lib/mail-template.js';
 import { createUserBucket } from '../../model/mongodb/model/index.js';
 import CODE from '../../lib/httpStatus.js';
-
-const { EMAIL_USER, EMAIL_HOST } = process.env;
 
 const register = async (ctx) => {
   const { user } = ctx.request.body; // if none, assign user with {}
@@ -47,16 +43,16 @@ const register = async (ctx) => {
         userId = rows[0].id;
       });
 
-    const message = `${EMAIL_HOST}/api/user/verify?id=${userId}&token=${token}`;
-    // await sendEmail(user.email, 'Verify Email', verifyMessage);
+    // const message = `${EMAIL_HOST}/api/user/verify?id=${userId}&token=${token}`;
+    // // await sendEmail(user.email, 'Verify Email', verifyMessage);
 
-    sendEmail({
-      subject: '【noteflow】 Verify Email',
-      text: message,
-      to: user.email,
-      from: EMAIL_USER,
-      html: HTML_TEMPLATE(message),
-    });
+    // sendEmail({
+    //   subject: '【noteflow】 Verify Email',
+    //   text: message,
+    //   to: user.email,
+    //   from: EMAIL_USER,
+    //   html: HTML_TEMPLATE(message),
+    // });
 
     ctx.session = {
       logined: true,
