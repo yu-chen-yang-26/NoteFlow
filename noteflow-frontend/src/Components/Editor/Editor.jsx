@@ -100,11 +100,19 @@ const Editor = ({
         <span className="focus-border"></span>
         <div className="users">
           {colab.map((element, index) => {
-            return (
-              <div className="user" key={index}>
-                <img src={colabPicture[element]} alt="" />
-              </div>
-            );
+            if (colabPicture && element in colabPicture) {
+              return (
+                <div className="user" key={index}>
+                  <img src={colabPicture[element]} alt="" />
+                </div>
+              );
+            } else {
+              return (
+                <div className="user" key={index}>
+                  <img src={getRandomPicture(element)} alt="" />
+                </div>
+              );
+            }
           })}
         </div>
       </div>

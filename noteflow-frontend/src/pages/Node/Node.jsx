@@ -16,8 +16,10 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
   const { OpenEditor, QuillRef, newTitle, setNewTitle, setTitle } = useQuill();
   const [colab, setColab] = useState([]);
   const [colabPicture, setColabPicture] = useState({});
+
   const { user } = useApp();
   const navigateTo = useNavigate();
+
   const handleDrawerClose = () => {
     if (!nodeId) navigateTo('/home');
     else setIsEdit(false);
@@ -31,6 +33,7 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
       setTitle(res.data);
       setNewTitle(res.data);
     });
+
     const connection = new Colab(editorId, user.email, (members) => {
       setColab(members);
       members.map((email) => {
@@ -57,6 +60,8 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
       connection.close();
     };
   }, [editorId]);
+
+  console.log('nodewidth:', nodeWidth);
 
   return (
     <div
