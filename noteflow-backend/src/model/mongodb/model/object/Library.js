@@ -25,8 +25,7 @@ class Library {
     await collection.insertOne(result);
   }
 
-  async fetchNodes(query = { user: this.user }, options = {}) {
-    const { user } = query;
+  static async fetchNodes(user) {
     const mongoClient = getMongoClient();
     // 不需要 try：有問題 controller 層會 catch
 
@@ -34,18 +33,17 @@ class Library {
     const collection = database.collection('library');
 
     // 先拿到 { userId: ..., nodes: ...}
-    const result = await collection.findOne(query, options);
+    const result = await collection.findOne({ user });
 
-    const nodeRepo = new NodeRepo(user);
-    await nodeRepo.fetchNodes();
+    if (!result) {
+      await Library.genLibraryProfile(user);
+      return [];
+    }
 
-    console.log(nodeRepo.nodes);
-    console.log(result);
+    const nodesFromLib = result.nodes.map((data) => data.id);
+    const nodes = await NodeRepo.fetchNodes(user, nodesFromLib);
 
-    this.nodes = new Array(result.nodes.length);
-    result.nodes.forEach((element, index) => {
-      this.nodes.push(element);
-    });
+    return nodes;
   }
 
   static async addNode(id, email) {
@@ -59,7 +57,7 @@ class Library {
         user: email,
       },
       {
-        $addToSet: { nodes: { id } },
+        $addToSet: { nodes: { id, addTime: Date.now() } },
       },
     );
   }
