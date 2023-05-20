@@ -66,17 +66,6 @@ const Calendar = () => {
         console.log(e);
       });
   }, []);
-  useEffect(() => {
-    if (!editorId) return;
-    OpenEditor(editorId);
-    const connection = new Colab(editorId, user.email, (members) => {
-      setColab(members);
-    });
-    return () => {
-      console.log('CLOSING colab connection');
-      connection.close();
-    };
-  }, [editorId]);
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
       {/* <Grid item xs={6}> */}
