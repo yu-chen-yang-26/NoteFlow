@@ -46,7 +46,6 @@ const forgotPassword = async (ctx) => {
 const forgotPasswordAuth = async (ctx) => {
   const { token, email } = ctx.request.body;
   const value = await redisClient.get(`reset-password-${token}`);
-  console.log(value, await redisClient.keys('reset-password-*'));
 
   ctx.assert(value, CODE.timeout, 'Request timeout.');
 

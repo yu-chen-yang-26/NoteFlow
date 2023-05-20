@@ -119,14 +119,6 @@ function ResetPage() {
                 }}
               >
                 <Button
-                  variant="contained"
-                  sx={{ mt: 2, mb: 2, width: '45%' }}
-                  style={{ backgroundColor: 'white', color: 'black' }}
-                  // onClick={() => navigateTo("/")}
-                >
-                  {'Cancel'}
-                </Button>
-                <Button
                   type="submit"
                   variant="contained"
                   sx={{ mt: 2, mb: 2, width: '45%' }}

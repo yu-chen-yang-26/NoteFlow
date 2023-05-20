@@ -11,13 +11,11 @@ const upload = multer();
 const router = new Router();
 router
   .get('hello-world', async (ctx) => {
-    // console.log(ctx.session);
     ctx.session.hello = 'hi';
     await ctx.session.save();
 
     ctx.body = 'hello world!';
     ctx.status = 200;
-    // console.log(ctx);
   })
   .get('/reset-redis', async (ctx) => {
     await redisClient.flushall();

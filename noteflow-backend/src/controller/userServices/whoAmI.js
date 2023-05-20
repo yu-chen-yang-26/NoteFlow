@@ -9,12 +9,6 @@ const whoAmI = async (ctx) => {
     result = await db('users').first().where({ email: ctx.session.email });
   }
 
-  console.log({
-    email,
-    logined: !!logined,
-    name,
-    picture: result ? result.picture : null,
-  });
   ctx.body = JSON.stringify({
     email,
     logined: !!logined,

@@ -24,9 +24,7 @@ const UserProvider = (props) => {
   const [user, setUser] = useState(null);
   const [lang, setLang] = useState('zh');
   const { i18n } = useTranslation();
-  // const
 
-  // console.log(user);
   const [rerender, setRerender] = useState(false);
 
   const navigate = useNavigate();
@@ -37,20 +35,17 @@ const UserProvider = (props) => {
   };
   const location = useLocation();
 
-  console.log(location);
   useEffect(() => {
     instance
       .get('/user/who-am-i')
       .then((res) => {
         const user = res.data;
-        console.log('user', user);
+
         if (!user.logined && location.pathname !== '/resetPassword') {
-          console.log('遣返');
           navigate('/');
         }
 
         if (!user.picture) {
-          console.log(user);
           user.picture = getRandomPicture(user.email);
         }
         setUser({
@@ -59,8 +54,6 @@ const UserProvider = (props) => {
         });
       })
       .catch((e) => {
-        console.log('back');
-        console.log(e);
         navigate('/');
       });
   }, [rerender]);

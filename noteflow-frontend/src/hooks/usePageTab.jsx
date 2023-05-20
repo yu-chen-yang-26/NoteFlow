@@ -17,8 +17,6 @@ const PageTabProvider = (props) => {
     if (tabListCache !== null) setTabList(tabListCache);
   }, []);
 
-  console.log('tablist', tabList, activeTab);
-
   const navigateTo = useNavigate();
 
   const addTab = (payload) => {
