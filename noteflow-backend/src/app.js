@@ -79,13 +79,27 @@ app.use(async (ctx) => {
 });
 
 const router = new WsRouter()
-  .no_session('/registerNodeColab', (ws) => {
+  .session('/node/registerNodeColab', (ws) => {
     ws.on('message', async (message) => {
       try {
         const query = JSON.parse(message.toString('utf-8'));
-        await redisClient.set(`${query.nodeId}-${query.email}`, 1, 'EX', 3);
+        await redisClient.set(
+          `${query.nodeId}-${query.email}`,
+          query.picture,
+          'EX',
+          3,
+        );
         const keys = await redisClient.keys(`${query.nodeId}-*`);
-        ws.send(JSON.stringify(keys));
+        const value = await redisClient.mget(keys);
+
+        ws.send(
+          JSON.stringify(
+            keys.map((entry, index) => ({
+              entry,
+              picture: value[index],
+            })),
+          ),
+        );
       } catch (e) {
         ws.close(1001);
       }

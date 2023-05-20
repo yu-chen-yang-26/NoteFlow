@@ -7,24 +7,26 @@ import db from '../../lib/db.js';
 import sendEmail from '../../lib/email.js';
 import HTML_TEMPLATE from '../../lib/mail-template.js';
 import { createUserBucket } from '../../model/mongodb/model/index.js';
+import CODE from '../../lib/httpStatus.js';
 
 const { EMAIL_USER, EMAIL_HOST } = process.env;
 
 const register = async (ctx) => {
   const { user } = ctx.request.body; // if none, assign user with {}
 
-  ctx.assert(user, 400, "Bad request. You didn't provide user column.");
-
-  const filled = user.email && user.name && user.password;
   ctx.assert(
-    filled,
-    400,
+    user && user.email && user.name && user.password,
+    CODE.insufficient,
     "Bad request. You didn't provide sufficient information.",
   );
 
   // create User
   const result = await db('users').first().where({ email: user.email });
-  ctx.assert(result, 401, 'Forbidden, you already have an email.');
+  ctx.assert(
+    result,
+    CODE.unauthorized,
+    'Forbidden, you already have an email.',
+  );
 
   let userId = null;
   const randomString = Math.random().toString(15);
@@ -65,11 +67,11 @@ const register = async (ctx) => {
     await ctx.session.save();
 
     await createUserBucket(user.email);
-  } catch (err) {
-    ctx.throw(500, JSON.stringify(err));
-  }
 
-  ctx.status = 200;
+    ctx.status = CODE.success;
+  } catch (err) {
+    ctx.throw(CODE.internal_error, JSON.stringify(err));
+  }
 };
 
 export default register;

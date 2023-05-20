@@ -4,6 +4,7 @@ import db from '../../lib/db.js';
 import sendEmail from '../../lib/email.js';
 import HTML_TEMPLATE from '../../lib/mail-template.js';
 import redisClient from '../../model/redis/redisClient.js';
+import CODE from '../../lib/httpStatus.js';
 
 const { EMAIL_USER, EMAIL_HOST } = process.env;
 
@@ -11,12 +12,12 @@ const forgotPassword = async (ctx) => {
   const { email } = ctx.request.body;
 
   if (!email) {
-    ctx.throw(400, 'You did not provide sufficient data.');
+    ctx.throw(CODE.insufficient, 'You did not provide sufficient data.');
   }
 
   const result = await db('users').first().where({ email });
   if (!result) {
-    ctx.throw(401, 'This email does not exist.');
+    ctx.throw(CODE.not_found, 'This email does not exist.');
   }
 
   const randomString = Math.random().toString(15);
@@ -34,10 +35,10 @@ const forgotPassword = async (ctx) => {
 
     await redisClient.set(`reset-password-${token}`, 1, 'EX', 86400);
 
-    ctx.status = 200;
+    ctx.status = CODE.success;
     // ctx.body = return html 回去
   } catch (e) {
-    ctx.throw(500, 'Internal server error');
+    ctx.throw(CODE.internal_error, 'Internal server error');
   }
 };
 
@@ -45,7 +46,7 @@ const forgotPasswordAuth = async (ctx) => {
   const { token, email } = ctx.query;
   const value = await redisClient.get(`reset-password-${token}`);
 
-  ctx.assert(value, 408, 'Request timeout.');
+  ctx.assert(value, CODE.timeout, 'Request timeout.');
 
   ctx.session = {
     resetPassword: true,
@@ -54,7 +55,7 @@ const forgotPasswordAuth = async (ctx) => {
 
   await ctx.session.save();
 
-  ctx.status = 200;
+  ctx.status = CODE.success;
 };
 
 const forgotPasswordRenew = async (ctx) => {
@@ -66,14 +67,14 @@ const forgotPasswordRenew = async (ctx) => {
 
     const validate = await argon2.verify(result.password, oldPassword);
 
-    ctx.assert(validate, 401, 'Old password is invalid.');
+    ctx.assert(validate, CODE.unauthorized, 'Old password is invalid.');
 
     const password = await argon2.hash(newPassword);
     await db('users').update({ password }).where({ email });
   } else {
     const { email, resetPassword } = ctx.session;
 
-    ctx.assert(resetPassword, 408, 'Request timeout.');
+    ctx.assert(resetPassword, CODE.timeout, 'Request timeout.');
 
     // TODO
   }

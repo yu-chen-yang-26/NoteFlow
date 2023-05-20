@@ -1,34 +1,31 @@
-import React, { useEffect, useRef } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
 import EditorToolbar, { modules, formats } from './EditorToolbar';
 import 'react-quill/dist/quill.snow.css';
 import './Editor.scss';
 import { IoIosArrowBack } from 'react-icons/io';
 import { BsShare } from 'react-icons/bs';
-import { useState } from 'react';
+import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { getRandomPicture, useApp } from '../../hooks/useApp';
+import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material';
 import instance from '../../API/api';
 import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
+import { Colab } from '../../API/Colab';
 
 window.katex = katex;
-const Editor = ({
-  handleDrawerClose,
-  QuillRef,
-  colab,
-  colabPicture,
-  editorId,
-}) => {
+const Editor = ({ handleDrawerClose, editorId }) => {
   const [state, setState] = useState({
     title: '',
     value: '',
   });
   const [showSettings, setShowSettings] = useState(false);
-  const { isMobile } = useApp();
+  const { user, isMobile } = useApp();
+  const [favorite, setFavorite] = useState(false);
 
+  // 1-Title and content Display
   useEffect(() => {
     setState({
       title: '',
@@ -36,7 +33,33 @@ const Editor = ({
     });
   }, []);
 
-  const { newTitle, sendNewTitle, setNewTitle } = useQuill();
+  // 2-quill logic & avatar showing logic.
+  const {
+    OpenEditor,
+    newTitle,
+    QuillRef,
+    setTitle,
+    setNewTitle,
+    sendNewTitle,
+  } = useQuill();
+  const [colab, setColab] = useState([]);
+
+  useEffect(() => {
+    if (!editorId) return;
+
+    OpenEditor(editorId);
+    instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
+      setTitle(res.data);
+      setNewTitle(res.data);
+    });
+
+    const connection = new Colab(editorId, user, (members) => {
+      setColab(members);
+    });
+    return () => {
+      connection.close();
+    };
+  }, [editorId]);
 
   useEffect(() => {
     // quill-editor, editor-settings
@@ -97,22 +120,29 @@ const Editor = ({
         >
           <BsShare size={18} />
         </Button>
+        <Button
+          variant="dark"
+          size="small"
+          onClick={() => {
+            const fav = favorite;
+            setFavorite((state) => !state);
+            instance.post(!fav ? '/library/add-node' : 'library/remove-node', {
+              id: editorId,
+            });
+          }}
+          className="toolBarButton"
+        >
+          {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
+        </Button>
         <span className="focus-border"></span>
         <div className="users">
+          {/* 右上角可愛的大頭貼 */}
           {colab.map((element, index) => {
-            if (colabPicture && element in colabPicture) {
-              return (
-                <div className="user" key={index}>
-                  <img src={colabPicture[element]} alt="" />
-                </div>
-              );
-            } else {
-              return (
-                <div className="user" key={index}>
-                  <img src={getRandomPicture(element)} alt="" />
-                </div>
-              );
-            }
+            return (
+              <div className="user" key={index}>
+                <img src={element.picture} alt="" />
+              </div>
+            );
           })}
         </div>
       </div>

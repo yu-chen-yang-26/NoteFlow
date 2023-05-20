@@ -3,6 +3,7 @@ import _ from 'lodash';
 import argon2 from 'argon2';
 import db from '../../lib/db.js';
 import { userSchema } from '../../model/postgres/schemas/index.js';
+import CODE from '../../lib/httpStatus.js';
 
 const updateUserInfo = async (ctx) => {
   const { body } = ctx.request;
@@ -31,11 +32,9 @@ const updateUserInfo = async (ctx) => {
     await ctx.session.save();
 
     ctx.body = { user: _.omit(user, ['password']) };
-    ctx.status = 200;
+    ctx.status = CODE.timeout;
   } catch (err) {
-    ctx.throw(400, err.message);
-    ctx.status = err.status || 500;
-    ctx.body = JSON.parse({ errors: err.message });
+    ctx.throw(CODE.internal_error, err.message);
   }
 };
 
