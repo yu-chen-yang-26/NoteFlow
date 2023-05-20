@@ -60,21 +60,16 @@ const Calendar = () => {
       .get('/library')
       .then((res) => {
         setNodes([...nodes, ...res.data]);
-        console.log(res.data);
         setEditorId([...nodes, ...res.data][0].id);
-        console.log(res.data);
-        console.log('ok!');
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
   useEffect(() => {
-    console.log(!editorId);
     if (!editorId) return;
     OpenEditor(editorId);
     const connection = new Colab(editorId, user.email, (members) => {
-      console.log(members);
       setColab(members);
     });
     return () => {
