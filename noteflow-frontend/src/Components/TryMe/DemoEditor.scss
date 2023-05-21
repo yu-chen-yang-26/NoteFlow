@@ -35,6 +35,7 @@
 
       &:focus + .focus-border {
         width: 20vw;
+        min-width: 50px;
         transition: 0.4s;
       }
     }

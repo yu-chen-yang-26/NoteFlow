@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactQuill, { Quill } from 'react-quill';
+import Delta from 'quill-delta';
 import EditorToolbar, { modules, formats } from '../Editor/EditorToolbar';
 import 'react-quill/dist/quill.snow.css';
 import './DemoEditor.scss';
@@ -11,8 +12,13 @@ import 'katex/dist/katex.min.css';
 import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material';
 import instance from '../../API/api';
-import EditorSettings from '../Editor/EditorSettings';
-import { useQuill } from '../../API/useQuill';
+import Typing from './Typing';
+
+const opening = `Hello, this is a text editor, \n\nJust like every other editor, you can write down anything amazing! \n\nBut we also provide you with some cool features.\n\nTry some of them in the toolbar!
+`;
+const example_1 = `For example, you can add a link of Youtube video in the editor: \n\n`;
+const example_2 = `Or you can add math notation in Latex, below is the recursive function of the Fibonacci sequence: \n\n`;
+const closing = `There are still a lot of features you can discover!\n\nDon't hesitate to try!`;
 
 window.katex = katex;
 const DemoEditor = ({ handleDrawerClose, editorId }) => {
@@ -22,18 +28,60 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
   });
   const { isMobile } = useApp();
   const [favorite, setFavorite] = useState(false);
-
-  // 1-Title and content Display
-  useEffect(() => {
-    setState({
-      title: '',
-      value: '',
-    });
-  }, []);
-
-  // 2-quill logic & avatar showing logic.
-  const { newTitle, QuillRef, setNewTitle, sendNewTitle } = useQuill();
+  const [newTitle, setNewTitle] = useState('');
   const [colab, setColab] = useState([]);
+  const [text, setText] = useState('');
+  const [editor, setEditor] = useState(null);
+  const QuillRef = useRef(null);
+
+  let TypingEffect;
+
+  useEffect(() => {
+    if (!QuillRef) return;
+    setEditor(QuillRef.current.getEditor());
+
+    if (!editor) return;
+
+    TypingEffect = new Typing(40);
+    TypingEffect.type(opening, setText);
+
+    const t1 = setTimeout(() => {
+      TypingEffect.type(example_1, setText);
+      setTimeout(() => {
+        editor.insertEmbed(
+          editor.getLength(),
+          'video',
+          'https://www.youtube.com/watch?v=IK5tS1O9y94',
+        );
+        setTimeout(() => {
+          TypingEffect.type(example_2, setText);
+          setTimeout(() => {
+            editor.formatText(example_2.indexOf('Latex'), 5, 'bold', true);
+            editor.insertEmbed(editor.getLength(), 'formula', 'F_{0}=0');
+            editor.insertEmbed(editor.getLength(), 'formula', 'F_{1}=1');
+            editor.insertEmbed(
+              editor.getLength(),
+              'formula',
+              'F_{n}=F_{n-1}+F_{n-2}',
+            );
+            setTimeout(() => {
+              TypingEffect.type(closing, setText);
+            }, 4000);
+          }, 40 * example_2.length + 1000);
+        }, 3000);
+      }, 40 * example_1.length + 500);
+    }, 40 * opening.length + 500);
+
+    return () => {
+      TypingEffect.close();
+      clearTimeout(t1);
+    };
+  }, [QuillRef, editor]);
+
+  useEffect(() => {
+    if (!editor || editor.hasFocus()) return;
+    editor.setContents([{ insert: text }]);
+  }, [editor, text]);
 
   return (
     <div className={`${isMobile ? 'demo-editor-mobile' : 'demo-editor'}`}>
