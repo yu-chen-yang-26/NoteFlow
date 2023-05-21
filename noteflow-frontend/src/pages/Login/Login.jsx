@@ -111,7 +111,28 @@ const Login = () => {
             classNames="fade"
             timeout={500}
           >
-            <TryMe />
+            {showLogo ? (
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={showTryMe ? 'tryme' : 'h1'}
+                  classNames="fade"
+                  timeout={500}
+                >
+                  {showTryMe ? <TryMe /> : <h1>Try Me</h1>}
+                </CSSTransition>
+              </SwitchTransition>
+            ) : (
+              <div>
+                <img
+                  loading="lazy"
+                  src="assets/logo.png"
+                  alt=""
+                  width="190"
+                  height="190"
+                />
+                <h1>NoteFlow</h1>
+              </div>
+            )}
           </CSSTransition>
         </SwitchTransition>
       </div>
