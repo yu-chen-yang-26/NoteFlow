@@ -44,7 +44,7 @@ const UserProvider = (props) => {
         if (!user.logined && location.pathname !== '/resetPassword') {
           navigate('/');
         }
-
+        console.log(user);
         if (!user.picture) {
           user.picture = getRandomPicture(user.email);
         }

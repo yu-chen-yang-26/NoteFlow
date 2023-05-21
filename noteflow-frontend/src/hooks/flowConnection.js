@@ -16,6 +16,7 @@ class FlowWebSocket {
     this.lastUpdated = Date.now();
     this.email = email;
     this.mounted = {};
+    this.mounted_list = {};
     this.mouseTracker = {};
     this.self = {
       xPort: 0,
@@ -59,14 +60,17 @@ class FlowWebSocket {
     if (!background) return;
     if (email in this.mouseTracker) {
       // let divElement = document.createElement('div');
-      let divElement = document.querySelector(`#mouse-dot-${email}`);
-      if (!divElement) {
+      let divElement;
+      if (!(email in this.mounted_list)) {
+        this.mounted_list[email] = true;
         divElement = await FlowWebSocket.createInstance(email, 'mouse-dot');
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
 
       const other = this.mouseTracker[email];
+
+      if (!divElement || !other) return;
 
       const { xPort, yPort, left, top, width, height, zoom, x, y } = this.self;
 
