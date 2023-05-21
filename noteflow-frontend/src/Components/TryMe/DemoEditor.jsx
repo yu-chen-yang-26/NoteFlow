@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
-import EditorToolbar, { modules, formats } from './EditorToolbar';
+import EditorToolbar, { modules, formats } from '../Editor/EditorToolbar';
 import 'react-quill/dist/quill.snow.css';
-import './Editor.scss';
+import './DemoEditor.scss';
 import { IoIosArrowBack } from 'react-icons/io';
 import { BsShare } from 'react-icons/bs';
 import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
@@ -11,18 +11,16 @@ import 'katex/dist/katex.min.css';
 import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material';
 import instance from '../../API/api';
-import EditorSettings from './EditorSettings';
+import EditorSettings from '../Editor/EditorSettings';
 import { useQuill } from '../../API/useQuill';
-import { Colab } from '../../API/Colab';
 
 window.katex = katex;
-const Editor = ({ handleDrawerClose, editorId }) => {
+const DemoEditor = ({ handleDrawerClose, editorId }) => {
   const [state, setState] = useState({
     title: '',
     value: '',
   });
-  const [showSettings, setShowSettings] = useState(false);
-  const { user, isMobile } = useApp();
+  const { isMobile } = useApp();
   const [favorite, setFavorite] = useState(false);
 
   // 1-Title and content Display
@@ -34,58 +32,11 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   }, []);
 
   // 2-quill logic & avatar showing logic.
-  const {
-    OpenEditor,
-    newTitle,
-    QuillRef,
-    setTitle,
-    setNewTitle,
-    sendNewTitle,
-  } = useQuill();
+  const { newTitle, QuillRef, setNewTitle, sendNewTitle } = useQuill();
   const [colab, setColab] = useState([]);
 
-  useEffect(() => {
-    if (!editorId) return;
-
-    OpenEditor(editorId);
-    instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
-      setTitle(res.data);
-      setNewTitle(res.data);
-    });
-    instance.get(`/library/is-favorite?id=${editorId}`).then((res) => {
-      if (res.status === 200) {
-        setFavorite(res.data);
-      }
-    });
-
-    const connection = new Colab(editorId, user, (members) => {
-      setColab(members);
-    });
-    return () => {
-      connection.close();
-    };
-  }, [editorId]);
-
-  useEffect(() => {
-    // quill-editor, editor-settings
-    const toolbar = document.querySelector('#toolbar');
-    const editor = document.querySelector('#quill-editor');
-
-    if (showSettings) {
-      toolbar.style.pointerEvents = 'none';
-      toolbar.style.opacity = '0.5';
-
-      editor.style.display = 'none';
-    } else {
-      toolbar.style.pointerEvents = 'auto';
-      toolbar.style.opacity = '1';
-
-      editor.style.display = '';
-    }
-  }, [showSettings]);
-
   return (
-    <div className={`${isMobile ? 'editor-mobile' : 'editor'}`}>
+    <div className={`${isMobile ? 'demo-editor-mobile' : 'demo-editor'}`}>
       <div className="header">
         <IconButton
           size="large"
@@ -103,27 +54,9 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           onChange={(e) => {
             setNewTitle(e.target.value);
           }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              sendNewTitle(newTitle);
-              instance
-                .post('/nodes/set-title', {
-                  id: editorId,
-                  title: newTitle,
-                })
-                .then((res) => {
-                  console.log(res.status);
-                });
-            }
-          }}
         />
         <span className="focus-border"></span>
-        <Button
-          variant="dark"
-          onClick={() => setShowSettings((state) => !state)}
-          className="toolBarButton"
-        >
+        <Button variant="dark" className="toolBarButton">
           <BsShare size={18} />
         </Button>
         <Button
@@ -154,7 +87,6 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       </div>
       <div className="text-editor">
         <EditorToolbar />
-        {showSettings ? <EditorSettings editorId={editorId} /> : <></>}
         <ReactQuill
           theme="snow"
           value={state}
@@ -171,4 +103,4 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   );
 };
 
-export { Editor };
+export default DemoEditor;

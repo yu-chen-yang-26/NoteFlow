@@ -1,9 +1,13 @@
-.editor {
+.demo-editor {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 45vw;
+  background-color: white;
+  height: 90%;
+  border-radius: 15px;
   .header {
     height: 80px;
+    width: 100%;
     padding: 0;
     display: flex;
     align-items: center;
@@ -74,37 +78,53 @@
       }
     }
   }
+
+  #toolbar {
+    height: 15%;
+    overflow-y: scroll;
+  }
   .text-editor {
-    height: calc(100vh - 80px);
-    position: relative;
+    height: calc(100% - 80px);
+    width: 100%;
 
     .editor-input {
-      height: calc(100% - 80px);
-      position: relative;
+      height: 85%;
+      color: black;
+
+      .ql-container {
+        border-radius: 0 0 15px 15px;
+      }
     }
   }
 }
 
-.editor-mobile {
+.demo-editor-mobile {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 90vw;
+  height: 40vh;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 15px;
+
   .header {
-    height: 80px;
+    height: 7vh;
     padding: 0;
     display: flex;
     align-items: center;
     position: relative;
+    width: 100%;
 
     .title-input {
       margin-left: 10px;
       margin-bottom: 0;
-      font-size: 30px;
+      font-size: 3vw;
       font-weight: 700;
       border: none;
       background: transparent;
       color: #1e1e1e;
-      width: 50vw;
+      width: 50%;
 
       &:focus {
         outline: none;
@@ -112,13 +132,13 @@
       }
 
       &:focus + .focus-border {
-        width: 35vw;
+        width: 20%;
         transition: 0.4s;
       }
     }
     .focus-border {
       position: absolute;
-      bottom: 15px;
+      bottom: 1vh;
       left: 50px;
       width: 0px;
       height: 2px;
@@ -156,11 +176,22 @@
       }
     }
   }
+
+  #toolbar {
+    height: 30%;
+    overflow-y: scroll;
+  }
   .text-editor {
-    height: 70vh;
+    height: calc(100% - 7vh);
+    width: 100%;
 
     .editor-input {
-      height: calc(100% - 80px);
+      height: 70%;
+      color: black;
+
+      .ql-container {
+        border-radius: 0 0 15px 15px;
+      }
     }
   }
 }

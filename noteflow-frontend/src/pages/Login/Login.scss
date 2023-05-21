@@ -139,8 +139,8 @@
     text-align: center;
     color: white;
     margin: 0;
-    gap: 5vw;
-    padding-top: 5%;
+    gap: 1vh;
+    // padding-top: 5%;
 
     .tryme-div {
       width: 100%;
@@ -153,10 +153,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
 
     h2 {
       margin-bottom: 0%;
+    }
+
+    .infoContainer {
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vh;
+      justify-content: center;
+      border: red soild 2px;
     }
     .horizontalLine {
       width: 55%;
@@ -166,12 +176,17 @@
 
       line-height: 0.1%;
       margin: 0;
-      margin-top: 1vw;
+      margin-top: 2vh;
 
       span {
         background: #fff;
+
         padding: 10px 10px;
       }
+    }
+
+    #signInDiv {
+      margin-top: 2vh;
     }
   }
 }

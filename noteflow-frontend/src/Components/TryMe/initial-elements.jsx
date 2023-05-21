@@ -5,14 +5,14 @@ export const nodes = [
     id: '1',
     type: 'input',
     data: {
-      label: 'Input Node',
+      label: 'Note 1',
     },
     position: { x: 250, y: 0 },
   },
   {
     id: '2',
     data: {
-      label: 'Default Node',
+      label: 'Note 2',
     },
     position: { x: 100, y: 100 },
   },
@@ -20,7 +20,7 @@ export const nodes = [
     id: '3',
     type: 'output',
     data: {
-      label: 'Output Node',
+      label: 'Note 3',
     },
     position: { x: 400, y: 100 },
   },
