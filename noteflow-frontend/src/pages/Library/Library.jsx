@@ -7,17 +7,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { useTranslation } from 'react-i18next';
 import { Editor } from '../../Components/Editor/Editor';
-import { useQuill } from '../../API/useQuill';
 import { useApp } from '../../hooks/useApp';
-import { Colab } from '../../API/Colab';
 import { useState, useEffect } from 'react';
 import instance from '../../API/api';
 
 const Library = () => {
   const { t } = useTranslation();
-  const { user, isMobile } = useApp();
+  const { isMobile } = useApp();
   const [nodes, setNodes] = useState([]);
-  const { OpenEditor, QuillRef } = useQuill();
   const [editorId, setEditorId] = useState(null);
 
   //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
@@ -87,35 +84,23 @@ const Library = () => {
       },
     },
   }));
+
   const toNode = (id) => {
     setEditorId(id);
   };
-  const [colab, setColab] = useState([]);
+
   useEffect(() => {
     instance
       .get('/library')
       .then((res) => {
         setNodes([...nodes, ...res.data]);
         setEditorId([...nodes, ...res.data][0].id);
-        console.log(res.data);
-        console.log('ok!');
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
-  useEffect(() => {
-    if (!editorId) return;
-    OpenEditor(editorId);
-    const connection = new Colab(editorId, user.email, (members) => {
-      console.log(members);
-      setColab(members);
-    });
-    return () => {
-      console.log('CLOSING colab connection');
-      connection.close();
-    };
-  }, [editorId]);
+
   return (
     <Grid container columns={12} sx={{ height: '100%' }}>
       <Grid
@@ -173,8 +158,6 @@ const Library = () => {
           handleDrawerClose={() => {
             setMobileEditorDisplay(false);
           }}
-          QuillRef={QuillRef}
-          colab={colab}
         />
       </Grid>
     </Grid>

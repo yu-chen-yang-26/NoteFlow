@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import Router from 'koa-router';
 import multer from '@koa/multer';
-import { user, flow } from '../controller/index.js';
+import { user, flow, node } from '../controller/index.js';
 import logined from '../middleware/logined-middleware.js';
 import authorized from '../middleware/flow-auth-middleware.js';
 import redisClient from '../model/redis/redisClient.js';
@@ -11,13 +11,11 @@ const upload = multer();
 const router = new Router();
 router
   .get('hello-world', async (ctx) => {
-    // console.log(ctx.session);
     ctx.session.hello = 'hi';
     await ctx.session.save();
 
     ctx.body = 'hello world!';
     ctx.status = 200;
-    // console.log(ctx);
   })
   .get('/reset-redis', async (ctx) => {
     await redisClient.flushall();
@@ -52,9 +50,10 @@ router
   .post('/flows/revise-colab-list', logined, authorized, flow.reviseColabList)
   .get('/flows/get-title', logined, flow.getFlowTitle)
   .get('/flows/set-tile', logined, authorized, flow.setFlowTitle)
-  .get('/library', logined, flow.getLibrary)
-  // .put('/library/add-node, service.addNodeToLibrary)
-  // .put('/library/remove-node, service.removeNodeFromLibrary')
+  .get('/library', logined, node.getLibrary)
+  .get('/library/is-favorite', logined, node.isFavorite)
+  .post('/library/add-node', logined, node.addNodeToLibrary)
+  .post('/library/remove-node', logined, node.removeNodeFromLibrary)
   .post('/nodes/new-node', logined, flow.newNode)
   .get('/nodes/get-colab-list', logined, authorized, flow.getColabList)
   .post('/nodes/revise-colab-list', logined, authorized, flow.reviseColabList)

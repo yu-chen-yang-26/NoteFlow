@@ -23,25 +23,15 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showLogo, setShowLogo] = useState(false);
   const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
+  const [alarms, setAlarms] = useState('');
+  const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user, isMobile } = useApp();
 
   useEffect(() => {
-    if (user) navigateTo('/home');
+    if (user && user.logined) navigateTo('/home');
   }, [user]);
-  useEffect(() => {
-    instance
-      .get('/user/who-am-i')
-      .then((res) => {
-        if (res.status == 200) {
-          refetchFromLocalStorage();
-          navigateTo('/home');
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []); // user 是 google 回傳的 object, 可以拿去 render profile 頁面
+
   const handleCallbackResponse = (res) => {
     const userObject = jwt_decode(res.credential);
     instance
@@ -69,18 +59,16 @@ const Login = () => {
     instance
       .post('/user/login', request)
       .then((res) => {
-        console.log('ok!');
         refetchFromLocalStorage();
         navigateTo('/home');
       })
       .catch((e) => {
-        console.log(e);
-        console.log('Login error');
+        if (e.response.status === 401) {
+          setAlarms('*Account or password error');
+        } else if (Math.floor(e.response.status / 100) === 5) {
+          setAlarms('*Internal server error');
+        }
       });
-
-    // navigateTo("/home");
-
-    //
   };
 
   useEffect(() => {
@@ -116,11 +104,11 @@ const Login = () => {
   }, []);
 
   return (
-    <div className={`${isMobile ? 'login-mobile' : 'login'}`}>
-      <div className={`${isMobile ? 'logo-mobile' : 'logo'}`}>
+    <div className={`${isMobile ? 'login' : 'login'}`}>
+      <div className={`${isMobile ? 'logo' : 'logo'}`}>
         <SwitchTransition mode="out-in">
           <CSSTransition
-            key={showLogo ? 'logo' : 'tryme'}
+            key={tryme ? 'tryme' : 'logo'}
             classNames="fade"
             timeout={500}
           >
@@ -150,7 +138,7 @@ const Login = () => {
         </SwitchTransition>
       </div>
 
-      <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
+      <div className="info">
         <h2>Login</h2>
         <div className="infoContainer">
           <Box
@@ -187,7 +175,17 @@ const Login = () => {
                 setPassword(e.target.value);
               }}
             />
-
+            <div
+              style={{
+                color: 'red',
+                height: '18px',
+                // border: '1px solid black',
+                textAlign: 'left',
+                padding: '0 5px 0 5px',
+              }}
+            >
+              {alarms}
+            </div>
             <Button
               type="submit"
               fullWidth
@@ -196,7 +194,7 @@ const Login = () => {
               style={{
                 backgroundColor: '#0e1111',
                 color: 'white',
-                paddingTop: '2%',
+                paddingTop: '1%',
                 textTransform: 'none',
               }}
             >
@@ -238,23 +236,4 @@ const Login = () => {
   );
 };
 
-// const Welcome = ({ mode }) => {
-//   return (
-//     <div className="login">
-//       <div className="login-container">
-//         <div className="logo">
-//           <img src="/src/assets/logo.png" alt="" width="190" height="190" />
-//           <h1>NoteFlow</h1>
-//         </div>
-//         {mode === "0" ? (
-//           <Login />
-//         ) : mode === "1" ? (
-//           <Register />
-//         ) : (
-//           <ForgotPassword />
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
 export { Login };

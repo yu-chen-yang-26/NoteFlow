@@ -65,27 +65,11 @@ const Calendar = () => {
       .then((res) => {
         setNodes([...nodes, ...res.data]);
         setEditorId([...nodes, ...res.data][0].id);
-        console.log(res.data);
-        console.log('ok!');
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
-
-  useEffect(() => {
-    console.log(!editorId);
-    if (!editorId) return;
-    OpenEditor(editorId);
-    const connection = new Colab(editorId, user.email, (members) => {
-      // console.log(members);
-      setColab(members);
-    });
-    return () => {
-      console.log('CLOSING colab connection');
-      connection.close();
-    };
-  }, [editorId]);
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
       {/* <Grid item xs={6}> */}

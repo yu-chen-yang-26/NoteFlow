@@ -10,7 +10,6 @@ class WsRouter {
   session(path, callback) {
     const exec = async (ws, req) => {
       const sess = await getSession(req.headers.cookie);
-      // console.log('1', req.url);
       if (!sess) {
         ws.close(1001);
         return;

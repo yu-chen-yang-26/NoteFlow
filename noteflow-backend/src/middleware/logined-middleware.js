@@ -1,7 +1,7 @@
-const logined = (ctx, next) => {
-  if (!ctx.session.email) {
-    ctx.throw(401, "Unauthorized. You haven't log in yet.");
-  }
+import whoAmI from '../controller/userServices/whoAmI.js';
+
+const logined = async (ctx, next) => {
+  await whoAmI(ctx);
   return next();
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { v4 as uuidv4 } from 'uuid';
 import { getMongoClient } from '../../mongoClient.js';
 import Node from './Node.js';
@@ -27,17 +28,29 @@ class NodeRepo {
     await collection.insertOne(result);
   }
 
-  async fetchNodes(query = { user: this.user }, options = {}) {
+  static async fetchNodes(user, nodeIds) {
     const mongoClient = getMongoClient();
     // 不需要 try：有問題 controller 層會 catch
 
     const database = mongoClient.db('noteflow');
     const collection = database.collection('nodeRepository');
 
-    const cursor = collection.find(query, options);
-    const documents = await cursor.toArray();
+    const result = await collection.findOne(
+      {
+        user,
+      },
+      nodeIds
+        ? {
+            projection: {
+              nodes: {
+                $elemMatch: { id: { $in: nodeIds } },
+              },
+            },
+          }
+        : {},
+    );
 
-    this.nodes = documents.nodes;
+    return result.nodes;
   }
 
   async newNode() {
@@ -79,6 +92,7 @@ class NodeRepo {
       const database = mongoClient.db('noteflow');
       const collection = database.collection('nodeRepository');
       // eslint-disable-next-line no-await-in-loop
+
       const result = await collection.findOne({
         user: this.user,
         nodes: { $elemMatch: { nodeId: newUuid } },

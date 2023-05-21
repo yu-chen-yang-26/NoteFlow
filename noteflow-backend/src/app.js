@@ -19,6 +19,7 @@ import redisClient, { newRedisClient } from './model/redis/redisClient.js';
 import routes from './routes/index.js';
 import redisSession from './model/redis/redisSession.js';
 import WsRouter from './routes/ws-router.js';
+import { getMongoClient } from './model/mongodb/mongoClient.js';
 
 const app = new Koa();
 
@@ -79,13 +80,27 @@ app.use(async (ctx) => {
 });
 
 const router = new WsRouter()
-  .no_session('/registerNodeColab', (ws) => {
+  .session('/node/registerNodeColab', (ws) => {
     ws.on('message', async (message) => {
       try {
         const query = JSON.parse(message.toString('utf-8'));
-        await redisClient.set(`${query.nodeId}-${query.email}`, 1, 'EX', 3);
+        await redisClient.set(
+          `${query.nodeId}-${query.email}`,
+          query.picture,
+          'EX',
+          3,
+        );
         const keys = await redisClient.keys(`${query.nodeId}-*`);
-        ws.send(JSON.stringify(keys));
+        const value = await redisClient.mget(keys);
+
+        ws.send(
+          JSON.stringify(
+            keys.map((entry, index) => ({
+              entry,
+              picture: value[index],
+            })),
+          ),
+        );
       } catch (e) {
         ws.close(1001);
       }
@@ -123,10 +138,59 @@ const router = new WsRouter()
     });
   })
   .session('/flow', (ws) => {
+    ws.on('message', (message) => {
+      const query = JSON.parse(message.toString('utf-8'));
+      const { a, d } = query;
+      if (a === 'op') {
+        if (ws.prev) clearTimeout(ws.prev);
+        // eslint-disable-next-line no-param-reassign
+        ws.prev = setTimeout(() => {
+          const mongoClient = getMongoClient();
+          const collection = mongoClient.db('noteflow').collection('flows');
+          const user = d.split('-')[0];
+          collection.findOneAndUpdate(
+            {
+              user,
+              'flows.id': d,
+            },
+            {
+              $set: { 'flows.$.updateAt': Date.now() },
+            },
+          );
+          clearTimeout(ws.prev);
+        }, 2000);
+      }
+    });
     const stream = new WebSocketJSONStream(ws);
     sharedb.listen(stream);
   })
-  .no_session('/node', (ws) => {
+  .session('/node', (ws) => {
+    ws.on('message', (message) => {
+      const query = JSON.parse(message.toString('utf-8'));
+      const { a, d } = query;
+      if (a === 'op') {
+        if (ws.prev) clearTimeout(ws.prev);
+        // eslint-disable-next-line no-param-reassign
+        ws.prev = setTimeout(() => {
+          const mongoClient = getMongoClient();
+          const collection = mongoClient
+            .db('noteflow')
+            .collection('nodeRepository');
+          const user = d.split('-')[0];
+          collection.findOneAndUpdate(
+            {
+              user,
+              'nodes.id': d,
+            },
+            {
+              $set: { 'nodes.$.updateAt': Date.now() },
+            },
+          );
+          clearTimeout(ws.prev);
+        }, 2000);
+      }
+    });
+
     const stream = new WebSocketJSONStream(ws);
     sharedb.listen(stream);
   });

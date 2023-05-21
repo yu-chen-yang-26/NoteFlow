@@ -1,10 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import axios from 'axios';
-import db from '../../lib/db.js';
 import fs from 'fs';
 import path from 'path';
-
-const { PHOTO_FS } = process.env;
+import db from '../../lib/db.js';
+import CODE from '../../lib/httpStatus.js';
 
 const BASE_PATH = path.join(process.cwd(), 'images');
 
@@ -19,7 +17,7 @@ const setUserPhoto = async (ctx) => {
 
   await db('users').update({ picture: filename }).where({ email });
 
-  ctx.status = 200;
+  ctx.status = CODE.success;
   ctx.body = filename;
 };
 

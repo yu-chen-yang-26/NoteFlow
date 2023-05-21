@@ -1,6 +1,25 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // an email template that can be used with Nodemailer to send emails
+import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import path from 'path';
 
-const HTML_TEMPLATE = (text) => `
+const htmlHandler = (email, redirect) => {
+  const html = fs
+    .readFileSync(
+      path.join(process.cwd(), 'src', 'lib', 'forgot-password', 'index.html'),
+    )
+    .toString();
+  const { document } = new JSDOM(html).window;
+  document.querySelector('#greetings').textContent = `${email} 您好`;
+  document.querySelector('a').href = redirect;
+
+  const modified = document.documentElement.outerHTML;
+
+  return modified;
+};
+
+const HTML_TEMPLATE = (redirect) => `
     <!DOCTYPE html>
     <html>
       <head>
@@ -43,7 +62,7 @@ const HTML_TEMPLATE = (text) => `
               <h1>NoteFlow</h1>
             </div>
             <div class="email-body">
-              <a href="${text}">verify account</a>
+              <a href="${redirect}">verify account</a>
             </div>
             <div class="email-footer">
               <p>SDM group-6</p>
@@ -55,3 +74,4 @@ const HTML_TEMPLATE = (text) => `
   `;
 
 export default HTML_TEMPLATE;
+export { htmlHandler };

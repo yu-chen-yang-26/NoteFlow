@@ -1,7 +1,7 @@
 import { useContext, createContext, useState, useEffect } from 'react';
 import crc32 from 'crc-32';
 import instance from '../API/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -25,24 +25,33 @@ const UserProvider = (props) => {
   const [lang, setLang] = useState('zh');
   const { i18n } = useTranslation();
 
-  // console.log(user);
   const [rerender, setRerender] = useState(false);
-
   const navigate = useNavigate();
 
   const logout = () => {
+    localStorage.removeItem('tabList');
     setUser('');
     navigate('/');
   };
+  const location = useLocation();
+
   useEffect(() => {
     instance
       .get('/user/who-am-i')
       .then((res) => {
         const user = res.data;
-        if (!user.picture) {
-          user.picture = getRandomPicture(user.name);
+
+        if (!user.logined && location.pathname !== '/resetPassword') {
+          navigate('/');
         }
-        setUser(user);
+
+        if (!user.picture) {
+          user.picture = getRandomPicture(user.email);
+        }
+        setUser({
+          ...user,
+          picture: `/api/${user.picture}`,
+        });
       })
       .catch((e) => {
         navigate('/');
@@ -52,6 +61,7 @@ const UserProvider = (props) => {
   const refetchFromLocalStorage = () => {
     setRerender((prev) => !prev);
   };
+
   const changeLang = () => {
     i18n.changeLanguage(lang);
     if (lang === 'zh') {

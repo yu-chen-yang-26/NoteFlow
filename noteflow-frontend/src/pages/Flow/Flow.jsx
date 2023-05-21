@@ -14,14 +14,12 @@ import ReactFlow, {
   getOutgoers,
   getConnectedEdges,
   useViewport,
-  isEdge,
 } from 'reactflow';
 import CustomNode from '../../Components/Flow/Node';
 import ToolBar from '../../Components/Flow/ToolBar';
 import StyleBar from '../../Components/Flow/StyleBar';
 import PageTab from '../../Components/PageTab/PageTab';
 import { Navigate, useLocation } from 'react-router-dom';
-import { toPng } from 'html-to-image';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 
@@ -60,6 +58,7 @@ function downloadImage(dataUrl) {
 
 function Flow() {
   const rfInstance = useReactFlow();
+
   const xPos = useRef(50);
   const yPos = useRef(0);
   const nodeId = useRef(0);
@@ -90,25 +89,34 @@ function Flow() {
   };
 
   const trackerCallback = useCallback(
-    (tracker) => {
+    async (tracker, record) => {
       // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
       // 創一個 child element
       Object.keys(tracker).forEach((email, index) => {
-        let instance = document.querySelector(`#sub-flow-${email}`);
-        if (!instance) {
-          instance = FlowWebSocket.createInstance(email, 'sub-flow');
-          subRef.current.appendChild(instance);
+        if (!(email in record)) {
+          record[email] = true;
+          FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
+            instance.onclick = (e) => {
+              console.log(e);
+              const { xPort, yPort } = tracker[email];
+              rfInstance.setViewport({ x: -xPort, y: -yPort, zoom: 1 });
+            };
+            subRef.current.appendChild(instance);
+          });
         } else {
           // 有沒有在閒置
-          if (tracker[email].lastUpdate - Date.now() >= 60000) {
-            instance.style.opacity = 0.5;
-          } else {
-            instance.style.opacity = 1;
+          const instance = document.querySelector(`#sub-flow-${email}`);
+          if (instance) {
+            if (Date.now() - tracker[email].lastUpdate >= 5000) {
+              instance.style.opacity = 0.75;
+            } else {
+              instance.style.opacity = 1;
+            }
           }
         }
       });
     },
-    [subRef],
+    [subRef, rfInstance],
   );
 
   useEffect(() => {
@@ -223,8 +231,11 @@ function Flow() {
 
   const [restart, setRestart] = useState(false);
 
+  let { x, y, zoom } = useViewport();
+
   const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
+    zoom = 2;
     setEditorId(node.editorId);
     setIsEdit(true);
     addTab({
@@ -235,12 +246,8 @@ function Flow() {
   });
 
   const canvasRef = useRef();
-  const { x, y, zoom } = useViewport();
 
   useEffect(() => {
-    console.log('x: ', x);
-    console.log('y:', y);
-
     if (flowWebSocket && flowWebSocket.self) {
       flowWebSocket.updateInfo({
         xPort: -x,
@@ -288,7 +295,6 @@ function Flow() {
       y: canvasY / zoom,
       xPort: -x / zoom,
       yPort: -y / zoom,
-      // zoom: zoom,
     });
   };
 
@@ -313,7 +319,6 @@ function Flow() {
           }}
           onEdgeUpdate={(param) => {
             onEdgeUpdate(param);
-            console.log('2');
           }}
           onConnect={(param) => {
             onConnect(param);
@@ -321,7 +326,6 @@ function Flow() {
               { ...param, id: edgeId.current.toString() },
               'edge',
             );
-            console.log(param);
           }}
           // onInit={setRfInstance}
           onNodeDoubleClick={onNodeDoubleClick}

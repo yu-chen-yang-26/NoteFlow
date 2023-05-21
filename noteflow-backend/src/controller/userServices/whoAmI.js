@@ -1,10 +1,21 @@
+import db from '../../lib/db.js';
+import CODE from '../../lib/httpStatus.js';
+
 const whoAmI = async (ctx) => {
-  if (!ctx.session.email || !ctx.session.logined) {
-    ctx.throw(401, 'You have no login data.');
+  const { email, logined, name } = ctx.session;
+
+  let result;
+  if (email) {
+    result = await db('users').first().where({ email: ctx.session.email });
   }
 
-  ctx.body = JSON.stringify(ctx.session);
-  ctx.status = 200;
+  ctx.body = JSON.stringify({
+    email,
+    logined: !!logined,
+    name,
+    picture: result ? result.picture : null,
+  });
+  ctx.status = CODE.success;
 };
 
 export default whoAmI;

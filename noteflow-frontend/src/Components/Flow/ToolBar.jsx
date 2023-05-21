@@ -26,6 +26,7 @@ export default function ToolBar({
   flowId,
   subRef,
   isEdit,
+  rfInstance,
 }) {
   const [show, setShow] = useState(false);
   const inputRef = useRef(null);

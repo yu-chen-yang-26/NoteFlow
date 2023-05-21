@@ -5,7 +5,7 @@ import getFlowTitle from './getFlowTitle.js';
 import getNodeTitle from './getNodeTitle.js';
 import getColabList from './getColabList.js';
 import getFlows from './getFlows.js';
-import getLibrary from './getLibrary.js';
+import getLibrary from '../nodeServices/getLibrary.js';
 import reviseColabList from './reviseColabList.js';
 import setFlowTitle from './setFlowTitle.js';
 import setNodeTitle from './setNodeTitle.js';
