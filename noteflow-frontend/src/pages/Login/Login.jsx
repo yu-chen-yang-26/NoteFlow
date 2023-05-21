@@ -203,7 +203,9 @@ const Login = () => {
               className="links"
               style={{
                 display: 'flex',
+                // flexDirection: 'column',
                 justifyContent: 'space-between',
+                // alignItems: 'center',
               }}
             >
               <Link
@@ -211,7 +213,7 @@ const Login = () => {
                 style={{
                   color: '#414a4c',
                   cursor: 'pointer',
-                  fontSize: '1vw',
+                  // fontSize: '1vw',
                 }}
                 onClick={() => navigateTo('/forgotPassword')}
               >
@@ -219,7 +221,11 @@ const Login = () => {
               </Link>
               <Link
                 variant="body2"
-                style={{ color: '#414a4c', cursor: 'pointer', fontSize: '1vw' }}
+                style={{
+                  color: '#414a4c',
+                  cursor: 'pointer',
+                  // fontSize: '1vw',
+                }}
                 onClick={() => navigateTo('/register')}
               >
                 {"Don't have an account? Sign Up"}
