@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import argon2 from 'argon2';
 import db from '../../lib/db.js';
+import CODE from '../../lib/httpStatus.js';
 
 const login = async (ctx) => {
   try {
@@ -9,18 +10,22 @@ const login = async (ctx) => {
 
     ctx.assert(
       _.isObject(user) && user.email && user.password,
-      422,
+      CODE.insufficient,
       JSON.stringify({ errors: 'email or password input error' }),
     );
 
     const result = await db('users').first().where({ email: user.email });
-    ctx.assert(result, 401, JSON.stringify({ errors: 'email is invalid' }));
+    ctx.assert(
+      result,
+      CODE.not_found,
+      JSON.stringify({ errors: 'email is invalid' }),
+    );
 
     const validate = await argon2.verify(result.password, user.password);
 
     ctx.assert(
       validate,
-      401,
+      CODE.unauthorized,
       JSON.stringify({ errors: 'password is invalid' }),
     );
 
@@ -34,10 +39,10 @@ const login = async (ctx) => {
     };
     await ctx.session.save();
 
-    ctx.status = 200;
+    ctx.status = CODE.success;
     ctx.body = JSON.stringify({ user: _.omit(user, ['password']) });
   } catch (err) {
-    ctx.status = err.status || 500;
+    ctx.status = err.status || CODE.internal_error;
     ctx.body = JSON.stringify(err);
   }
 };

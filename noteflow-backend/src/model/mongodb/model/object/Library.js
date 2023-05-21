@@ -3,48 +3,89 @@ import { getMongoClient } from '../../mongoClient.js';
 import NodeRepo from './NodeRepo.js';
 
 class Library {
-    constructor(user) {
-        this.user = user;
-        this.nodes = [];
+  constructor(user) {
+    this.user = user;
+    this.nodes = [];
+  }
+
+  static async genLibraryProfile(email) {
+    const result = {
+      user: email,
+      nodes: [],
+    };
+
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    if (await collection.findOne({ user: result.user })) {
+      return; // We have created for this user.
+    }
+    await collection.insertOne(result);
+  }
+
+  static async fetchNodes(user) {
+    const mongoClient = getMongoClient();
+    // 不需要 try：有問題 controller 層會 catch
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('nodeRepository');
+
+    // 先拿到 { userId: ..., nodes: ...}
+    const result = await collection.findOne({ user });
+
+    if (!result) {
+      await Library.genLibraryProfile(user);
+      return [];
     }
 
-    static async genLibraryProfile(email) {
-        const result = {
-            user: email,
-            nodes: [],
-        };
-        const mongoClient = getMongoClient();
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('library');
-        if (await collection.findOne({ user: result.user })) {
-            return; // We have created for this user.
-        }
-        await collection.insertOne(result);
+    const nodesFromLib = result.nodes.map((data) => data.id);
+    const nodes = await NodeRepo.fetchNodes(user, nodesFromLib);
 
-        await mongoClient.close();
-    }
+    return nodes;
+  }
 
-    async fetchNodes(query = { user: this.user }, options = {}) {
-        const { user } = query;
-        const mongoClient = getMongoClient();
-        // 不需要 try：有問題 controller 層會 catch
-        await mongoClient.connect();
-        const database = mongoClient.db('noteflow');
-        const collection = database.collection('library');
+  static async isFavorite(user, nodeId) {
+    const mongoClient = getMongoClient();
+    // 不需要 try：有問題 controller 層會 catch
 
-        // 先拿到 { userId: ..., nodes: ...}
-        const result = await collection.findOne(query, options);
-        await mongoClient.close();
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
 
-        const nodeRepo = new NodeRepo(user);
-        await nodeRepo.fetchNodes();
+    // 先拿到 { userId: ..., nodes: ...}
+    const result = await collection.findOne({ user, 'nodes.id': nodeId });
 
-        this.nodes = new Array(result.nodes.length);
-        result.nodes.forEach((element) => {
-            this.nodes.push(nodeRepo.nodes[element.ref]);
-        });
-    }
+    return !!result;
+  }
+
+  static async addNode(id, email) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    await collection.findOneAndUpdate(
+      {
+        user: email,
+      },
+      {
+        $addToSet: { nodes: { id, addTime: Date.now() } },
+      },
+    );
+  }
+
+  static async removeNode(id, email) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    await collection.findOneAndDelete({
+      user: email,
+      'nodes.id': id,
+    });
+  }
 }
 
 export default Library;

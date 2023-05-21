@@ -1,5 +1,6 @@
-import { useContext, createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from './useApp';
 
 const PageTabContext = createContext({
   tabList: [],
@@ -11,11 +12,16 @@ const PageTabContext = createContext({
 const PageTabProvider = (props) => {
   const [tabList, setTabList] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const { user } = useApp();
+
   useEffect(() => {
-    const tabListCache = JSON.parse(localStorage.getItem("tabList"));
+    const tabListCache = JSON.parse(localStorage.getItem('tabList'));
     if (tabListCache !== null) setTabList(tabListCache);
-  }, []);
+    else setTabList([]);
+  }, [user]);
+
   const navigateTo = useNavigate();
+
   const addTab = (payload) => {
     const exist = tabList.filter((tab) => tab.objectId == payload.objectId);
     if (exist.length === 0)
@@ -26,8 +32,8 @@ const PageTabProvider = (props) => {
         });
         const newTab = { ...payload, tabId: maxId + 1 };
         localStorage.setItem(
-          "tabList",
-          JSON.stringify([...prevTabList, newTab])
+          'tabList',
+          JSON.stringify([...prevTabList, newTab]),
         );
         return [...prevTabList, newTab];
       });
@@ -38,10 +44,10 @@ const PageTabProvider = (props) => {
     const lastTab = tabList.length == 1;
     if (lastTab) {
       setTabList([]);
-      navigateTo("/home");
+      navigateTo('/home');
     } else {
       const tabListUpdated = tabList.filter((tab) => tab.tabId !== tabId);
-      localStorage.setItem("tabList", JSON.stringify(tabListUpdated));
+      localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
       setTabList(tabListUpdated);
       toTab(tabList[0].tabId);
     }
@@ -57,7 +63,15 @@ const PageTabProvider = (props) => {
 
   return (
     <PageTabContext.Provider
-      value={{ tabList, addTab, closeTab, toTab, activeTab, setActiveTab }}
+      value={{
+        tabList,
+        addTab,
+        closeTab,
+        toTab,
+        activeTab,
+        setActiveTab,
+        setTabList,
+      }}
       {...props}
     />
   );

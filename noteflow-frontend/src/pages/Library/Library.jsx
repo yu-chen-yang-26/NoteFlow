@@ -1,93 +1,122 @@
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import { styled, alpha } from "@mui/material/styles";
-import { grey } from "@mui/material/colors";
-import { BsSortDown } from "react-icons/bs";
-import SearchIcon from "@mui/icons-material/Search";
-import InputBase from "@mui/material/InputBase";
-import { useFlowStorage } from "../../storage/Storage";
-import { useNavigate } from "react-router-dom";
-import { useApp } from "../../hooks/useApp";
-import { usePageTab } from "../../hooks/usePageTab";
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { styled, alpha } from '@mui/material/styles';
+import { grey } from '@mui/material/colors';
+import SearchIcon from '@mui/icons-material/Search';
+import InputBase from '@mui/material/InputBase';
+import { useTranslation } from 'react-i18next';
+import { Editor } from '../../Components/Editor/Editor';
+import { useApp } from '../../hooks/useApp';
+import { useState, useEffect } from 'react';
+import instance from '../../API/api';
 
 const Library = () => {
-  // const { t } = useTranslation();
-  const { addTab, tabList } = usePageTab();
+  const { t } = useTranslation();
   const { isMobile } = useApp();
-  const nodes = useFlowStorage((state) => state.nodes);
-  const navigate = useNavigate();
-  const NodeButton = styled(Button)(({ theme }) => ({
+  const [nodes, setNodes] = useState([]);
+  const [editorId, setEditorId] = useState(null);
+
+  //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
+  const [mobileEditorDisplay, setMobileEditorDisplay] = useState(false);
+
+  const NodeButton = styled(Button)(({ theme, selected }) => ({
     color: theme.palette.getContrastText(grey[100]),
-    fontSize: "12px",
-    backgroundColor: "white",
-    border: "1px black solid",
-    "&:hover": {
+    fontSize: '12px',
+    backgroundColor: selected ? '#E0E0E0' : 'white',
+    borderRadius: selected ? '5px' : '0',
+    '&:hover': {
+      backgroundColor: selected ? '#E0E0E0' : grey[100],
+    },
+    width: '90%',
+    height: 70,
+    '&:after': {
+      content: '""',
+      position: 'absolute',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '95%',
+      height: '1px',
+      backgroundColor: '#E0E0E0',
+    },
+  }));
+  const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: '0',
+    '&:hover': {
       backgroundColor: grey[100],
-      border: "1px grey solid",
     },
-    width: "100%",
-    height: 150,
-  }));
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "auto",
+    width: '90%',
+    '&:after': {
+      content: '""',
+      position: 'absolute',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '95%',
+      height: '1px',
+      backgroundColor: '#E0E0E0',
     },
   }));
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }));
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    "& .MuiInputBase-input": {
+    color: 'inherit',
+    '& .MuiInputBase-input': {
       padding: theme.spacing(1, 1, 1, 0),
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create("width"),
-      width: "100%",
-      [theme.breakpoints.up("sm")]: {
-        width: "12ch",
-        "&:focus": {
-          width: "20ch",
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('sm')]: {
+        width: '12ch',
+        '&:focus': {
+          width: '20ch',
         },
       },
     },
   }));
-  const toNode = (node) => {
-    console.log(node);
-    if (!tabList.find((f) => f.id == node.id)) {
-      addTab({ id: node.id, title: node.name });
-    }
-    navigate("/node", { state: node });
+
+  const toNode = (id) => {
+    setEditorId(id);
   };
 
+  useEffect(() => {
+    instance
+      .get('/library')
+      .then((res) => {
+        setNodes([...nodes, ...res.data]);
+        setEditorId([...nodes, ...res.data][0].id);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
   return (
-    <Stack direction="column" justifyContent="center" alignItems="center">
-      <Stack
-        direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
+    <Grid container columns={12} sx={{ height: '100%' }}>
+      <Grid
+        item
+        md={2}
+        xs={12}
         sx={{
-          marginTop: "1vmin",
-          marginBottom: "1vmin",
-          alignSelf: "flex-end",
-          paddingLeft: 2,
-          paddingRight: 2,
+          // borderRight: "1px solid lightgrey",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'top',
+          display: mobileEditorDisplay ? 'none' : 'flex',
+          alignItems: 'center',
+          height: '100%',
+          overflowX: 'hidden',
+          overflowY: 'scroll',
         }}
       >
         <Search>
@@ -96,36 +125,42 @@ const Library = () => {
           </SearchIconWrapper>
           <StyledInputBase
             placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
+            inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
-        <Button style={{ color: "black" }}>
-          <BsSortDown size={20} style={{ marginRight: "3px" }} />
-          <Typography>Newest to oldest</Typography>
-        </Button>
-      </Stack>
-      <Grid
-        container
-        justifyContent="left"
-        sx={{ paddingLeft: 2, paddingRight: 2 }}
-        spacing={"2vw"}
-        columns={15}
-      >
-        {nodes.map((node, id) => (
-          <Grid item xs={5} md={3} key={id}>
-            <NodeButton
-              sx={{ height: isMobile ? "10vh" : "20vh" }}
-              onClick={() => toNode(node)}
-            >
-              {/* {t("Last Edit Time:")} {node.time} {t("hours")} */}
-            </NodeButton>
-            <Typography style={{ fontSize: "14px", paddingTop: "2%" }}>
-              {node.name}
-            </Typography>
-          </Grid>
+        {nodes.map((node) => (
+          <NodeButton
+            className="node-button"
+            onClick={() => {
+              toNode(node.id);
+              if (isMobile === true) {
+                setMobileEditorDisplay(true);
+              }
+            }}
+            key={node.id}
+            selected={node.id === editorId}
+          >
+            {node.name} {t('Last Edit Time:')} {node.time} {t('hours')}
+          </NodeButton>
         ))}
+      </Grid>{' '}
+      <Grid
+        item
+        md={10}
+        style={{
+          height: '100%',
+          display:
+            !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
+        }}
+      >
+        <Editor
+          editorId={editorId}
+          handleDrawerClose={() => {
+            setMobileEditorDisplay(false);
+          }}
+        />
       </Grid>
-    </Stack>
+    </Grid>
   );
 };
 export default Library;
