@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 const useParams = create((set) => ({
   flows: 1,
   setFlows: (param) => set((state) => ({ flows: param })),
@@ -14,5 +14,7 @@ const useParams = create((set) => ({
   setActivateKey: (param) => set((state) => ({ activateKey: param })),
   user: {},
   setUser: (userObject) => set((state) => ({ user: userObject })),
+  nodeMenuOpen: null,
+  setNodeMenuOpen: (param) => set((state) => ({ nodeMenuOpen: param })),
 }));
 export { useParams };
