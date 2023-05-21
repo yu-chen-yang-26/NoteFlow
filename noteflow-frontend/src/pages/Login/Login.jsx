@@ -11,7 +11,7 @@ import instance from '../../API/api';
 import { SHA256 } from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
-import TryMe from '../../Components/TryMe/tryMe';
+import TryMe from '../../Components/TryMe/TryMe';
 
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
@@ -80,8 +80,7 @@ const Login = () => {
       });
 
       google.accounts.id.renderButton(document.getElementById('signInDiv'), {
-        theme: 'dark',
-        width: '330',
+        width: '200',
       });
 
       google.accounts.id.prompt();
@@ -145,7 +144,7 @@ const Login = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            style={{ margin: '10px 15px' }}
+            style={{ margin: '1vh 1vw' }}
           >
             <TextField
               margin="normal"
@@ -190,11 +189,11 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 2, mb: 2 }}
+              sx={{ mt: 1, mb: 1 }}
               style={{
                 backgroundColor: '#0e1111',
                 color: 'white',
-                paddingTop: '1%',
+                paddingTop: '1vh',
                 textTransform: 'none',
               }}
             >
@@ -212,6 +211,7 @@ const Login = () => {
                 style={{
                   color: '#414a4c',
                   cursor: 'pointer',
+                  fontSize: '1vw',
                 }}
                 onClick={() => navigateTo('/forgotPassword')}
               >
@@ -219,7 +219,7 @@ const Login = () => {
               </Link>
               <Link
                 variant="body2"
-                style={{ color: '#414a4c', cursor: 'pointer' }}
+                style={{ color: '#414a4c', cursor: 'pointer', fontSize: '1vw' }}
                 onClick={() => navigateTo('/register')}
               >
                 {"Don't have an account? Sign Up"}

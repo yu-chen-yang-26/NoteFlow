@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactFlow, { addEdge, useNodesState, useEdgesState } from 'reactflow';
+import DemoEditor from './DemoEditor';
 
 import {
   nodes as initialNodes,
@@ -13,6 +14,14 @@ const onInit = (reactFlowInstance) =>
 const TryMe = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editorId, setEditorId] = useState('');
+
+  const onNodeDoubleClick = useCallback((event, node) => {
+    setEditorId(node.id);
+    setIsEdit(true);
+  });
+
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
@@ -25,17 +34,27 @@ const TryMe = () => {
   });
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edgesWithUpdatedTypes}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      onInit={onInit}
-      fitView
-    >
+    <>
       {/* <h1>Try Me</h1> */}
-    </ReactFlow>
+
+      {isEdit ? (
+        <DemoEditor
+          editorId={editorId}
+          handleDrawerClose={() => setIsEdit(false)}
+        />
+      ) : (
+        <ReactFlow
+          nodes={nodes}
+          edges={edgesWithUpdatedTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeDoubleClick={onNodeDoubleClick}
+          onConnect={onConnect}
+          onInit={onInit}
+          fitView
+        />
+      )}
+    </>
   );
 };
 
