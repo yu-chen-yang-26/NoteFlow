@@ -1,5 +1,6 @@
 import { useContext, createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from './useApp';
 
 const PageTabContext = createContext({
   tabList: [],
@@ -11,13 +12,13 @@ const PageTabContext = createContext({
 const PageTabProvider = (props) => {
   const [tabList, setTabList] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const { user } = useApp();
 
   useEffect(() => {
     const tabListCache = JSON.parse(localStorage.getItem('tabList'));
     if (tabListCache !== null) setTabList(tabListCache);
-  }, []);
-
-  console.log('tablist', tabList, activeTab);
+    else setTabList([]);
+  }, [user]);
 
   const navigateTo = useNavigate();
 
@@ -62,7 +63,15 @@ const PageTabProvider = (props) => {
 
   return (
     <PageTabContext.Provider
-      value={{ tabList, addTab, closeTab, toTab, activeTab, setActiveTab }}
+      value={{
+        tabList,
+        addTab,
+        closeTab,
+        toTab,
+        activeTab,
+        setActiveTab,
+        setTabList,
+      }}
       {...props}
     />
   );

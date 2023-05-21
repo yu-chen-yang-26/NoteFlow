@@ -1,3 +1,4 @@
+import CODE from '../../lib/httpStatus.js';
 import { Flows } from '../../model/mongodb/model/index.js';
 
 const getFlowTitle = async (ctx) => {
@@ -6,12 +7,11 @@ const getFlowTitle = async (ctx) => {
   let resolved;
   try {
     resolved = await Flows.getTitle(id);
+    ctx.status = CODE.success;
+    ctx.body = JSON.stringify(resolved);
   } catch (e) {
-    ctx.throw(500, 'Internal server error');
+    ctx.throw(CODE.internal_error, 'Internal server error');
   }
-
-  ctx.status = 200;
-  ctx.body = JSON.stringify(resolved);
 };
 
 export default getFlowTitle;

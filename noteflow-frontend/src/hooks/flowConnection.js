@@ -1,7 +1,7 @@
 import sharedb from 'sharedb/lib/client';
 import * as json1 from 'ot-json1';
 import ReconnectingWebsocket from 'reconnecting-websocket';
-import { BASE_URL } from '../API/api';
+import instance, { BASE_URL } from '../API/api';
 import { type } from 'rich-text';
 import { getRandomPicture } from './useApp';
 import { allocateColor } from '../API/Colab';
@@ -15,6 +15,7 @@ class FlowWebSocket {
     this.subscribeToToolbar = subscribeToToolbar;
     this.lastUpdated = Date.now();
     this.email = email;
+    this.mounted = {};
     this.mouseTracker = {};
     this.self = {
       xPort: 0,
@@ -39,7 +40,7 @@ class FlowWebSocket {
     };
   }
 
-  receiveLocation(email) {
+  async receiveLocation(email) {
     /*
       我送的資料包括
       { x: canvasX, y: canvasY, xPort: x, yPort:y, zoom: zoom }
@@ -60,12 +61,11 @@ class FlowWebSocket {
       // let divElement = document.createElement('div');
       let divElement = document.querySelector(`#mouse-dot-${email}`);
       if (!divElement) {
-        divElement = FlowWebSocket.createInstance(email, 'mouse-dot');
+        divElement = await FlowWebSocket.createInstance(email, 'mouse-dot');
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
-      // console.log(divElement.style, divElement.style.left);
-      // console.log(divElement.style.top)
+
       const other = this.mouseTracker[email];
 
       const { xPort, yPort, left, top, width, height, zoom, x, y } = this.self;
@@ -84,8 +84,7 @@ class FlowWebSocket {
         x: (other.x + xOffset) * zoom,
         y: (other.y + yOffset) * zoom,
       };
-      // 符合我們的 scope
-      // console.log(hisScope, myScope);
+
       // if (
       //   hisScope.x >= myScope.xMin &&
       //   hisScope.x <= myScope.xMax &&
@@ -110,7 +109,7 @@ class FlowWebSocket {
     }
   }
 
-  static createInstance(email, className) {
+  static async createInstance(email, className) {
     let divElement = document.createElement('div');
     divElement.className = className;
     divElement.id = `${className}-${email}`;
@@ -118,7 +117,19 @@ class FlowWebSocket {
 
     const imgElement = document.createElement('img');
     imgElement.className = `${className}-img`;
-    imgElement.src = getRandomPicture(deconvert(email));
+
+    try {
+      const res = await instance.get(
+        `/user/get-photo-url?email=${deconvert(email)}`,
+      );
+      if (res.data) {
+        imgElement.src = `/api/${res.data}`;
+      } else {
+        imgElement.src = getRandomPicture(deconvert(email));
+      }
+    } catch (e) {
+      imgElement.src = getRandomPicture(deconvert(email));
+    }
     divElement.appendChild(imgElement);
 
     return divElement;
@@ -130,6 +141,7 @@ class FlowWebSocket {
     this.mouseSocket = new ReconnectingWebsocket(
       `wss://${BASE_URL}/ws/flow/mouse-sub?id=${flowId}`,
     );
+
     this.mouseSocket.addEventListener('message', (msg) => {
       const position = JSON.parse(msg.data.toString('utf-8'));
       if (!position || !position.email) return;
@@ -143,8 +155,12 @@ class FlowWebSocket {
         this.receiveLocation(email);
       }
 
-      this.subscribeToToolbar(this.mouseTracker);
+      this.subscribeToToolbar(this.mouseTracker, this.mounted);
     });
+
+    this.interval = setInterval(() => {
+      this.subscribeToToolbar(this.mouseTracker, this.mounted);
+    }, 2000);
   }
 
   // { x: canvasX, y: canvasY, xPort: x, yPort:y }
@@ -183,6 +199,7 @@ class FlowWebSocket {
   close() {
     this.socket.close();
     this.mouseSocket.close();
+    clearInterval(this.interval);
   }
 
   editFlowTitle(title) {

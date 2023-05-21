@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import _ from 'lodash';
 import db from '../../lib/db.js';
+import CODE from '../../lib/httpStatus.js';
 
 const verifyToken = async (ctx) => {
   const { token, id } = ctx.query;
@@ -24,11 +25,11 @@ const verifyToken = async (ctx) => {
       await ctx.session.save();
 
       const newUser = await db('users').first().where({ id });
-      ctx.status = 200;
+      ctx.status = CODE.success;
       ctx.body = { user: _.omit(newUser, ['password']) };
     }
   } catch (err) {
-    ctx.throw(500, JSON.stringify({ errors: err.message }));
+    ctx.throw(CODE.internal_error, JSON.stringify({ errors: err.message }));
   }
 };
 

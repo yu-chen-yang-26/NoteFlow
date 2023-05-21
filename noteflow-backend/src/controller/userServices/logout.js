@@ -1,6 +1,8 @@
+import CODE from '../../lib/httpStatus.js';
+
 const logout = async (ctx) => {
   ctx.session = null;
-  ctx.status = 200;
+  ctx.status = CODE.success;
 };
 
 export default logout;

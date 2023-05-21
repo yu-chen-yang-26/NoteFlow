@@ -11,14 +11,11 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { AiOutlineMail } from 'react-icons/ai';
 import { BiLogOut } from 'react-icons/bi';
 import { useFlowStorage } from '../../storage/Storage';
-import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
 import instance from '../../API/api';
 import ResetModal from './ResetModal';
 import { useEffect, useState } from 'react';
 import './Settings.scss';
-
-import { BASE_URL } from '../../API/api';
 
 const Settings = () => {
   const { user, logout, isMobile } = useApp();
@@ -27,6 +24,7 @@ const Settings = () => {
   const setLang = useFlowStorage((state) => state.setLang);
   const [show, setShow] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
+
   const SettingsButton = styled(Button)(({ theme }) => ({
     cursor: 'pointer',
     backgroundColor: '#0e1111',
@@ -41,13 +39,7 @@ const Settings = () => {
   useEffect(() => {
     const imgInput = document.getElementById('avatar');
     imgInput.addEventListener('change', uploadPhoto);
-    instance.get('/user/get-photo-url').then((res) => {
-      if (res.status == 200) {
-        const url = res.data;
-        console.log(url);
-        setPhotoUrl(`/api/${url}`);
-      }
-    });
+    setPhotoUrl(user.picture);
     return () => {
       imgInput.removeEventListener('change', uploadPhoto);
     };
@@ -77,7 +69,7 @@ const Settings = () => {
   };
 
   return (
-    <Grid container columns={12} sx={{ height: isMobile ? "80vh" : "100%" }}>
+    <Grid container columns={12} sx={{ height: isMobile ? '80vh' : '100%' }}>
       <Grid item xs={12} md={6}>
         <Stack
           direction="row"

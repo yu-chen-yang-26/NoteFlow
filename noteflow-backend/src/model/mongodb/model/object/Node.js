@@ -10,7 +10,7 @@ class Node {
     this.colaborators = Array.isArray(colaborators)
       ? colaborators
       : [this.owner];
-    this.updateTime = Date.now();
+    this.updateAt = Date.now();
   }
 
   validate() {

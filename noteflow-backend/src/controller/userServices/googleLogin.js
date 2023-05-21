@@ -5,11 +5,15 @@ import _ from 'lodash';
 import argon2 from 'argon2';
 import db from '../../lib/db.js';
 import { createUserBucket } from '../../model/mongodb/model/index.js';
+import CODE from '../../lib/httpStatus.js';
 
 const googleLogin = async (ctx) => {
   const { user } = ctx.request.body;
   if (!user) {
-    ctx.throw(400, "Bad request. You didn't provide user column.");
+    ctx.throw(
+      CODE.insufficient,
+      "Bad request. You didn't provide user column.",
+    );
   }
   const userSelected = await db('users').first().where({ email: user.email });
   // return;
@@ -43,7 +47,7 @@ const googleLogin = async (ctx) => {
   await ctx.session.save();
 
   ctx.body = JSON.stringify({ user: _.omit(user, ['password']) });
-  ctx.status = 200;
+  ctx.status = CODE.success;
 };
 
 export default googleLogin;

@@ -25,8 +25,7 @@ class Library {
     await collection.insertOne(result);
   }
 
-  async fetchNodes(query = { user: this.user }, options = {}) {
-    const { user } = query;
+  static async fetchNodes(user) {
     const mongoClient = getMongoClient();
     // 不需要 try：有問題 controller 層會 catch
 
@@ -34,14 +33,57 @@ class Library {
     const collection = database.collection('nodeRepository');
 
     // 先拿到 { userId: ..., nodes: ...}
-    const result = await collection.findOne(query, options);
+    const result = await collection.findOne({ user });
 
-    // const nodeRepo = new NodeRepo(user);
-    // await nodeRepo.fetchNodes();
+    if (!result) {
+      await Library.genLibraryProfile(user);
+      return [];
+    }
 
-    // this.nodes = new Array(result.nodes.length);
-    result.nodes.forEach((element) => {
-      this.nodes.push(element);
+    const nodesFromLib = result.nodes.map((data) => data.id);
+    const nodes = await NodeRepo.fetchNodes(user, nodesFromLib);
+
+    return nodes;
+  }
+
+  static async isFavorite(user, nodeId) {
+    const mongoClient = getMongoClient();
+    // 不需要 try：有問題 controller 層會 catch
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    // 先拿到 { userId: ..., nodes: ...}
+    const result = await collection.findOne({ user, 'nodes.id': nodeId });
+
+    return !!result;
+  }
+
+  static async addNode(id, email) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    await collection.findOneAndUpdate(
+      {
+        user: email,
+      },
+      {
+        $addToSet: { nodes: { id, addTime: Date.now() } },
+      },
+    );
+  }
+
+  static async removeNode(id, email) {
+    const mongoClient = getMongoClient();
+
+    const database = mongoClient.db('noteflow');
+    const collection = database.collection('library');
+
+    await collection.findOneAndDelete({
+      user: email,
+      'nodes.id': id,
     });
   }
 }
