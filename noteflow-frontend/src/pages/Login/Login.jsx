@@ -24,7 +24,7 @@ const Login = () => {
   const [showLogo, setShowLogo] = useState(false);
   const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
   const [alarms, setAlarms] = useState('');
-  const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
+
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user, isMobile } = useApp();
 
@@ -104,11 +104,11 @@ const Login = () => {
   }, []);
 
   return (
-    <div className={`${isMobile ? 'login' : 'login'}`}>
-      <div className={`${isMobile ? 'logo' : 'logo'}`}>
+    <div className={`${isMobile ? 'login-mobile' : 'login'}`}>
+      <div className={`${isMobile ? 'logo-mobile' : 'logo'}`}>
         <SwitchTransition mode="out-in">
           <CSSTransition
-            key={tryme ? 'tryme' : 'logo'}
+            key={showLogo ? 'logo' : 'tryme'}
             classNames="fade"
             timeout={500}
           >
@@ -138,7 +138,7 @@ const Login = () => {
         </SwitchTransition>
       </div>
 
-      <div className="info">
+      <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
         <h2>Login</h2>
         <div className="infoContainer">
           <Box
