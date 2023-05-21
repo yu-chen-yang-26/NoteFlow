@@ -11,7 +11,7 @@ import instance from '../../API/api';
 import { SHA256 } from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
-import TryMe from '../../Components/TryMe/TryMe';
+import TryMe from '../../Components/TryMe/tryMe';
 
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
