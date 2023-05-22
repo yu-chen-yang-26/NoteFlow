@@ -22,3 +22,46 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+.editor-settings {
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+
+  height: 70%;
+  min-height: 250px;
+
+  .share-box {
+    border: black solid 2px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 500px;
+    height: 90%;
+    padding: 5px;
+    position: relative;
+    .title {
+      position: absolute;
+      left: 8px;
+      top: 2px;
+      h2 {
+        font-size: 25px;
+        font-weight: 400;
+      }
+    }
+
+    .buttons {
+      display: flex;
+      width: 80%;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}
