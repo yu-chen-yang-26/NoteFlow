@@ -10,8 +10,7 @@ sharedb.types.register(json1.type);
 
 class FlowWebSocket {
   constructor(flowId, email, updateData, subscribeToToolbar) {
-    this.nodeAndEdgeSub(flowId, updateData);
-    this.mouseMovementSub(flowId);
+    console.log('flowId', flowId);
     this.subscribeToToolbar = subscribeToToolbar;
     this.lastUpdated = Date.now();
     this.email = email;
@@ -30,6 +29,9 @@ class FlowWebSocket {
       zoom: 1,
     };
     this.mouseLastUpdated = Date.now();
+    if (!flowId) return;
+    this.nodeAndEdgeSub(flowId, updateData);
+    this.mouseMovementSub(flowId);
     // [{email: ..., name: ..., x: ..., y: ...}]
   }
 

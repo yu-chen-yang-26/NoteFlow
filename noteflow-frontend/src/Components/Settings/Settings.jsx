@@ -8,17 +8,18 @@ import { MdLanguage } from 'react-icons/md';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { RiLockPasswordLine } from 'react-icons/ri';
+import { BsFiletypeCss } from 'react-icons/bs';
 import { AiOutlineMail } from 'react-icons/ai';
 import { BiLogOut } from 'react-icons/bi';
 import { useFlowStorage } from '../../storage/Storage';
-import { useApp } from '../../hooks/useApp';
+import { VITE_AVAI_CSS, useApp } from '../../hooks/useApp';
 import instance from '../../API/api';
 import ResetModal from './ResetModal';
 import { useEffect, useState } from 'react';
 import './Settings.scss';
 
 const Settings = () => {
-  const { user, logout, isMobile } = useApp();
+  const { user, logout, cssValue, setCssValue, isMobile } = useApp();
   const { t, i18n } = useTranslation();
   const lang = useFlowStorage((state) => state.lang);
   const setLang = useFlowStorage((state) => state.setLang);
@@ -130,6 +131,31 @@ const Settings = () => {
               style={{ marginRight: '15px' }}
             ></AiOutlineMail>
             <Typography>{user.email}</Typography>
+          </Stack>
+          <Stack direction="row" justifyContent="left" alignItems="center">
+            <BsFiletypeCss
+              size={25}
+              style={{ marginRight: '15px' }}
+            ></BsFiletypeCss>
+            <select
+              className="noteflow-css-selector"
+              value={cssValue}
+              onChange={(e) => {
+                setCssValue(e.target.value);
+              }}
+            >
+              {VITE_AVAI_CSS.map((data, index) => {
+                return (
+                  <option
+                    value={data}
+                    key={`quill-code-css-${index}`}
+                    id={`quill-code-css-${index}`}
+                  >
+                    {data}
+                  </option>
+                );
+              })}
+            </select>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">
             <RiLockPasswordLine
