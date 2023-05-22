@@ -11,7 +11,7 @@ import instance from '../../API/api';
 import { SHA256 } from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
-import TryMe from '../../Components/TryMe/TryMe';
+import TryMe from '../../Components/TryMe/tryMe';
 
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
@@ -24,7 +24,7 @@ const Login = () => {
   const [showLogo, setShowLogo] = useState(false);
   const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
   const [alarms, setAlarms] = useState('');
-  const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
+
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user, isMobile } = useApp();
 
@@ -107,11 +107,32 @@ const Login = () => {
       <div className={`${isMobile ? 'logo-mobile' : 'logo'}`}>
         <SwitchTransition mode="out-in">
           <CSSTransition
-            key={tryme ? 'tryme' : 'logo'}
+            key={showLogo ? 'logo' : 'tryme'}
             classNames="fade"
             timeout={500}
           >
-            <TryMe />
+            {showLogo ? (
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={showTryMe ? 'tryme' : 'h1'}
+                  classNames="fade"
+                  timeout={500}
+                >
+                  {showTryMe ? <TryMe /> : <h1>Try Me</h1>}
+                </CSSTransition>
+              </SwitchTransition>
+            ) : (
+              <div>
+                <img
+                  loading="lazy"
+                  src="assets/logo.png"
+                  alt=""
+                  width="190"
+                  height="190"
+                />
+                <h1>NoteFlow</h1>
+              </div>
+            )}
           </CSSTransition>
         </SwitchTransition>
       </div>
@@ -182,7 +203,9 @@ const Login = () => {
               className="links"
               style={{
                 display: 'flex',
+                // flexDirection: 'column',
                 justifyContent: 'space-between',
+                // alignItems: 'center',
               }}
             >
               <Link
@@ -190,7 +213,7 @@ const Login = () => {
                 style={{
                   color: '#414a4c',
                   cursor: 'pointer',
-                  fontSize: '1vw',
+                  // fontSize: '1vw',
                 }}
                 onClick={() => navigateTo('/forgotPassword')}
               >
@@ -198,7 +221,11 @@ const Login = () => {
               </Link>
               <Link
                 variant="body2"
-                style={{ color: '#414a4c', cursor: 'pointer', fontSize: '1vw' }}
+                style={{
+                  color: '#414a4c',
+                  cursor: 'pointer',
+                  // fontSize: '1vw',
+                }}
                 onClick={() => navigateTo('/register')}
               >
                 {"Don't have an account? Sign Up"}
