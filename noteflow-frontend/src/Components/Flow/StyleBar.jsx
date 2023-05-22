@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -10,29 +10,14 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { useParams } from '../../hooks/useParams';
 import './FlowEditor.scss';
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-start',
-}));
 
 export default function StyleBar({
   nodeId,
-  nodeChangeColor,
-  nodeBorderChangeColor,
-  nodeBorderChangeStoke,
+  nodeChangeStyle,
   handleStyleBarClose,
-  // nodeBorder,
 }) {
-  // const [open, setOpen] = useState(isOpen);
   const [border, setBorder] = useState(2);
-  const { nodeStyleMenuOpen, setNodeStyleMenuOpen } = useParams();
 
   return (
     <Box className="bar">
@@ -48,7 +33,6 @@ export default function StyleBar({
         anchor="right"
         open={true}
       >
-        {/* <DrawerHeader></DrawerHeader> */}
         <List>
           <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
             <IconButton onClick={handleStyleBarClose}>
@@ -66,7 +50,10 @@ export default function StyleBar({
             <Grid item xs={6}>
               <input
                 type="color"
-                onChange={(event) => nodeBorderChangeColor(nodeId, event)}
+                onChange={(event) => {
+                  console.log(nodeId);
+                  nodeChangeStyle(nodeId, event, 'color');
+                }}
               />
             </Grid>
           </Grid>
@@ -78,7 +65,7 @@ export default function StyleBar({
               <Select
                 onChange={(event) => {
                   setBorder(event.target.value);
-                  nodeBorderChangeStoke(nodeId, event);
+                  nodeChangeStyle(nodeId, event, 'stroke');
                 }}
                 value={border}
                 sx={{ height: '25px', width: '50px' }}
@@ -100,7 +87,9 @@ export default function StyleBar({
             <Grid item xs={6}>
               <input
                 type="color"
-                onChange={(event) => nodeChangeColor(nodeId, event)}
+                onChange={(event) =>
+                  nodeChangeStyle(nodeId, event, 'background')
+                }
                 // onChange={data.onChange}
                 // defaultValue={data.color}
               />
