@@ -29,7 +29,7 @@ import instance from '../../API/api';
 import { useApp } from '../../hooks/useApp';
 import './Flow.scss';
 import 'reactflow/dist/style.css';
-import FlowWebSocket from '../../hooks/flowConnection';
+import FlowWebSocket, { convert } from '../../hooks/flowConnection';
 import { useNavigate } from 'react-router-dom';
 import { usePageTab } from '../../hooks/usePageTab';
 import Node from '../Node/Node';
@@ -434,6 +434,12 @@ function Flow() {
         xPort: -x,
         yPort: -y,
         zoom: zoom,
+      });
+      Object.keys(flowWebSocket.mouseTracker).forEach((email) => {
+        if (email !== convert(user.email)) {
+          // 停滯不動的其他人，也需要刷新他們的位置
+          flowWebSocket.receiveLocation(email);
+        }
       });
     }
   }, [x, y, flowWebSocket]);

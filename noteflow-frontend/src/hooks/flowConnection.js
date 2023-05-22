@@ -375,3 +375,4 @@ function deconvert(email) {
 }
 
 export default FlowWebSocket;
+export { convert, deconvert };

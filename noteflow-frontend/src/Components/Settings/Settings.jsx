@@ -38,13 +38,14 @@ const Settings = () => {
   }));
 
   useEffect(() => {
+    if (!user) return;
     const imgInput = document.getElementById('avatar');
     imgInput.addEventListener('change', uploadPhoto);
     setPhotoUrl(user.picture);
     return () => {
       imgInput.removeEventListener('change', uploadPhoto);
     };
-  }, []);
+  }, [user]);
 
   const changeLang = () => {
     i18n.changeLanguage(lang);
@@ -61,7 +62,6 @@ const Settings = () => {
     console.log(imgInput.files);
     const formData = new FormData();
     formData.append('image', file);
-    console.log(formData);
     await instance.post('/user/set-photo', formData).then((res) => {
       if (res.status === 200) {
         setPhotoUrl(`/api/${res.data}`);
