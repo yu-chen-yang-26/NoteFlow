@@ -6,6 +6,7 @@ const PageTabContext = createContext({
   tabList: [],
   addTab: () => {},
   closeTab: () => {},
+  deleteTab: () => {}, //Use when deleting a flow
   toTab: () => {},
 });
 
@@ -53,6 +54,18 @@ const PageTabProvider = (props) => {
     }
   };
 
+  const deleteTab = (id) => {
+    const lastTab = tabList.length == 1;
+    if (lastTab) {
+      setTabList([]);
+    } else {
+      const tabListUpdated = tabList.filter((tab) => tab.objectId !== id);
+      localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
+      setTabList(tabListUpdated);
+    }
+    navigateTo('/home');
+  };
+
   const toTab = (tabId) => {
     const tabObject = tabList.find((tab) => tab.tabId == tabId);
     const type = tabObject.type;
@@ -68,6 +81,7 @@ const PageTabProvider = (props) => {
         addTab,
         closeTab,
         toTab,
+        deleteTab,
         activeTab,
         setActiveTab,
         setTabList,
