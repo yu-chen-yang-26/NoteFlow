@@ -203,9 +203,15 @@ class FlowWebSocket {
   }
 
   close() {
-    this.socket.close();
-    this.mouseSocket.close();
-    clearInterval(this.interval);
+    if (this.socket) {
+      this.socket.close();
+    }
+    if (this.mouseSocket) {
+      this.mouseSocket.close();
+    }
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   editFlowTitle(title) {
