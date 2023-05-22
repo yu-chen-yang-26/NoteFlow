@@ -61,6 +61,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     const connection = new Colab(editorId, user, (members) => {
       setColab(members);
     });
+
     return () => {
       connection.close();
     };
