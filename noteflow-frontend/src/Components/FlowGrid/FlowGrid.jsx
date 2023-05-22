@@ -145,12 +145,23 @@ export default function FlowGrid({ containerRef }) {
   };
 
   const deleteFlow = (id) => {
+    // flowdd = 'yuti@gmail.com-flow-1b6837f7-10d3-4501-9d9c-f5ad8be24f17';
     setTitleToBeDeleted(null);
     setIdToBeDeleted(null);
     setIsAlertOpen(false);
+    console.log(id);
 
-    //delete ID API
-    console.log('Delete Flow Success');
+    instance
+      .post('/flows/delete-flow', { id })
+      .then((res) => {
+        console.log('Delete Flow Success');
+        console.log(flows.filter((flow) => flow.id !== id));
+        setFlows(flows.filter((flow) => flow.id !== id));
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
     if (tabList.find((f) => f.objectId == id)) {
       deleteTab(id);
     }
@@ -161,8 +172,25 @@ export default function FlowGrid({ containerRef }) {
     setIdToBeChanged(null);
     setIsChangeTitleOpen(false);
 
+    instance
+      .get('flows/set-title', { id, title })
+      .then((res) => {
+        setFlows((fs) =>
+          fs.map((flow) => {
+            if (flow.id == id) {
+              flow.name = { title };
+            }
+            return flow;
+          }),
+        );
+        console.log(flows);
+        console.log(res.data);
+        console.log('Change Title Success');
+      })
+      .catch((e) => {
+        console.log(e);
+      });
     //change Title API
-    console.log('Change Title success');
   };
 
   return loading ? (
@@ -205,7 +233,6 @@ export default function FlowGrid({ containerRef }) {
                 multiline
                 value={titleToBeChanged}
                 onChange={(event) => {
-                  console.log(event.target.value);
                   setTitleToBeChanged(event.target.value);
                 }}
               />

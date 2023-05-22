@@ -45,6 +45,7 @@ const nodeTypes = {
 const defaultNodeStyle = {
   borderWidth: '2px',
   borderStyle: 'solid',
+  borderColor: 'black',
   background: 'white',
   borderRadius: 10,
   height: 50,
@@ -75,19 +76,20 @@ function Flow() {
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [flowWebSocket, setFlowWebSocket] = useState(null);
+
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
-  const [changeStyleId, setChangeStyleId] = useState(null);
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
   const [dragNode, setDragNode] = useState({});
-  const [changeLabelId, setChangeLabelId] = useState(null);
+  const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
+  const [changeStyleId, setChangeStyleId] = useState(null);
+  const [changeStyleContent, setChangeStyleContent] = useState(null);
 
   const searchParams = new URLSearchParams(location.search);
   const { user } = useApp();
   const flowId = searchParams.get('id');
 
-  const { addTab } = usePageTab();
+  const { addTab, returnWS } = usePageTab();
 
   const navigateTo = useNavigate();
 
@@ -113,52 +115,44 @@ function Flow() {
   const handleStyleBarClose = () => {
     setIsStyleBarOpen(false);
     setChangeStyleId(null);
+    setChangeStyleContent(null);
   };
 
-  const nodeChangeColor = (id, event) => {
+  const nodeChangeStyle = (id, event, type) => {
+    // setChangeStyleId(id);
+    // console.log(id);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id == id) {
-          node.style = {
-            ...node.style,
-            background: event.target.value,
-          };
+          switch (type) {
+            case 'background':
+              node.style = {
+                ...node.style,
+                background: event.target.value,
+              };
+              setChangeStyleContent(node.style);
+              break;
+            case 'color':
+              node.style = {
+                ...node.style,
+                borderColor: event.target.value,
+              };
+              setChangeStyleContent(node.style);
+              break;
+            case 'stroke':
+              node.style = {
+                ...node.style,
+                borderWidth: event.target.value + 'px',
+              };
+              setChangeStyleContent(node.style);
+              break;
+          }
         }
         return node;
       }),
     );
   };
-
-  const nodeBorderChangeColor = (id, event) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id == id) {
-          node.style = {
-            ...node.style,
-            borderColor: event.target.value,
-          };
-        }
-        return node;
-      }),
-    );
-  };
-
-  const nodeBorderChangeStoke = (id, event) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id == id) {
-          node.style = {
-            ...node.style,
-            borderWidth: event.target.value + 'px',
-          };
-        }
-        return node;
-      }),
-    );
-  };
-
   const onDragOver = useCallback((event) => {
-    // console.log(event);
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
@@ -292,7 +286,7 @@ function Flow() {
       flowConnection.close();
     };
   }, [flowId, user]);
-  //
+
   const rerender = (data) => {
     // setNodes(data.nodes);
     rerenderNodes(data.nodes);
@@ -383,10 +377,6 @@ function Flow() {
       .catch((e) => console.log(e));
   }, [setNodes, flowWebSocket]);
 
-  const changeStyle = () => {
-    setIsStyleBarOpen(true);
-  };
-
   const handleNodeBarOpen = () => {
     setIsNodeBarOpen(true);
   };
@@ -400,16 +390,9 @@ function Flow() {
   };
 
   const editLabel = (id, label) => {
-    setChangeLabelId(id);
-    // const param = [
-    //   {
-    //     id,
-    //     type: "title",
-    //     label,
-    //   },
-    // ];
-    // flowWebSocket.editComponent(param, "node");
+    setChangeLabelId({ id, label });
   };
+
   const [restart, setRestart] = useState(false);
 
   let { x, y, zoom } = useViewport();
@@ -437,6 +420,33 @@ function Flow() {
       });
     }
   }, [x, y, flowWebSocket]);
+
+  useEffect(() => {
+    if (changeLabelId.id) {
+      const param = [
+        {
+          id: changeLabelId.id,
+          type: 'title',
+          label: changeLabelId.label,
+        },
+      ];
+      console.log('edit');
+      flowWebSocket.editComponent(param, 'node');
+    }
+  }, [changeLabelId, flowWebSocket]);
+
+  useEffect(() => {
+    if (changeStyleContent) {
+      const param = [
+        {
+          id: changeStyleId,
+          type: 'style',
+          style: changeStyleContent,
+        },
+      ];
+      flowWebSocket.editComponent(param, 'node');
+    }
+  }, [changeStyleContent, flowWebSocket]);
 
   const handleMouseMove = (e) => {
     if (isEdit || !flowWebSocket) return;
@@ -494,22 +504,6 @@ function Flow() {
           onDragOver={onDragOver}
           onNodesChange={(param) => {
             onNodesChange(param);
-            if (changeLabelId == param[0].id) {
-              param[0] = {
-                ...param[0],
-                type: 'title',
-                label: nodes[param[0].id].data.label,
-              };
-              setChangeLabelId(null);
-            }
-            if (changeStyleId == param[0].id) {
-              param[0] = {
-                ...param[0],
-                type: 'style',
-                style: nodes[param[0].id].style,
-              };
-              setChangeStyleId(null);
-            }
             flowWebSocket.editComponent(param, 'node');
           }}
           onEdgesChange={(param) => {
@@ -535,13 +529,9 @@ function Flow() {
             <StyleBar
               handleStyleBarClose={handleStyleBarClose}
               nodeId={changeStyleId}
-              nodeBorderChangeColor={(id, event) => {
-                nodeBorderChangeColor(id, event);
-              }}
-              nodeBorderChangeStoke={(id, event) => {
-                nodeBorderChangeStoke(id, event);
-              }}
-              nodeChangeColor={(id, event) => nodeChangeColor(id, event)}
+              nodeChangeStyle={(id, event, type) =>
+                nodeChangeStyle(id, event, type)
+              }
             />
           ) : null}
           {isNodeBarOpen ? (
