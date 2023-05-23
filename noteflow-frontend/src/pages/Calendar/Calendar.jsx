@@ -10,19 +10,16 @@ import Typography from '@mui/material/Typography';
 import './Calendar.scss';
 import { useTranslation } from 'react-i18next';
 import { Editor } from '../../Components/Editor/Editor';
-import { useQuill } from '../../API/useQuill';
 import { useApp } from '../../hooks/useApp';
-import { Colab } from '../../API/Colab';
 import { useState, useEffect } from 'react';
 import instance from '../../API/api';
 
 const Calendar = () => {
-  const { user, isMobile } = useApp();
+  const { isMobile } = useApp();
   const { t } = useTranslation();
   const [nodes, setNodes] = useState([]);
-  const { OpenEditor, QuillRef } = useQuill();
   const [editorId, setEditorId] = useState(null);
-
+  const [intervalId, setIntervalId] = useState(null);
   //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
   const [mobileEditorDisplay, setMobileEditorDisplay] = useState(false);
 
@@ -46,6 +43,10 @@ const Calendar = () => {
       height: '1px',
       backgroundColor: '#E0E0E0',
     },
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   }));
   const getDate = () => {
     const today = new Date();
@@ -55,21 +56,61 @@ const Calendar = () => {
     const dateString = year + '-' + month + '-' + day;
     return dateString;
   };
-  const [colab, setColab] = useState([]);
+  const getTime = (time) => {
+    const now = new Date();
+    const timeDiff = now - time;
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor(timeDiff / (1000 * 60));
+    if (days >= 1) {
+      return { time: days, unit: days === 1 ? 'day' : 'days' };
+    } else if (hours >= 1) {
+      return { time: hours, unit: hours === 1 ? 'hour' : 'hours' };
+    } else {
+      return { time: minutes, unit: minutes <= 1 ? 'minute' : 'minutes' };
+    }
+  };
   const toNode = (id) => {
     setEditorId(id);
   };
-  useEffect(() => {
+  const getNodes = (flag) => {
     instance
       .get('/library')
       .then((res) => {
-        setNodes([...nodes, ...res.data]);
-        setEditorId([...nodes, ...res.data][0].id);
+        console.log('fetch');
+        setNodes(res.data);
+        if (res.data.length !== 0 && flag === 0) {
+          setEditorId(res.data[0].id);
+        }
       })
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  };
+  const createInterval = () => {
+    const interval = setInterval(() => {
+      getNodes(1);
+    }, 2000);
+    setIntervalId(interval);
+  };
+  useEffect(() => {
+    if (intervalId === null) {
+      getNodes(0);
+      createInterval();
+    } else if (intervalId === '') {
+      createInterval();
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [intervalId]);
+  const [date, setDate] = useState(dayjs(getDate()));
+  const handleChange = (selectedDate) => {
+    setDate(selectedDate);
+    clearInterval(intervalId);
+    setIntervalId('');
+  };
+
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
       {/* <Grid item xs={6}> */}
@@ -87,9 +128,10 @@ const Calendar = () => {
             />
           ) : (
             <StaticDatePicker
-              defaultValue={dayjs(getDate())}
+              value={date}
               autoFocus={true}
               sx={{ width: '100%' }}
+              onChange={handleChange}
             />
           )}
         </LocalizationProvider>
@@ -112,20 +154,38 @@ const Calendar = () => {
           overflowY: 'scroll',
         }}
       >
-        {nodes.map((node) => (
-          <NodeButton
-            onClick={() => {
-              toNode(node.id);
-              if (isMobile === true) {
-                setMobileEditorDisplay(true);
-              }
-            }}
-            key={node.id}
-            selected={node.id === editorId}
-          >
-            {node.name} {t('Last Edit Time:')} {node.time} {t('hours')}
-          </NodeButton>
-        ))}
+        {nodes
+          .filter((node) => {
+            if (date === '') {
+              return true;
+            }
+            return (
+              dayjs(node.updateAt).format('YYYY-MM-DD') ===
+              date.format('YYYY-MM-DD')
+            );
+          })
+          .map((node) => {
+            const editTime = getTime(node.updateAt);
+            return (
+              <NodeButton
+                className="node-button"
+                onClick={() => {
+                  toNode(node.id);
+                  if (isMobile === true) {
+                    setMobileEditorDisplay(true);
+                  }
+                }}
+                key={node.id}
+                selected={node.id === editorId}
+              >
+                <Typography sx={{ fontSize: '12px' }}>{node.name}</Typography>
+                <Typography sx={{ fontSize: '12px' }}>
+                  {t('Last Edit Time:')} {editTime.time}
+                  {' ' + t(editTime.unit) + t('ago')}
+                </Typography>
+              </NodeButton>
+            );
+          })}
       </Grid>
       <Grid
         item
@@ -145,9 +205,6 @@ const Calendar = () => {
           handleDrawerClose={() => {
             setMobileEditorDisplay(false);
           }}
-          QuillRef={QuillRef}
-          colab={colab}
-          // sx={{ height: '100%' }}
         />
       </Grid>
     </Grid>
