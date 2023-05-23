@@ -10,12 +10,12 @@ sharedb.types.register(json1.type);
 
 class FlowWebSocket {
   constructor(flowId, email, updateData, subscribeToToolbar) {
-    this.nodeAndEdgeSub(flowId, updateData);
-    this.mouseMovementSub(flowId);
+    console.log('flowId', flowId);
     this.subscribeToToolbar = subscribeToToolbar;
     this.lastUpdated = Date.now();
     this.email = email;
     this.mounted = {};
+    this.mounted_list = {};
     this.mouseTracker = {};
     this.self = {
       xPort: 0,
@@ -29,6 +29,9 @@ class FlowWebSocket {
       zoom: 1,
     };
     this.mouseLastUpdated = Date.now();
+    if (!flowId) return;
+    this.nodeAndEdgeSub(flowId, updateData);
+    this.mouseMovementSub(flowId);
     // [{email: ..., name: ..., x: ..., y: ...}]
   }
 
@@ -59,14 +62,17 @@ class FlowWebSocket {
     if (!background) return;
     if (email in this.mouseTracker) {
       // let divElement = document.createElement('div');
-      let divElement = document.querySelector(`#mouse-dot-${email}`);
-      if (!divElement) {
+      let divElement;
+      if (!(email in this.mounted_list)) {
+        this.mounted_list[email] = true;
         divElement = await FlowWebSocket.createInstance(email, 'mouse-dot');
         background.appendChild(divElement);
       }
       divElement = document.querySelector(`#mouse-dot-${email}`);
 
       const other = this.mouseTracker[email];
+
+      if (!divElement || !other) return;
 
       const { xPort, yPort, left, top, width, height, zoom, x, y } = this.self;
 
@@ -197,9 +203,15 @@ class FlowWebSocket {
   }
 
   close() {
-    this.socket.close();
-    this.mouseSocket.close();
-    clearInterval(this.interval);
+    if (this.socket) {
+      this.socket.close();
+    }
+    if (this.mouseSocket) {
+      this.mouseSocket.close();
+    }
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   editFlowTitle(title) {
@@ -274,6 +286,41 @@ class FlowWebSocket {
         ].reduce(json1.type.compose, null);
 
         break;
+      case 'title':
+        console.log('changing title');
+        if (type === 'edge') throw Error('看不懂');
+
+        let node =
+          this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
+        node.data.label = param[0].label;
+        console.log('changing title');
+
+        op = [
+          json1.replaceOp(
+            [type === 'node' ? 'nodes' : 'edges', param[0].id.toString()],
+            true,
+            node,
+          ),
+        ].reduce(json1.type.compose, null);
+        console.log(node);
+        break;
+      case 'style':
+        console.log('changing style');
+        if (type === 'edge') throw Error('看不懂');
+
+        let styleNode =
+          this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
+        styleNode.style = param[0].style;
+
+        op = [
+          json1.replaceOp(
+            [type === 'node' ? 'nodes' : 'edges', param[0].id.toString()],
+            true,
+            styleNode,
+          ),
+        ].reduce(json1.type.compose, null);
+        console.log(styleNode);
+        break;
       case 'select':
         // if (type === 'edges') return console.log('窩還沒做 qq');
         currentNode =
@@ -328,3 +375,4 @@ function deconvert(email) {
 }
 
 export default FlowWebSocket;
+export { convert, deconvert };

@@ -3,6 +3,25 @@ import { Quill } from 'react-quill';
 import './EditorToolbar.scss';
 import ImageResize from 'quill-image-resize-module-react';
 import QuillCursors from 'quill-cursors';
+import hljs from 'highlight.js';
+import javascript from 'highlight.js/lib/languages/javascript';
+import cpp from 'highlight.js/lib/languages/cpp';
+import python from 'highlight.js/lib/languages/python';
+import 'highlight.js/styles/agate.css';
+
+const langReg = {
+  javascript: javascript,
+  python: python,
+  cpp: cpp,
+};
+
+Object.keys(langReg).forEach((key) => {
+  hljs.registerLanguage(key, langReg[key]);
+});
+
+hljs.configure({
+  languages: ['javascript', 'python', 'c', 'c++'],
+});
 
 const CustomUndo = () => (
   <svg viewBox="0 0 18 18">
@@ -109,6 +128,11 @@ export const modules = {
     },
   },
   cursors: true,
+  syntax: {
+    highlight: (text) => {
+      return hljs.highlightAuto(text).value;
+    },
+  },
 };
 
 // Formats objects for setting up the Quill editor
@@ -132,6 +156,7 @@ export const formats = [
   'color',
   'code-block',
   'formula',
+  'css',
 ];
 
 let icons = Quill.import('ui/icons');

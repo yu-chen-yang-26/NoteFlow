@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 
 const UserContext = createContext({
   user: {},
+  cssValue: '',
   logout: () => {},
+  setCssValue: () => {},
   refetchFromLocalStorage: () => {},
 });
 
@@ -20,12 +22,16 @@ const getRandomPicture = (name) => {
   return `/assets/avatar/${Math.ceil(hash % 7)}.png`;
 };
 
+let { VITE_AVAI_CSS } = import.meta.env;
+VITE_AVAI_CSS = JSON.parse(VITE_AVAI_CSS);
+
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
   const [lang, setLang] = useState('zh');
   const { i18n } = useTranslation();
 
   const [rerender, setRerender] = useState(false);
+  const [cssValue, setCssValue] = useState(VITE_AVAI_CSS[0]);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -44,19 +50,33 @@ const UserProvider = (props) => {
         if (!user.logined && location.pathname !== '/resetPassword') {
           navigate('/');
         }
-
-        if (!user.picture) {
-          user.picture = getRandomPicture(user.email);
-        }
         setUser({
           ...user,
-          picture: `/api/${user.picture}`,
+          picture: user.picture
+            ? `/api/${user.picture}`
+            : getRandomPicture(user.email),
         });
       })
       .catch((e) => {
         navigate('/');
       });
   }, [rerender]);
+
+  useEffect(() => {
+    let key = localStorage.getItem('noteflow-quill-css');
+    if (!VITE_AVAI_CSS.includes(key)) {
+      localStorage.setItem('noteflow-quill-css', VITE_AVAI_CSS[0]);
+      key = VITE_AVAI_CSS[0];
+    }
+    setCssValue(key);
+  }, []);
+
+  useEffect(() => {
+    if (!cssValue) return;
+    console.log(`Change css style to ${cssValue}`);
+    import(`../../node_modules/highlight.js/styles/${cssValue}`);
+    localStorage.setItem('noteflow-quill-css', cssValue);
+  }, [cssValue]);
 
   const refetchFromLocalStorage = () => {
     setRerender((prev) => !prev);
@@ -70,9 +90,17 @@ const UserProvider = (props) => {
       setLang('zh');
     }
   };
+
   return (
     <UserContext.Provider
-      value={{ user, refetchFromLocalStorage, logout, changeLang }}
+      value={{
+        user,
+        refetchFromLocalStorage,
+        logout,
+        changeLang,
+        cssValue,
+        setCssValue,
+      }}
       {...props}
     />
   );
@@ -97,4 +125,4 @@ const useApp = () => {
   return { ...userContext, ...mediaContext };
 };
 
-export { useApp, UserProvider, MediaProvider, getRandomPicture };
+export { useApp, UserProvider, MediaProvider, getRandomPicture, VITE_AVAI_CSS };

@@ -18,6 +18,8 @@ import ReactFlow, {
 import CustomNode from '../../Components/Flow/Node';
 import ToolBar from '../../Components/Flow/ToolBar';
 import StyleBar from '../../Components/Flow/StyleBar';
+import NodeBar from '../../Components/Flow/NodeBar';
+
 import PageTab from '../../Components/PageTab/PageTab';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Resizable } from 'react-resizable';
@@ -27,7 +29,7 @@ import instance from '../../API/api';
 import { useApp } from '../../hooks/useApp';
 import './Flow.scss';
 import 'reactflow/dist/style.css';
-import FlowWebSocket from '../../hooks/flowConnection';
+import FlowWebSocket, { convert } from '../../hooks/flowConnection';
 import { useNavigate } from 'react-router-dom';
 import { usePageTab } from '../../hooks/usePageTab';
 import Node from '../Node/Node';
@@ -41,7 +43,9 @@ const nodeTypes = {
 // };
 
 const defaultNodeStyle = {
-  border: '2px solid',
+  borderWidth: '2px',
+  borderStyle: 'solid',
+  borderColor: 'black',
   background: 'white',
   borderRadius: 10,
   height: 50,
@@ -72,20 +76,160 @@ function Flow() {
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [flowWebSocket, setFlowWebSocket] = useState(null);
+
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
+  const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
+  const [dragNode, setDragNode] = useState({});
+  const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
+  const [changeStyleId, setChangeStyleId] = useState(null);
+  const [changeStyleContent, setChangeStyleContent] = useState(null);
+
   const searchParams = new URLSearchParams(location.search);
   const { user } = useApp();
   const flowId = searchParams.get('id');
 
-  const { addTab } = usePageTab();
+  const { addTab, returnWS } = usePageTab();
 
   const navigateTo = useNavigate();
+
+  const onLabelChange = (id, event) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id == id) {
+          node.data = {
+            ...node.data,
+            label: event.target.value,
+          };
+        }
+        return node;
+      }),
+    );
+  };
+
+  const openStyleBar = (id) => {
+    setIsStyleBarOpen(true);
+    setChangeStyleId(id);
+  };
+
+  const handleStyleBarClose = () => {
+    setIsStyleBarOpen(false);
+    setChangeStyleId(null);
+    setChangeStyleContent(null);
+  };
+
+  const nodeChangeStyle = (id, event, type) => {
+    // setChangeStyleId(id);
+    // console.log(id);
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id == id) {
+          switch (type) {
+            case 'background':
+              node.style = {
+                ...node.style,
+                background: event.target.value,
+              };
+              setChangeStyleContent(node.style);
+              break;
+            case 'color':
+              node.style = {
+                ...node.style,
+                borderColor: event.target.value,
+              };
+              setChangeStyleContent(node.style);
+              break;
+            case 'stroke':
+              node.style = {
+                ...node.style,
+                borderWidth: event.target.value + 'px',
+              };
+              setChangeStyleContent(node.style);
+              break;
+          }
+        }
+        return node;
+      }),
+    );
+  };
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback((event) => {
+    event.preventDefault();
+
+    const type = event.dataTransfer.getData('application/reactflow');
+    console.log(type);
+    if (typeof type === 'undefined' || !type) {
+      return;
+    }
+    const position = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    instance
+      .post('/nodes/new-node')
+      .then((res) => {
+        console.log('res:', res.data);
+        const editorId = res.data.nodeId;
+        const newNode = {
+          id: nodeId.current.toString(),
+          data: {
+            label: dragNode.name,
+            toolbarPosition: Position.Right,
+            openStyleBar: (id) => {
+              openStyleBar(id);
+            },
+            onLabelChange: (id, event) => {
+              onLabelChange(id, event);
+            },
+            editLabel: (id, label) => {
+              editLabel(id, label);
+            },
+            flowWebSocket,
+          },
+
+          type: 'CustomNode',
+          position,
+          style: defaultNodeStyle,
+          class: 'Node',
+          editorId: editorId,
+        };
+        setNodes((nds) => {
+          nds.concat(newNode);
+          console.log(nodes);
+        });
+        // webSocket
+        flowWebSocket.addComponent(newNode, 'node');
+      })
+      .catch((e) => console.log(e));
+  });
 
   const onResize = (event, { element, size, handle }) => {
     setNodeWidth(size.width);
     console.log(size.width);
+  };
+
+  const rerenderNodes = (nodes) => {
+    nodes.map((node) => {
+      node.data = {
+        ...node.data,
+        openStyleBar: (id) => {
+          openStyleBar(id);
+        },
+        onLabelChange: (id, event) => {
+          onLabelChange(id, event);
+        },
+        editLabel: (id, label) => {
+          editLabel(id, label);
+        },
+      };
+      return node;
+    });
+    setNodes(nodes);
   };
 
   const trackerCallback = useCallback(
@@ -143,9 +287,10 @@ function Flow() {
       flowConnection.close();
     };
   }, [flowId, user]);
-  //
+
   const rerender = (data) => {
-    setNodes(data.nodes);
+    // setNodes(data.nodes);
+    rerenderNodes(data.nodes);
     setEdges(data.edges);
     setTitle(data.name);
     const node_ids = new Array(data.nodes.length);
@@ -208,7 +353,19 @@ function Flow() {
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
-          data: { label: 'Untitle', toolbarPosition: Position.Top },
+          data: {
+            label: 'Untitle',
+            toolbarPosition: Position.Top,
+            openStyleBar: (id) => {
+              openStyleBar(id);
+            },
+            onLabelChange: (id, event) => {
+              onLabelChange(id, event);
+            },
+            editLabel: (id, label) => {
+              editLabel(id, label);
+            },
+          },
           type: 'CustomNode',
           position: { x: xPos.current, y: yPos.current },
           style: defaultNodeStyle,
@@ -221,14 +378,23 @@ function Flow() {
       .catch((e) => console.log(e));
   }, [setNodes, flowWebSocket]);
 
-  const changeStyle = () => {
-    setIsStyleBarOpen(true);
+  const handleNodeBarOpen = () => {
+    setIsNodeBarOpen(true);
+  };
+  const handleNodeBarClose = () => {
+    setIsNodeBarOpen(false);
   };
 
   const onSave = (title) => {
     flowWebSocket.editFlowTitle(title);
     setBack(true);
   };
+
+  const editLabel = (id, label) => {
+    setChangeLabelId({ id, label });
+  };
+
+  const [restart, setRestart] = useState(false);
 
   let { x, y, zoom } = useViewport();
 
@@ -253,8 +419,41 @@ function Flow() {
         yPort: -y,
         zoom: zoom,
       });
+      Object.keys(flowWebSocket.mouseTracker).forEach((email) => {
+        if (email !== convert(user.email)) {
+          // 停滯不動的其他人，也需要刷新他們的位置
+          flowWebSocket.receiveLocation(email);
+        }
+      });
     }
   }, [x, y, flowWebSocket]);
+
+  useEffect(() => {
+    if (changeLabelId.id) {
+      const param = [
+        {
+          id: changeLabelId.id,
+          type: 'title',
+          label: changeLabelId.label,
+        },
+      ];
+      console.log('edit');
+      flowWebSocket.editComponent(param, 'node');
+    }
+  }, [changeLabelId, flowWebSocket]);
+
+  useEffect(() => {
+    if (changeStyleContent) {
+      const param = [
+        {
+          id: changeStyleId,
+          type: 'style',
+          style: changeStyleContent,
+        },
+      ];
+      flowWebSocket.editComponent(param, 'node');
+    }
+  }, [changeStyleContent, flowWebSocket]);
 
   const handleMouseMove = (e) => {
     if (isEdit || !flowWebSocket) return;
@@ -308,6 +507,8 @@ function Flow() {
           className="NodePanel"
           nodes={nodes}
           edges={edges}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
           onNodesChange={(param) => {
             onNodesChange(param);
             flowWebSocket.editComponent(param, 'node');
@@ -331,11 +532,27 @@ function Flow() {
           nodeTypes={nodeTypes}
           // edgeTypes={edgeTypes}
         >
+          {isStyleBarOpen ? (
+            <StyleBar
+              handleStyleBarClose={handleStyleBarClose}
+              nodeId={changeStyleId}
+              nodeChangeStyle={(id, event, type) =>
+                nodeChangeStyle(id, event, type)
+              }
+            />
+          ) : null}
+          {isNodeBarOpen ? (
+            <NodeBar
+              handleNodeBarClose={handleNodeBarClose}
+              addNode={setDragNode}
+            />
+          ) : null}
           <ToolBar
             setTitle={setTitle}
             title={title}
             addNode={onAdd}
             onSave={onSave}
+            handleNodeBarOpen={handleNodeBarOpen}
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle);
             }}
@@ -344,7 +561,7 @@ function Flow() {
             subRef={subRef}
             isEdit={isEdit}
           />
-          {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null}
+          {/* {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null} */}
           <MiniMap nodeStrokeWidth={10} zoomable pannable />
           <Controls />
           <Background color="#ccc" variant={bgVariant} />

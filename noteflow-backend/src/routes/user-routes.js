@@ -49,7 +49,7 @@ router
   .get('/flows/get-colab-list', logined, authorized, flow.getColabList)
   .post('/flows/revise-colab-list', logined, authorized, flow.reviseColabList)
   .get('/flows/get-title', logined, flow.getFlowTitle)
-  .get('/flows/set-tile', logined, authorized, flow.setFlowTitle)
+  .get('/flows/set-title', logined, authorized, flow.setFlowTitle)
   .get('/library', logined, node.getLibrary)
   .get('/library/is-favorite', logined, node.isFavorite)
   .post('/library/add-node', logined, node.addNodeToLibrary)
