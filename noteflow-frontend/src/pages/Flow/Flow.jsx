@@ -190,7 +190,6 @@ function Flow() {
             editLabel: (id, label) => {
               editLabel(id, label);
             },
-            flowWebSocket,
           },
 
           type: 'CustomNode',
