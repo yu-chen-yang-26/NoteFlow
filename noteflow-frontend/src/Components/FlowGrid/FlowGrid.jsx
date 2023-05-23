@@ -255,7 +255,7 @@ export default function FlowGrid({ containerRef }) {
           className={`${isMobile ? 'flow-container-mobile' : 'flow-container'}`}
         >
           {flows.map((flow, key) => (
-            <ClickAwayListener onClickAway={handleCloseContextMenu}>
+            <ClickAwayListener key={key} onClickAway={handleCloseContextMenu}>
               <div className="grid-item" key={key}>
                 <div
                   className="grid-item"
@@ -283,7 +283,7 @@ export default function FlowGrid({ containerRef }) {
                   <Menu
                     // autoFocusItem={open}
                     open={isMenuOpen == flow.id}
-                    // anchorEl={target}
+                    anchorEl={target}
                     anchorOrigin={{
                       vertical: 'center',
                       horizontal: 'center',
