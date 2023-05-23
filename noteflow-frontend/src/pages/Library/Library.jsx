@@ -128,21 +128,32 @@ const Library = () => {
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
-        {nodes.map((node) => (
-          <NodeButton
-            className="node-button"
-            onClick={() => {
-              toNode(node.id);
-              if (isMobile === true) {
-                setMobileEditorDisplay(true);
-              }
-            }}
-            key={node.id}
-            selected={node.id === editorId}
-          >
-            {node.name} {t('Last Edit Time:')} {node.time} {t('hours')}
-          </NodeButton>
-        ))}
+
+        {nodes.map((node) => {
+          const date = new Date();
+          date.setTime(node.updateAt);
+          const formattedDate = date.toLocaleString();
+          return (
+            <NodeButton
+              className="node-button"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+              onClick={() => {
+                toNode(node.id);
+                if (isMobile === true) {
+                  setMobileEditorDisplay(true);
+                }
+              }}
+              key={node.id}
+              selected={node.id === editorId}
+            >
+              <div> {node.name} </div>
+              <div>{formattedDate} </div>
+            </NodeButton>
+          );
+        })}
       </Grid>{' '}
       <Grid
         item

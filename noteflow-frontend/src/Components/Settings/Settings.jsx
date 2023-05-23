@@ -11,7 +11,6 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import { BsFiletypeCss } from 'react-icons/bs';
 import { AiOutlineMail } from 'react-icons/ai';
 import { BiLogOut } from 'react-icons/bi';
-import { useFlowStorage } from '../../storage/Storage';
 import { VITE_AVAI_CSS, useApp } from '../../hooks/useApp';
 import instance from '../../API/api';
 import ResetModal from './ResetModal';
@@ -21,8 +20,7 @@ import './Settings.scss';
 const Settings = () => {
   const { user, logout, cssValue, setCssValue, isMobile } = useApp();
   const { t, i18n } = useTranslation();
-  const lang = useFlowStorage((state) => state.lang);
-  const setLang = useFlowStorage((state) => state.setLang);
+
   const [show, setShow] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
 
@@ -48,12 +46,18 @@ const Settings = () => {
   }, [user]);
 
   const changeLang = () => {
-    i18n.changeLanguage(lang);
-    if (lang === 'zh') {
-      setLang('en');
-    } else {
-      setLang('zh');
-    }
+    const newlang = (() => {
+      switch (i18n.language) {
+        case 'zh':
+          return 'en';
+        case 'en':
+          return 'zh';
+        default:
+          return '';
+      }
+    })();
+    localStorage.setItem('noteflow-lang', newlang);
+    i18n.changeLanguage(newlang);
   };
 
   const uploadPhoto = async () => {
@@ -169,7 +173,9 @@ const Settings = () => {
           <Stack direction="row" justifyContent="left" alignItems="center">
             <MdLanguage size={25} style={{ marginRight: '15px' }}></MdLanguage>
             <SettingsButton onClick={() => changeLang()}>
-              {t('Switch to ' + (lang === 'zh' ? 'Chinese' : 'English'))}
+              {t(
+                'Switch to ' + (i18n.language === 'en' ? 'Chinese' : 'English'),
+              )}
             </SettingsButton>
           </Stack>
           <Stack direction="row" justifyContent="left" alignItems="center">

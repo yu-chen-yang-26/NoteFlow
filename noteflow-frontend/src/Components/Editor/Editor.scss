@@ -15,7 +15,8 @@
     }
 
     .title-input {
-      width: 40%;
+      width: 15vw;
+      min-width: 15vw;
       margin-left: 10px;
       margin-bottom: 0;
       font-size: 30px;
@@ -30,7 +31,7 @@
       }
 
       &:focus + .focus-border {
-        width: 20vw;
+        width: 15vw;
         transition: 0.4s;
       }
     }
@@ -42,6 +43,23 @@
       height: 2px;
       background-color: #7b7b7b;
       transition: 0.4s;
+    }
+
+    // .active + .focus-border {
+    //   position: absolute;
+    //   bottom: 15px;
+    //   left: 50px;
+    //   width: 0px;
+    //   height: 2px;
+    //   background-color: #7b7b7b;
+    //   transition: 0.4s;
+    // }
+
+    .status-holder {
+      min-width: 20px;
+      width: 100px;
+      padding: 5px 0 0 0;
+      // margin
     }
 
     .users {

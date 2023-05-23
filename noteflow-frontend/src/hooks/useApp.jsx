@@ -4,6 +4,7 @@ import instance from '../API/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useFlowStorage } from '../storage/Storage';
 
 const UserContext = createContext({
   user: {},
@@ -27,11 +28,11 @@ VITE_AVAI_CSS = JSON.parse(VITE_AVAI_CSS);
 
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
-  const [lang, setLang] = useState('zh');
   const { i18n } = useTranslation();
 
   const [rerender, setRerender] = useState(false);
   const [cssValue, setCssValue] = useState(VITE_AVAI_CSS[0]);
+
   const navigate = useNavigate();
 
   const logout = () => {
@@ -69,6 +70,15 @@ const UserProvider = (props) => {
       key = VITE_AVAI_CSS[0];
     }
     setCssValue(key);
+
+    const lang = localStorage.getItem('noteflow-lang');
+    console.log(i18n.language);
+    if (!lang) {
+      i18n.changeLanguage(i18n.languages[0]);
+      localStorage.setItem('noteflow-lang', i18n.languages[0]);
+    } else {
+      i18n.changeLanguage(lang);
+    }
   }, []);
 
   useEffect(() => {
@@ -82,22 +92,12 @@ const UserProvider = (props) => {
     setRerender((prev) => !prev);
   };
 
-  const changeLang = () => {
-    i18n.changeLanguage(lang);
-    if (lang === 'zh') {
-      setLang('en');
-    } else {
-      setLang('zh');
-    }
-  };
-
   return (
     <UserContext.Provider
       value={{
         user,
         refetchFromLocalStorage,
         logout,
-        changeLang,
         cssValue,
         setCssValue,
       }}
