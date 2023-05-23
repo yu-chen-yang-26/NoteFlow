@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoteFlow</title>
+    <link rel="logo" href="assets/favicon.ico" />
+      <style>
+    :root {
+      font-family:  sans-serif;
+    }
+    .container {
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      background-color: #cccccc;
+    }
+    .email {
+      /* display: flex; gmail does not support flex */
+      /* flex-direction: column; */
+      width: 80%;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    .email-header {
+      /* display: flex; */
+      width: 100%;
+      background-color: #333;
+      color: #fff;
+      padding: 1px;
+      text-align: left;
+      justify-content: center;
+    }
+    .email-header-holder {
+      width: 80%;
+      /* border: 1px solid red; */
+      padding: 0 0 0 10px;
+    }
+    .noteflow-logo-container {
+      width: 100%;
+      height: 80px;
+      padding: 20px 0;
+      position: relative;
+    }
+    .noteflow-logo {
+      width: 80px;
+      aspect-ratio: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+    }
+    .separator {
+      width: 100%;
+      height: 2px;
+      background-color: #cccccc;
+      margin: 10px 0 20px;
+    }
+    .email-footer {
+      width: 100%;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      margin: 20px 0 0 0;
+      padding: 2px 0;
+    }
+
+    .change-password-holder {
+      background-color: #c7d7d3;
+      display: inline-block;
+    }
+
+    .change-password {
+      color: black;
+      text-decoration: none;
+      margin: 5px 0;
+    }
+  </style>
+  </head>
+  <body>
+    <div id="root">
+       <div class="container">
+          <div class="email">
+            <div class="email-header">
+              <div class="email-header-holder">
+                <h2>重設 Noteflow 密碼</h2>
+              </div>
+            </div>
+            <div class="noteflow-logo-container">
+              <img class="noteflow-logo" src="assets/logo.png" alt="Noteflow logo" />
+            </div>
+            <div class="separator"></div>
+            <div class="email-body">
+              <div id="greetings">#ABC 您好</div>
+              <div>有人從 Noteflow 的網站上希望重新設定您的帳號密碼。如果是您本人需要重設密碼的話，請點選以下連結：</div>
+              <div class="change-password-holder">
+                <a class="change-password" href="${redirect}">變更密碼</a>
+              </div>
+              <div>若您未曾要求重新設定，請直接忽略此信即可。忽略此信後密碼不會被修改。</div>
+            </div>
+            <div class="email-footer">
+              <h3>軟體開發方法</h3>
+              <h3>第六組</h3>
+            </div>
+          </div>
+        </div>
+    </div>
+  </body>
+</html>

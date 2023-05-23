@@ -1,16 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import { experimentalStyled as styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
-import { grey } from "@mui/material/colors";
-import instance from "../../API/api";
-import { useApp } from "../../hooks/useApp";
-import { useTranslation } from "react-i18next";
-import { usePageTab } from "../../hooks/usePageTab";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
-import BackToTopButton from "../../Components/BacktoTopButton/BackToTopButton.jsx";
-import "./FlowGrid.scss";
+import React, { useEffect, useState, useRef } from 'react';
+import { experimentalStyled as styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import Menu from '@mui/material/Menu';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { useNavigate } from 'react-router-dom';
+import { grey } from '@mui/material/colors';
+import instance from '../../API/api';
+import { useApp } from '../../hooks/useApp';
+import { useTranslation } from 'react-i18next';
+import { usePageTab } from '../../hooks/usePageTab';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import BackToTopButton from '../BackToTopButton/BackToTopButton';
+import './FlowGrid.scss';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function FlowGrid({ containerRef }) {
   const { t, i18n } = useTranslation();
@@ -18,19 +31,28 @@ export default function FlowGrid({ containerRef }) {
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isChangeTitleOpen, setIsChangeTitleOpen] = useState(false);
+  const [titleToBeDeleted, setTitleToBeDeleted] = useState(null);
+  const [idToBeDeleted, setIdToBeDeleted] = useState(null);
+  const [titleToBeChanged, setTitleToBeChanged] = useState(null);
+  const [idToBeChanged, setIdToBeChanged] = useState(null);
+  const [target, setTarget] = useState({});
+
   const navigateTo = useNavigate();
-  const { tabList, addTab } = usePageTab();
+  const { tabList, addTab, deleteTab } = usePageTab();
   const loadingCheckPointRef = useRef(null);
   const FlowButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[100]),
-    backgroundColor: "white",
-    border: "1px black solid",
-    "&:hover": {
+    backgroundColor: 'white',
+    border: '1px black solid',
+    '&:hover': {
       backgroundColor: grey[100],
-      border: "1px grey solid",
+      border: '1px grey solid',
     },
-    width: "100%",
-    aspectRatio: "3/2",
+    width: '100%',
+    aspectRatio: '3/2',
   }));
   const options = {
     root: null,
@@ -39,7 +61,7 @@ export default function FlowGrid({ containerRef }) {
   const fetchFlows = async () => {
     const nextPage = page + 1;
     await instance
-      .get("/flows", { params: { page } })
+      .get('/flows', { params: { page } })
       .then((res) => {
         if (res.status === 200) {
           if (res.data.length == 0) {
@@ -82,49 +104,228 @@ export default function FlowGrid({ containerRef }) {
   const toFlow = (flow) => {
     if (!tabList.find((f) => f.objectId == flow.id)) {
       addTab({
-        type: "flow",
+        type: 'flow',
         objectId: flow.id,
-        name: flow.name ? flow.name : "UnTitled",
+        name: flow.name ? flow.name : 'UnTitled',
       }); // name 應該在 flows/create 拿
     }
     console.log(flow);
     navigateTo(`/flow?id=${flow.id}`);
+  };
+  const handleCloseContextMenu = () => {
+    setTarget(null);
+    setIsMenuOpen(null);
+  };
+
+  const openAlert = (id, title) => {
+    setTitleToBeDeleted(title);
+    setIdToBeDeleted(id);
+    setIsAlertOpen(true);
+    setIsMenuOpen(null);
+  };
+
+  const openChangeTitle = (id, title) => {
+    setTitleToBeChanged(title);
+    setIdToBeChanged(id);
+    setIsChangeTitleOpen(true);
+    setIsMenuOpen(null);
+  };
+  const closeAlert = () => {
+    setTitleToBeDeleted(null);
+    setIdToBeDeleted(null);
+    setIsAlertOpen(false);
+    console.log('Cancel Delete Flow');
+  };
+
+  const closeChangeTitle = () => {
+    setTitleToBeChanged(null);
+    setIdToBeChanged(null);
+    setIsChangeTitleOpen(false);
+    // console.log("Cancel Delete Flow");
+  };
+
+  const deleteFlow = (id) => {
+    // flowdd = 'yuti@gmail.com-flow-1b6837f7-10d3-4501-9d9c-f5ad8be24f17';
+    setTitleToBeDeleted(null);
+    setIdToBeDeleted(null);
+    setIsAlertOpen(false);
+    console.log(id);
+
+    instance
+      .post('/flows/delete-flow', { id })
+      .then((res) => {
+        console.log('Delete Flow Success');
+        console.log(flows.filter((flow) => flow.id !== id));
+        setFlows(flows.filter((flow) => flow.id !== id));
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    if (tabList.find((f) => f.objectId == id)) {
+      deleteTab(id);
+    }
+  };
+
+  const changeTitle = (id, title) => {
+    setTitleToBeChanged(null);
+    setIdToBeChanged(null);
+    setIsChangeTitleOpen(false);
+
+    instance
+      .get('flows/set-title', { id, title })
+      .then((res) => {
+        setFlows((fs) =>
+          fs.map((flow) => {
+            if (flow.id == id) {
+              flow.name = { title };
+            }
+            return flow;
+          }),
+        );
+        console.log(flows);
+        console.log(res.data);
+        console.log('Change Title Success');
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    //change Title API
   };
 
   return loading ? (
     <LoadingScreen />
   ) : (
     <>
-      <div
-        className={`${isMobile ? "flow-container-mobile" : "flow-container"}`}
-      >
-        {flows.map((flow, key) => (
-          <div className="grid-item" key={key}>
-            <FlowButton onClick={() => toFlow(flow)}>
-              {flow.thumbnail !== "" ? (
-                <img style={{ objectFit: "cover" }} loading="lazy">
-                  flow.thumbnail
-                </img>
-              ) : (
-                `${t("Last Edit Time")}: ${flow.updateAt} ${t("hours")}`
-              )}
-            </FlowButton>
-            <Typography>{flow.name}</Typography>
-          </div>
-        ))}
-
-        {containerRef?.current && (
-          <BackToTopButton containerRef={containerRef} />
-        )}
-
+      {isAlertOpen || isChangeTitleOpen ? (
+        isAlertOpen ? (
+          <Dialog
+            open={isAlertOpen}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={closeAlert}
+          >
+            <DialogTitle>
+              Do you want to delete the follow {titleToBeDeleted} ?
+            </DialogTitle>
+            <DialogActions>
+              <Button onClick={() => deleteFlow(idToBeDeleted)}>Yes</Button>
+              <Button onClick={closeAlert}>Cancel</Button>
+            </DialogActions>
+          </Dialog>
+        ) : (
+          <Dialog
+            open={isChangeTitleOpen}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={closeChangeTitle}
+            fullWidth="true"
+            maxWidth="sm"
+          >
+            <DialogTitle>Change Name</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                fullWidth
+                variant="standard"
+                label="Flow Name"
+                multiline
+                value={titleToBeChanged}
+                onChange={(event) => {
+                  setTitleToBeChanged(event.target.value);
+                }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  console.log(titleToBeChanged);
+                  changeTitle(idToBeDeleted, titleToBeChanged);
+                }}
+              >
+                Confirm
+              </Button>
+              <Button onClick={closeChangeTitle}>Cancel</Button>
+            </DialogActions>
+          </Dialog>
+        )
+      ) : (
         <div
-          className="loading-checkpoint"
-          ref={loadingCheckPointRef}
-          style={{ visibility: "hidden" }}
+          className={`${isMobile ? 'flow-container-mobile' : 'flow-container'}`}
         >
-          CHECKPOINT
+          {flows.map((flow, key) => (
+            <ClickAwayListener onClickAway={handleCloseContextMenu}>
+              <div className="grid-item" key={key}>
+                <div
+                  className="grid-item"
+                  onContextMenu={(event) => {
+                    setTarget(event.currentTarget);
+                    setIsMenuOpen(flow.id);
+                    event.preventDefault();
+                  }}
+                  key={key}
+                >
+                  <FlowButton
+                    onClick={() => toFlow(flow)}
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
+                  >
+                    {flow.thumbnail !== '' ? (
+                      <img style={{ objectFit: 'cover' }} loading="lazy">
+                        flow.thumbnail
+                      </img>
+                    ) : (
+                      `${t('Last Edit Time')}: ${flow.updateAt} ${t('hours')}`
+                    )}
+                  </FlowButton>
+                  <Typography>{flow.name}</Typography>
+                  <Menu
+                    // autoFocusItem={open}
+                    open={isMenuOpen == flow.id}
+                    // anchorEl={target}
+                    anchorOrigin={{
+                      vertical: 'center',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        openChangeTitle(flow.id, flow.name);
+                      }}
+                    >
+                      Rename
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        openAlert(flow.id, flow.name);
+                      }}
+                    >
+                      Delete
+                    </MenuItem>
+                  </Menu>
+                </div>
+              </div>
+            </ClickAwayListener>
+          ))}
+
+          {containerRef?.current && (
+            <BackToTopButton containerRef={containerRef} />
+          )}
+
+          <div
+            className="loading-checkpoint"
+            ref={loadingCheckPointRef}
+            style={{ visibility: 'hidden' }}
+          >
+            CHECKPOINT
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

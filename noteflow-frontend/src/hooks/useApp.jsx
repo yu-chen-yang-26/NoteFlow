@@ -1,13 +1,15 @@
-import { useContext, createContext, useState, useEffect } from "react";
-import crc32 from "crc-32";
-import instance from "../API/api";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery, useTheme } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { useContext, createContext, useState, useEffect } from 'react';
+import crc32 from 'crc-32';
+import instance from '../API/api';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const UserContext = createContext({
   user: {},
+  cssValue: '',
   logout: () => {},
+  setCssValue: () => {},
   refetchFromLocalStorage: () => {},
 });
 
@@ -20,49 +22,85 @@ const getRandomPicture = (name) => {
   return `/assets/avatar/${Math.ceil(hash % 7)}.png`;
 };
 
+let { VITE_AVAI_CSS } = import.meta.env;
+VITE_AVAI_CSS = JSON.parse(VITE_AVAI_CSS);
+
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
-  const [lang, setLang] = useState("zh");
+  const [lang, setLang] = useState('zh');
   const { i18n } = useTranslation();
 
-  // console.log(user);
   const [rerender, setRerender] = useState(false);
-
+  const [cssValue, setCssValue] = useState(VITE_AVAI_CSS[0]);
   const navigate = useNavigate();
 
   const logout = () => {
-    setUser("");
-    navigate("/");
+    localStorage.removeItem('tabList');
+    setUser('');
+    navigate('/');
   };
+  const location = useLocation();
+
   useEffect(() => {
     instance
-      .get("/user/who-am-i")
+      .get('/user/who-am-i')
       .then((res) => {
         const user = res.data;
-        if (!user.picture) {
-          user.picture = getRandomPicture(user.name);
+
+        if (!user.logined && location.pathname !== '/resetPassword') {
+          navigate('/');
         }
-        setUser(user);
+        setUser({
+          ...user,
+          picture: user.picture
+            ? `/api/${user.picture}`
+            : getRandomPicture(user.email),
+        });
       })
       .catch((e) => {
-        navigate("/");
+        navigate('/');
       });
   }, [rerender]);
+
+  useEffect(() => {
+    let key = localStorage.getItem('noteflow-quill-css');
+    if (!VITE_AVAI_CSS.includes(key)) {
+      localStorage.setItem('noteflow-quill-css', VITE_AVAI_CSS[0]);
+      key = VITE_AVAI_CSS[0];
+    }
+    setCssValue(key);
+  }, []);
+
+  useEffect(() => {
+    if (!cssValue) return;
+    console.log(`Change css style to ${cssValue}`);
+    import(`../../node_modules/highlight.js/styles/${cssValue}`);
+    localStorage.setItem('noteflow-quill-css', cssValue);
+  }, [cssValue]);
 
   const refetchFromLocalStorage = () => {
     setRerender((prev) => !prev);
   };
+
   const changeLang = () => {
     i18n.changeLanguage(lang);
-    if (lang === "zh") {
-      setLang("en");
+    if (lang === 'zh') {
+      setLang('en');
     } else {
-      setLang("zh");
+      setLang('zh');
     }
   };
+
   return (
     <UserContext.Provider
-      value={{ user, refetchFromLocalStorage, logout, changeLang }}
+      value={{
+        user,
+        refetchFromLocalStorage,
+        logout,
+        changeLang,
+        cssValue,
+        setCssValue,
+      }}
       {...props}
     />
   );
@@ -70,7 +108,7 @@ const UserProvider = (props) => {
 
 const MediaProvider = ({ children }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   // console.log(isMobile);
 
   return (
@@ -87,4 +125,4 @@ const useApp = () => {
   return { ...userContext, ...mediaContext };
 };
 
-export { useApp, UserProvider, MediaProvider, getRandomPicture };
+export { useApp, UserProvider, MediaProvider, getRandomPicture, VITE_AVAI_CSS };

@@ -1,53 +1,45 @@
-import React from "react";
-import { useEffect, useRef, useState } from "react";
-import { SwitchTransition, CSSTransition } from "react-transition-group";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Box from "@mui/material/Box";
-import jwt_decode from "jwt-decode";
-import "./Login.scss";
-import instance from "../../API/api";
-import { SHA256 } from "crypto-js";
-import { useNavigate } from "react-router-dom";
-import { useApp } from "../../hooks/useApp";
+import React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { SwitchTransition, CSSTransition } from 'react-transition-group';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Box from '@mui/material/Box';
+import jwt_decode from 'jwt-decode';
+import './Login.scss';
+import instance from '../../API/api';
+import { SHA256 } from 'crypto-js';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from '../../hooks/useApp';
+import TryMe from '../../Components/TryMe/tryMe';
 
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
-  "390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com";
+  '390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com';
 
 const Login = () => {
   const divRef = useRef(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [tryme, setTryme] = useState(false); //切換 logo 以及 tryme
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showLogo, setShowLogo] = useState(false);
+  const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
+  const [alarms, setAlarms] = useState('');
+
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user, isMobile } = useApp();
 
   useEffect(() => {
-    if (user) navigateTo("/home");
+    if (user && user.logined) navigateTo('/home');
   }, [user]);
-  useEffect(() => {
-    instance
-      .get("/user/who-am-i")
-      .then((res) => {
-        if (res.status == 200) {
-          refetchFromLocalStorage();
-          navigateTo("/home");
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []); // user 是 google 回傳的 object, 可以拿去 render profile 頁面
+
   const handleCallbackResponse = (res) => {
     const userObject = jwt_decode(res.credential);
     instance
-      .post("/user/google-login", { user: userObject })
+      .post('/user/google-login', { user: userObject })
       .then((res) => {
         if (res.status == 200) {
           refetchFromLocalStorage();
-          navigateTo("/home");
+          navigateTo('/home');
         }
       })
       .catch((e) => {
@@ -65,20 +57,18 @@ const Login = () => {
       },
     };
     instance
-      .post("/user/login", request)
+      .post('/user/login', request)
       .then((res) => {
-        console.log("ok!");
         refetchFromLocalStorage();
-        navigateTo("/home");
+        navigateTo('/home');
       })
       .catch((e) => {
-        console.log(e);
-        console.log("Login error");
+        if (e.response.status === 401) {
+          setAlarms('*Account or password error');
+        } else if (Math.floor(e.response.status / 100) === 5) {
+          setAlarms('*Internal server error');
+        }
       });
-
-    // navigateTo("/home");
-
-    //
   };
 
   useEffect(() => {
@@ -89,9 +79,8 @@ const Login = () => {
         callback: handleCallbackResponse,
       });
 
-      google.accounts.id.renderButton(document.getElementById("signInDiv"), {
-        theme: "dark",
-        width: "330",
+      google.accounts.id.renderButton(document.getElementById('signInDiv'), {
+        width: '200',
       });
 
       google.accounts.id.prompt();
@@ -99,26 +88,39 @@ const Login = () => {
   }, [divRef.current]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setTryme(true);
+    const timer1 = setTimeout(() => {
+      setShowLogo(true);
     }, 2000);
 
+    const timer2 = setTimeout(() => {
+      setShowTryMe(true);
+    }, 4000);
+
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
   }, []);
 
   return (
-    <div className={`${isMobile ? "login-mobile" : "login"}`}>
-      <div className={`${isMobile ? "logo-mobile" : "logo"}`}>
+    <div className={`${isMobile ? 'login-mobile' : 'login'}`}>
+      <div className={`${isMobile ? 'logo-mobile' : 'logo'}`}>
         <SwitchTransition mode="out-in">
           <CSSTransition
-            key={tryme ? "tryme" : "logo"}
+            key={showLogo ? 'logo' : 'tryme'}
             classNames="fade"
             timeout={500}
           >
-            {tryme ? (
-              <h1>Try Me</h1>
+            {showLogo ? (
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={showTryMe ? 'tryme' : 'h1'}
+                  classNames="fade"
+                  timeout={500}
+                >
+                  {showTryMe ? <TryMe /> : <h1>Try Me</h1>}
+                </CSSTransition>
+              </SwitchTransition>
             ) : (
               <div>
                 <img
@@ -135,14 +137,14 @@ const Login = () => {
         </SwitchTransition>
       </div>
 
-      <div className={`${isMobile ? "info-mobile" : "info"}`}>
+      <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
         <h2>Login</h2>
         <div className="infoContainer">
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            style={{ margin: "10px 15px" }}
+            style={{ margin: '1vh 1vw' }}
           >
             <TextField
               margin="normal"
@@ -172,17 +174,27 @@ const Login = () => {
                 setPassword(e.target.value);
               }}
             />
-
+            <div
+              style={{
+                color: 'red',
+                height: '18px',
+                // border: '1px solid black',
+                textAlign: 'left',
+                padding: '0 5px 0 5px',
+              }}
+            >
+              {alarms}
+            </div>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 2, mb: 2 }}
+              sx={{ mt: 1, mb: 1 }}
               style={{
-                backgroundColor: "#0e1111",
-                color: "white",
-                paddingTop: "2%",
-                textTransform: "none",
+                backgroundColor: '#0e1111',
+                color: 'white',
+                paddingTop: '1vh',
+                textTransform: 'none',
               }}
             >
               Login
@@ -190,24 +202,31 @@ const Login = () => {
             <div
               className="links"
               style={{
-                display: "flex",
-                justifyContent: "space-between",
+                display: 'flex',
+                // flexDirection: 'column',
+                justifyContent: 'space-between',
+                // alignItems: 'center',
               }}
             >
               <Link
                 variant="body2"
                 style={{
-                  color: "#414a4c",
-                  cursor: "pointer",
+                  color: '#414a4c',
+                  cursor: 'pointer',
+                  // fontSize: '1vw',
                 }}
-                onClick={() => navigateTo("/forgotPassword")}
+                onClick={() => navigateTo('/forgotPassword')}
               >
                 Forgot password?
               </Link>
               <Link
                 variant="body2"
-                style={{ color: "#414a4c", cursor: "pointer" }}
-                onClick={() => navigateTo("/register")}
+                style={{
+                  color: '#414a4c',
+                  cursor: 'pointer',
+                  // fontSize: '1vw',
+                }}
+                onClick={() => navigateTo('/register')}
               >
                 {"Don't have an account? Sign Up"}
               </Link>
@@ -223,23 +242,4 @@ const Login = () => {
   );
 };
 
-// const Welcome = ({ mode }) => {
-//   return (
-//     <div className="login">
-//       <div className="login-container">
-//         <div className="logo">
-//           <img src="/src/assets/logo.png" alt="" width="190" height="190" />
-//           <h1>NoteFlow</h1>
-//         </div>
-//         {mode === "0" ? (
-//           <Login />
-//         ) : mode === "1" ? (
-//           <Register />
-//         ) : (
-//           <ForgotPassword />
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
 export { Login };
