@@ -190,7 +190,6 @@ function Flow() {
             editLabel: (id, label) => {
               editLabel(id, label);
             },
-            flowWebSocket,
           },
 
           type: 'CustomNode',
@@ -237,6 +236,7 @@ function Flow() {
     async (tracker, record) => {
       // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
       // 創一個 child element
+      if (!subRef.current) return;
       Object.keys(tracker).forEach((email, index) => {
         if (!(email in record)) {
           record[email] = true;

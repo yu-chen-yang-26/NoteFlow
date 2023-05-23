@@ -35,6 +35,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   const [showSettings, setShowSettings] = useState(false);
   const { user, isMobile } = useApp();
   const [favorite, setFavorite] = useState(false);
+  const [canEdit, setCanEdit] = useState(true);
 
   // 1-Title and content Display
   useEffect(() => {
@@ -83,9 +84,21 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       }
     });
 
+    instance
+      .get(`/nodes/get-colab-list?id=${editorId}`)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((e) => {
+        console.log('wrong:', e);
+        setCanEdit(false);
+      });
+    // setColabInput('');
+
     const connection = new Colab(editorId, user, (members) => {
       setColab(members);
     });
+
     return () => {
       connection.close();
     };
@@ -108,6 +121,14 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       editor.style.display = '';
     }
   }, [showSettings]);
+
+  useEffect(() => {
+    if (!QuillRef.current) return;
+
+    const editor = QuillRef.current.getEditor();
+    if (canEdit) editor.enable(true);
+    else editor.enable(false);
+  }, [canEdit]);
 
   return (
     <div className={`${isMobile ? 'editor-mobile' : 'editor'}`}>
@@ -154,7 +175,9 @@ const Editor = ({ handleDrawerClose, editorId }) => {
         </div>
         <Button
           variant="dark"
-          onClick={() => setShowSettings((state) => !state)}
+          onClick={() => {
+            if (canEdit) setShowSettings((state) => !state);
+          }}
           className="toolBarButton"
         >
           <BsShare size={18} />
@@ -174,6 +197,12 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
         </Button>
 
+        {!canEdit && (
+          <div className="viewOnly" style={{ color: '#828282' }}>
+            view only
+          </div>
+        )}
+
         <div className="users">
           {/* 右上角可愛的大頭貼 */}
           {colab.map((element, index) => {
@@ -187,7 +216,14 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       </div>
       <div className="text-editor">
         <EditorToolbar />
-        {showSettings ? <EditorSettings editorId={editorId} /> : <></>}
+        {showSettings ? (
+          <EditorSettings
+            editorId={editorId}
+            setShowSettings={setShowSettings}
+          />
+        ) : (
+          <></>
+        )}
         <ReactQuill
           theme="snow"
           value={state}

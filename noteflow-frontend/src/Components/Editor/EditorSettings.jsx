@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Backdrop, Box, Fade, Button } from '@mui/material';
+import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import './EditorSettings.scss';
 import instance from '../../API/api';
 
-const Settings = ({ editorId }) => {
+const Settings = ({ editorId, setShowSettings }) => {
   const [allColabs, setAllColabs] = useState(null);
   const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState('');
@@ -37,7 +38,6 @@ const Settings = ({ editorId }) => {
       .then((res) => {
         if (res.status === 200) {
           let canClose = true;
-          console.log(res.data);
           res.data.map((data, index) => {
             if (data.status !== 200) {
               canClose = false;
@@ -47,6 +47,7 @@ const Settings = ({ editorId }) => {
             }
           });
           setAllColabs(res.data);
+          setShowSettings(false);
         }
       })
       .catch((e) => {
@@ -65,7 +66,9 @@ const Settings = ({ editorId }) => {
 
   useEffect(() => {
     if (allColabs) {
+      console.log(allColabs);
       allColabs.forEach((data, index) => {
+        console.log(index);
         const each = document.querySelector(`#colab-node-${index}`);
         if (data.status === 200) {
           each.style.border = undefined;
@@ -77,94 +80,153 @@ const Settings = ({ editorId }) => {
   }, [allColabs]);
 
   return (
-    <div className="editor-input" id="editor-settings">
-      {allColabs === null ? <h2>載入中⋯</h2> : <h2>使用者清單</h2>}
-      <TextField
-        margin="normal"
-        // required
-        fullWidth
-        multiline
-        name="colabs"
-        label=""
-        type="text"
-        id="colabs"
-        size="small"
-        value={colabInput}
-        onChange={(e) => {
-          setColabInput(e.target.value);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            setAllColabs((state) => [
-              ...state,
-              { email: colabInput, type: 'new', status: 200 },
-            ]);
-            setColabInput('');
-          }
-        }}
-        InputProps={{
-          style: {
-            display: 'flex',
-            flexWrap: 'wrap',
-          },
-          startAdornment:
-            allColabs === null
-              ? undefined
-              : allColabs.map((data, index) => {
-                  return data.type === 'remove' ? (
-                    <></>
-                  ) : (
-                    <div
-                      id={`colab-node-${index}`}
-                      key={`colab-node-${index}`}
-                      className="colab-tags"
-                    >
-                      {data.email}
+    <div className="editor-settings">
+      <div className="share-box">
+        <div className="title">
+          <h2> 共用 「筆記本」</h2>
+        </div>
+        <TextField
+          margin="normal"
+          // required
+          fullWidth
+          name="colabs"
+          label=""
+          type="text"
+          id="colabs"
+          size="small"
+          value={colabInput}
+          placeholder="新增使用者"
+          onChange={(e) => {
+            setColabInput(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              if (allColabs)
+                setAllColabs((state) => [
+                  ...state,
+                  { email: colabInput, type: 'new', status: 200 },
+                ]);
+              else
+                setAllColabs([{ email: colabInput, type: 'new', status: 200 }]);
+              setColabInput('');
+            }
+          }}
+          InputProps={{
+            style: {
+              display: 'flex',
+              flexWrap: 'wrap',
+              position: 'relative',
+              height: '100%',
+            },
+            startAdornment:
+              allColabs === null ? undefined : (
+                <div
+                  className="adorment"
+                  style={{
+                    marginRight: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    height: '70%',
+                    width: 'calc(100% - 5px)',
+                    overflowY: 'scroll',
+                  }}
+                >
+                  {allColabs.map((data, index) => {
+                    return data.type === 'remove' ? (
                       <div
-                        onClick={() => {
-                          setAllColabs((state) => {
-                            // 如果是 new，可以直接 filter 掉，
-                            if (state[index].type === 'new') {
-                              return state.filter((d, i) => i !== index);
-                            }
-                            state[index].type = 'remove';
-                            return state;
-                          });
-                          setRerender((state) => !state);
+                        id={`colab-node-${index}`}
+                        key={`colab-node-${index}`}
+                        style={{ display: 'none' }}
+                      ></div>
+                    ) : (
+                      <div
+                        id={`colab-node-${index}`}
+                        key={`colab-node-${index}`}
+                        className="colab-tags"
+                        style={{
+                          borderRadius: '20px',
+                          boxShadow: '2px 2px 2px 1px rgba(0, 0, 0, 0.2)',
+                          backgroundColor: '#bae0ff',
+                          margin: '0 5px',
                         }}
                       >
-                        <CloseIcon />
+                        {data.email}
+                        <div
+                          onClick={() => {
+                            setAllColabs((state) => {
+                              // 如果是 new，可以直接 filter 掉，
+                              if (state[index].type === 'new') {
+                                return state.filter((d, i) => i !== index);
+                              }
+                              state[index].type = 'remove';
+                              return state;
+                            });
+                            setRerender((state) => !state);
+                          }}
+                          style={{
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <CloseIcon />
+                        </div>
                       </div>
-                    </div>
-                  );
-                }),
-        }}
-      />
-      <div
-        style={{
-          color: 'red',
-          height: '18px',
-          // border: '1px solid black',
-          textAlign: 'left',
-          padding: '0 5px 0 5px',
-        }}
-      >
-        {alarms}
+                    );
+                  })}
+                </div>
+              ),
+          }}
+        />
+        <div
+          style={{
+            color: 'red',
+            height: '18px',
+            textAlign: 'left',
+            padding: '0 5px 0 5px',
+          }}
+        >
+          {alarms}
+        </div>
+        <div className="buttons">
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+            }}
+            variant="contained"
+            style={{
+              borderRadius: '30px',
+              border: 'black solid 1px',
+              color: 'black',
+              textTransform: 'none',
+              width: '120px',
+              height: '50px',
+              display: 'flex',
+              gap: '2px',
+            }}
+          >
+            <LinkIcon />
+            複製連結
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            style={{
+              backgroundColor: '#0e1111',
+              height: '50px',
+              borderRadius: '30px',
+              color: 'white',
+              paddingTop: '5px',
+              width: '80px',
+              textTransform: 'none',
+            }}
+          >
+            完成
+          </Button>
+        </div>
       </div>
-      <Button
-        onClick={handleSubmit}
-        variant="contained"
-        sx={{ mt: 2, mb: 2 }}
-        style={{
-          backgroundColor: '#0e1111',
-          color: 'white',
-          paddingTop: '2%',
-          textTransform: 'none',
-        }}
-      >
-        更新清單
-      </Button>
     </div>
   );
 };

@@ -80,7 +80,7 @@ app.use(async (ctx) => {
 });
 
 const router = new WsRouter()
-  .session('/node/registerNodeColab', (ws) => {
+  .session('/node/registerNodeColab', (ws, can) => {
     ws.on('message', async (message) => {
       try {
         const query = JSON.parse(message.toString('utf-8'));
@@ -106,7 +106,7 @@ const router = new WsRouter()
       }
     });
   })
-  .session('/flow/mouse-sub', (ws) => {
+  .session('/flow/mouse-sub', (ws, can) => {
     // 上面的 ws 會一直都是原本的那一個，所以可以直接在上面加入 ws.email = email
     const redisListener = newRedisClient();
     const redisPublisher = newRedisClient();
@@ -137,7 +137,7 @@ const router = new WsRouter()
       });
     });
   })
-  .session('/flow', (ws) => {
+  .session('/flow', (ws, can) => {
     ws.on('message', (message) => {
       const query = JSON.parse(message.toString('utf-8'));
       const { a, d } = query;
@@ -164,10 +164,13 @@ const router = new WsRouter()
     const stream = new WebSocketJSONStream(ws);
     sharedb.listen(stream);
   })
-  .session('/node', (ws) => {
+  .session('/node', (ws, can) => {
     ws.on('message', (message) => {
       const query = JSON.parse(message.toString('utf-8'));
       const { a, d } = query;
+      if (!can && a === 'op') {
+        ws.close();
+      }
       if (a === 'op') {
         if (ws.prev) clearTimeout(ws.prev);
         // eslint-disable-next-line no-param-reassign
