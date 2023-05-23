@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import produce from "immer";
-import { userFlows, userFlowNode } from "./data";
+import { create } from 'zustand';
+import produce from 'immer';
+import { userFlows, userFlowNode } from './data';
 
 const flows = userFlows;
 const tabList = [];
@@ -20,7 +20,7 @@ export const useFlowStorage = create((set) => ({
             state.flows[ele].nodes = payload.flow.nodes;
           }
         }
-      })
+      }),
     ),
   saveFlow: (payload) =>
     set(
@@ -34,7 +34,7 @@ export const useFlowStorage = create((set) => ({
             state.flows[ele].name = payload.title;
           }
         }
-      })
+      }),
     ),
   saveNode: (payload) =>
     set(
@@ -70,26 +70,19 @@ export const useFlowStorage = create((set) => ({
             nodes: [{ id: payload.node_id, value: payload.value }],
           });
         }
-      })
+      }),
     ),
   addFlow: (payload) =>
     set(
       produce((state) => {
         state.flows.unshift(payload);
-      })
+      }),
     ),
   mode: 0,
   changeMode: (curMode) =>
     set(
       produce((state) => {
         state.mode = curMode;
-      })
-    ),
-  lang: "zh",
-  setLang: (curMode) =>
-    set(
-      produce((state) => {
-        state.lang = curMode;
-      })
+      }),
     ),
 }));

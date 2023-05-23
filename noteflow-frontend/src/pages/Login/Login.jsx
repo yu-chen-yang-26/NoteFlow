@@ -5,6 +5,11 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
 import jwt_decode from 'jwt-decode';
 import './Login.scss';
 import instance from '../../API/api';
@@ -12,13 +17,21 @@ import { SHA256 } from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
 import TryMe from '../../Components/TryMe/tryMe';
+import { US, TW } from 'country-flag-icons/react/3x2';
+import { useTranslation } from 'react-i18next';
 
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
   '390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com';
 
 const Login = () => {
+  const languageDiv = {
+    en: <US title="United States" value="en" />,
+    zh: <TW tilte="Taiwan" value="zh" />,
+  };
+
   const divRef = useRef(null);
+  const { i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showLogo, setShowLogo] = useState(false);
@@ -138,6 +151,23 @@ const Login = () => {
       </div>
 
       <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
+        {/* <Box sx={{ minWidth: 50 }}>
+          <FormControl fullWidth>
+            <InputLabel>{languageDiv[i18n.language]}</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Age"
+              onChange={(e) => {
+                i18n.changeLanguage(e.target.value);
+              }}
+            >
+              {Object.keys(languageDiv).map((key) => {
+                return <MenuItem value={key}>{languageDiv[key]}</MenuItem>;
+              })}
+            </Select>
+          </FormControl>
+        </Box> */}
         <h2>Login</h2>
         <div className="infoContainer">
           <Box

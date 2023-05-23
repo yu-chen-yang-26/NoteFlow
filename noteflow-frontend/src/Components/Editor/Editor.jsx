@@ -14,6 +14,14 @@ import instance from '../../API/api';
 import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
 import { Colab } from '../../API/Colab';
+import BeatLoader from 'react-spinners/BeatLoader';
+
+const STATE = {
+  peace: 0, // saved && editing
+  turb: 1, // saving
+};
+
+let stateTransInt;
 
 window.katex = katex;
 const Editor = ({ handleDrawerClose, editorId }) => {
@@ -21,6 +29,9 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     title: '',
     value: '',
   });
+
+  const [status, setStatus] = useState(STATE.peace);
+
   const [showSettings, setShowSettings] = useState(false);
   const { user, isMobile } = useApp();
   const [favorite, setFavorite] = useState(false);
@@ -33,6 +44,20 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       value: '',
     });
   }, []);
+
+  useEffect(() => {
+    if (status === STATE.turb) {
+      stateTransInt = setTimeout(() => {
+        clearInterval(stateTransInt);
+        setStatus(STATE.peace);
+        const ele = document.getElementsByClassName('focus-border');
+        console.log(ele);
+        if (!ele || ele.length === 0) return;
+        ele[0].classList.add('active');
+        // ele[0].classList.remove('active');
+      }, 2000);
+    }
+  }, [status]);
 
   // 2-quill logic & avatar showing logic.
   const {
@@ -139,7 +164,15 @@ const Editor = ({ handleDrawerClose, editorId }) => {
             }
           }}
         />
-        <span className="focus-border"></span>
+        <span className="focus-border" on></span>
+        <div className="status-holder">
+          {/* <BeatLoader
+            // color="a2d2ff"
+            loading={status}
+            size={5}
+            // cssOverride={{ transition: '0.4s' }}
+          /> */}
+        </div>
         <Button
           variant="dark"
           onClick={() => {
@@ -195,6 +228,21 @@ const Editor = ({ handleDrawerClose, editorId }) => {
           theme="snow"
           value={state}
           onChange={setState}
+          onKeyDown={(e) => {
+            clearInterval(stateTransInt);
+            stateTransInt = setTimeout(() => {
+              setStatus(STATE.turb);
+            }, 1000);
+            if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+              e.preventDefault();
+              setStatus(STATE.turb);
+            }
+          }}
+          // onKeyUp={(e) => {
+          //   if (e.key === 'meta') {
+          //     commandMode = false;
+          //   }
+          // }}
           placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}
@@ -205,6 +253,11 @@ const Editor = ({ handleDrawerClose, editorId }) => {
       </div>
     </div>
   );
+};
+
+const typingEventHolder = (event) => {
+  if (event === 'typing') {
+  }
 };
 
 export { Editor };
