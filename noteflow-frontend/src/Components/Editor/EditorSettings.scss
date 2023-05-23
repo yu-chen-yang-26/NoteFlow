@@ -14,18 +14,17 @@
 }
 
 .colab-tags {
-  border-radius: 3px;
-  background-color: #f7f9fc;
+  height: 30px;
   padding: 5px 10px 5px 10px;
-  margin: 5px 0 5px 0;
+
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
 }
 
 .editor-settings {
   position: absolute;
-  top: 20%;
+  top: 100px;
   left: 10%;
   display: flex;
   justify-content: center;
@@ -37,20 +36,24 @@
 
   .share-box {
     border: black solid 2px;
+    overflow: hidden;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
+    gap: 2%;
     align-items: center;
     justify-content: center;
     width: 90%;
     max-width: 500px;
-    height: 90%;
-    padding: 5px;
+    height: 70%;
+    max-height: 500px;
+    padding: 20px;
     position: relative;
     .title {
+      height: 20%;
       position: absolute;
-      left: 8px;
-      top: 2px;
+      left: 20px;
+      top: 10px;
       h2 {
         font-size: 25px;
         font-weight: 400;
@@ -58,10 +61,16 @@
     }
 
     .buttons {
+      height: 10%;
       display: flex;
       width: 80%;
       flex-direction: row;
       justify-content: space-between;
     }
   }
+}
+
+.MuiFormControl-root {
+  height: 60%;
+  border-radius: 15px;
 }

@@ -38,7 +38,6 @@ const Settings = ({ editorId, setShowSettings }) => {
       .then((res) => {
         if (res.status === 200) {
           let canClose = true;
-          console.log(res.data);
           res.data.map((data, index) => {
             if (data.status !== 200) {
               canClose = false;
@@ -90,7 +89,6 @@ const Settings = ({ editorId, setShowSettings }) => {
           margin="normal"
           // required
           fullWidth
-          multiline
           name="colabs"
           label=""
           type="text"
@@ -118,11 +116,23 @@ const Settings = ({ editorId, setShowSettings }) => {
             style: {
               display: 'flex',
               flexWrap: 'wrap',
+              position: 'relative',
+              height: '100%',
             },
             startAdornment:
-              allColabs === null
-                ? undefined
-                : allColabs.map((data, index) => {
+              allColabs === null ? undefined : (
+                <div
+                  className="adorment"
+                  style={{
+                    marginRight: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    height: '70%',
+                    width: 'calc(100% - 5px)',
+                    overflowY: 'scroll',
+                  }}
+                >
+                  {allColabs.map((data, index) => {
                     return data.type === 'remove' ? (
                       <div
                         id={`colab-node-${index}`}
@@ -134,6 +144,12 @@ const Settings = ({ editorId, setShowSettings }) => {
                         id={`colab-node-${index}`}
                         key={`colab-node-${index}`}
                         className="colab-tags"
+                        style={{
+                          borderRadius: '20px',
+                          boxShadow: '2px 2px 2px 1px rgba(0, 0, 0, 0.2)',
+                          backgroundColor: '#bae0ff',
+                          margin: '0 5px',
+                        }}
                       >
                         {data.email}
                         <div
@@ -148,12 +164,20 @@ const Settings = ({ editorId, setShowSettings }) => {
                             });
                             setRerender((state) => !state);
                           }}
+                          style={{
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
                         >
                           <CloseIcon />
                         </div>
                       </div>
                     );
-                  }),
+                  })}
+                </div>
+              ),
           }}
         />
         <div
@@ -168,7 +192,9 @@ const Settings = ({ editorId, setShowSettings }) => {
         </div>
         <div className="buttons">
           <Button
-            onClick={() => {}}
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+            }}
             variant="contained"
             style={{
               borderRadius: '30px',
@@ -189,6 +215,7 @@ const Settings = ({ editorId, setShowSettings }) => {
             variant="contained"
             style={{
               backgroundColor: '#0e1111',
+              height: '50px',
               borderRadius: '30px',
               color: 'white',
               paddingTop: '5px',
