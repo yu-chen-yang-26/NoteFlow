@@ -79,6 +79,7 @@ function Flow() {
 
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
+  const [flowWebSocket, setFlowWebSocket] = useState(null);
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
   const [dragNode, setDragNode] = useState({});
   const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
