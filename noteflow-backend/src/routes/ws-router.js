@@ -43,12 +43,8 @@ class WsRouter {
         params.get('id').split('-')[0],
         email,
       );
-      if (!can) {
-        ws.close(1000);
-        return;
-      }
 
-      callback(ws);
+      callback(ws, can);
     };
 
     this.paths.push({
@@ -60,7 +56,7 @@ class WsRouter {
 
   no_session(path, callback) {
     const exec = (ws) => {
-      callback(ws);
+      callback(ws, true);
     };
 
     this.paths.push({

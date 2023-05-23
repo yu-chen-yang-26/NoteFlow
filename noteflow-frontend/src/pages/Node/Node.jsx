@@ -1,6 +1,7 @@
 import { Editor } from '../../Components/Editor/Editor';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import instance from '../../API/api';
 
 import './Node.scss';
 

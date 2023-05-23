@@ -45,17 +45,17 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
     TypingEffect = new Typing(40);
     TypingEffect.type(opening, setText);
 
-    const t1 = setTimeout(() => {
+    let t1 = setTimeout(() => {
       TypingEffect.type(example_1, setText);
-      setTimeout(() => {
+      let t2 = setTimeout(() => {
         editor.insertEmbed(
           editor.getLength(),
           'video',
           'https://www.youtube.com/watch?v=IK5tS1O9y94',
         );
-        setTimeout(() => {
+        let t3 = setTimeout(() => {
           TypingEffect.type(example_2, setText);
-          setTimeout(() => {
+          let t4 = setTimeout(() => {
             editor.formatText(example_2.indexOf('Latex'), 5, 'bold', true);
             editor.insertEmbed(editor.getLength(), 'formula', 'F_{0}=0');
             editor.insertEmbed(editor.getLength(), 'formula', 'F_{1}=1');
@@ -64,17 +64,21 @@ const DemoEditor = ({ handleDrawerClose, editorId }) => {
               'formula',
               'F_{n}=F_{n-1}+F_{n-2}',
             );
-            setTimeout(() => {
+            let t5 = setTimeout(() => {
               TypingEffect.type(closing, setText);
             }, 4000);
+            // clearTimeout(t5);
           }, 40 * example_2.length + 1000);
+          // clearTimeout(t4);
         }, 3000);
+        // clearTimeout(t3);
       }, 40 * example_1.length + 500);
+      // clearTimeout(t2);
     }, 40 * opening.length + 500);
+    // clearTimeout(t1);
 
     return () => {
       TypingEffect.close();
-      clearTimeout(t1);
     };
   }, [QuillRef, editor]);
 
