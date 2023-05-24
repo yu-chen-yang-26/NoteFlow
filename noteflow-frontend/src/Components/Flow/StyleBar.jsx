@@ -14,11 +14,15 @@ import './FlowEditor.scss';
 
 export default function StyleBar({
   nodeId,
+  nodes,
   nodeChangeStyle,
   handleStyleBarClose,
 }) {
   const [border, setBorder] = useState(2);
-
+  const [style, setStyle] = useState(
+    nodes.filter((nd) => nd.id == nodeId)[0].style,
+  );
+  console.log(style);
   return (
     <Box className="bar">
       <Drawer
@@ -44,52 +48,62 @@ export default function StyleBar({
             Border Style
           </ListItem>
           <Grid container spacing={2}>
-            <Grid sx={{ justifyContent: 'flex-start' }} item xs={6}>
-              <p>Color</p>
+            <Grid item xs={6}>
+              Color
             </Grid>
             <Grid item xs={6}>
               <input
                 type="color"
+                value={style.borderColor}
                 onChange={(event) => {
                   console.log(nodeId);
+                  setStyle({ ...style, borderColor: event.target.value });
                   nodeChangeStyle(nodeId, event, 'color');
                 }}
               />
             </Grid>
           </Grid>
-          <Grid container spacing={2}>
-            <Grid sx={{ justifyContent: 'flex-start' }} item xs={6}>
-              <p>Width</p>
+          <Grid
+            sx={{ marginTop: '10px', marginBottom: '20px' }}
+            container
+            spacing={2}
+          >
+            <Grid item xs={6}>
+              Width
             </Grid>
             <Grid item xs={6}>
               <Select
                 onChange={(event) => {
-                  setBorder(event.target.value);
+                  setStyle({ ...style, borderWidth: event.target.value });
                   nodeChangeStyle(nodeId, event, 'stroke');
                 }}
-                value={border}
-                sx={{ height: '25px', width: '50px' }}
+                value={style.borderWidth}
+                sx={{ margin: '10x', height: '25px', width: '60px' }}
               >
-                <MenuItem value="1">1</MenuItem>
-                <MenuItem value="2">2</MenuItem>
-                <MenuItem value="3">3</MenuItem>
+                <MenuItem value="1px">1</MenuItem>
+                <MenuItem value="2px">2</MenuItem>
+                <MenuItem value="3px">3</MenuItem>
               </Select>
             </Grid>
           </Grid>
           <Divider variant="middle" />
-          <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
+          <ListItem
+            sx={{ fontSize: '20px', marginTop: '20px', marginBottom: '10px' }}
+          >
             Node Color
           </ListItem>
           <Grid container spacing={2}>
             <Grid sx={{ justifyContent: 'flex-start' }} item xs={6}>
-              <p>Color</p>
+              Color
             </Grid>
             <Grid item xs={6}>
               <input
                 type="color"
-                onChange={(event) =>
-                  nodeChangeStyle(nodeId, event, 'background')
-                }
+                value={style.background}
+                onChange={(event) => {
+                  setStyle({ ...style, background: event.target.value });
+                  nodeChangeStyle(nodeId, event, 'background');
+                }}
                 // onChange={data.onChange}
                 // defaultValue={data.color}
               />

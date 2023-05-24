@@ -172,7 +172,7 @@ function Flow() {
             case 'stroke':
               node.style = {
                 ...node.style,
-                borderWidth: event.target.value + 'px',
+                borderWidth: event.target.value,
               };
               setChangeStyleContent(node.style);
               break;
@@ -219,7 +219,6 @@ function Flow() {
             editLabel: (id, label) => {
               editLabel(id, label);
             },
-            flowWebSocket,
           },
 
           type: 'CustomNode',
@@ -392,7 +391,7 @@ function Flow() {
           id: nodeId.current.toString(),
           data: {
             label: 'Untitle',
-            toolbarPosition: Position.Top,
+            toolbarPosition: Position.Right,
             openStyleBar: (id) => {
               openStyleBar(id);
             },
@@ -574,6 +573,7 @@ function Flow() {
           {isStyleBarOpen ? (
             <StyleBar
               handleStyleBarClose={handleStyleBarClose}
+              nodes={nodes}
               nodeId={changeStyleId}
               nodeChangeStyle={(id, event, type) =>
                 nodeChangeStyle(id, event, type)

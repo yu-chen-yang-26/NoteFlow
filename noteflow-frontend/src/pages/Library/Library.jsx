@@ -16,7 +16,8 @@ const Library = () => {
   const { isMobile } = useApp();
   const [nodes, setNodes] = useState([]);
   const [editorId, setEditorId] = useState(null);
-
+  const [query, setQuery] = useState('');
+  const [intervalId, setIntervalId] = useState(null);
   //用這個控制 mobile 時候 editor 要不要顯示，顯示的時候隱藏 search 跟 nodes
   const [mobileEditorDisplay, setMobileEditorDisplay] = useState(false);
 
@@ -40,6 +41,10 @@ const Library = () => {
       height: '1px',
       backgroundColor: '#E0E0E0',
     },
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   }));
   const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -88,19 +93,60 @@ const Library = () => {
   const toNode = (id) => {
     setEditorId(id);
   };
-
-  useEffect(() => {
+  const getNodes = (flag) => {
     instance
       .get('/library')
       .then((res) => {
-        setNodes([...nodes, ...res.data]);
-        setEditorId([...nodes, ...res.data][0].id);
+        console.log('fetch');
+        setNodes(res.data);
+        if (res.data.length !== 0 && flag === 0) {
+          setEditorId(res.data[0].id);
+        }
       })
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  };
 
+  const createInterval = () => {
+    const interval = setInterval(() => {
+      getNodes(1);
+    }, 2000);
+    setIntervalId(interval);
+  };
+  useEffect(() => {
+    if (intervalId === null) {
+      getNodes(0);
+      createInterval();
+    } else if (intervalId === '') {
+      createInterval();
+    }
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [intervalId]);
+
+  const getTime = (time) => {
+    const now = new Date();
+    const timeDiff = now - time;
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor(timeDiff / (1000 * 60));
+    if (days >= 1) {
+      return { time: days, unit: days === 1 ? 'day' : 'days' };
+    } else if (hours >= 1) {
+      return { time: hours, unit: hours === 1 ? 'hour' : 'hours' };
+    } else {
+      return { time: minutes, unit: minutes <= 1 ? 'minute' : 'minutes' };
+    }
+  };
+
+  const search = (key, query) => {
+    if (key === 'Enter') {
+      setQuery(query);
+      setIntervalId('');
+    }
+  };
   return (
     <Grid container columns={12} sx={{ height: '100%' }}>
       <Grid
@@ -126,23 +172,41 @@ const Library = () => {
           <StyledInputBase
             placeholder="Search…"
             inputProps={{ 'aria-label': 'search' }}
+            onFocus={() => clearInterval(intervalId)}
+            onBlur={() => setIntervalId('')}
+            onKeyDown={(e) => search(e.key, e.target.value)}
           />
         </Search>
-        {nodes.map((node) => (
-          <NodeButton
-            className="node-button"
-            onClick={() => {
-              toNode(node.id);
-              if (isMobile === true) {
-                setMobileEditorDisplay(true);
-              }
-            }}
-            key={node.id}
-            selected={node.id === editorId}
-          >
-            {node.name} {t('Last Edit Time:')} {node.time} {t('hours')}
-          </NodeButton>
-        ))}
+        {nodes
+          .filter((node) => {
+            if (query === '') {
+              return true;
+            }
+            return node.name === query;
+          })
+          .map((node) => {
+            const editTime = getTime(node.updateAt);
+            return (
+              <NodeButton
+                className="node-button"
+                onClick={() => {
+                  toNode(node.id);
+                  if (isMobile === true) {
+                    setMobileEditorDisplay(true);
+                  }
+                }}
+                key={node.id}
+                selected={node.id === editorId}
+              >
+                <Typography sx={{ fontSize: '12px' }}>{node.name}</Typography>
+                <Typography sx={{ fontSize: '12px' }}>
+                  {t('Last Edit Time:')} {editTime.time}
+                  {' ' + t(editTime.unit) + t('ago')}
+                </Typography>
+              </NodeButton>
+            );
+          })}
+
       </Grid>{' '}
       <Grid
         item

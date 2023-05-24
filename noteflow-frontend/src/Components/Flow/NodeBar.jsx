@@ -58,8 +58,8 @@ export default function NodeBar({ handleNodeBarClose, addNode }) {
           </ListItem>
 
           {nodes.map((node) => (
-            <div key={node.id}>
-              <ListItem>
+            <div className="nodebar-item" key={node.id}>
+              <ListItem sx={{ justifyContent: 'center' }}>
                 <div
                   className="drag-node"
                   onDragStart={(event) =>
@@ -67,11 +67,13 @@ export default function NodeBar({ handleNodeBarClose, addNode }) {
                   }
                   draggable
                 >
-                  {node.name}
+                  <p>{node.name}</p>
                 </div>
               </ListItem>
-              <ListItem>
-                {t('Last Edit Time:')} {node.time} {t('hours')}
+              <ListItem sx={{ justifyContent: 'center' }}>
+                <p>
+                  {t('Last Edit Time:')} {node.time} {t('hours')}
+                </p>
               </ListItem>
             </div>
           ))}

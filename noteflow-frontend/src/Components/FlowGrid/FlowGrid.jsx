@@ -149,13 +149,12 @@ export default function FlowGrid({ containerRef }) {
     setTitleToBeDeleted(null);
     setIdToBeDeleted(null);
     setIsAlertOpen(false);
-    console.log(id);
 
     instance
       .post('/flows/delete-flow', { id })
       .then((res) => {
         console.log('Delete Flow Success');
-        console.log(flows.filter((flow) => flow.id !== id));
+        // console.log(flows.filter((flow) => flow.id !== id));
         setFlows(flows.filter((flow) => flow.id !== id));
       })
       .catch((e) => {
@@ -168,23 +167,20 @@ export default function FlowGrid({ containerRef }) {
   };
 
   const changeTitle = (id, title) => {
-    setTitleToBeChanged(null);
-    setIdToBeChanged(null);
-    setIsChangeTitleOpen(false);
-
     instance
-      .get('flows/set-title', { id, title })
+      .post('flows/set-title', { id, title })
       .then((res) => {
         setFlows((fs) =>
           fs.map((flow) => {
             if (flow.id == id) {
-              flow.name = { title };
+              flow.name = title;
             }
             return flow;
           }),
         );
-        console.log(flows);
-        console.log(res.data);
+        setTitleToBeChanged(null);
+        setIdToBeChanged(null);
+        setIsChangeTitleOpen(false);
         console.log('Change Title Success');
       })
       .catch((e) => {
@@ -241,7 +237,7 @@ export default function FlowGrid({ containerRef }) {
               <Button
                 onClick={() => {
                   console.log(titleToBeChanged);
-                  changeTitle(idToBeDeleted, titleToBeChanged);
+                  changeTitle(idToBeChanged, titleToBeChanged);
                 }}
               >
                 Confirm
@@ -254,64 +250,71 @@ export default function FlowGrid({ containerRef }) {
         <div
           className={`${isMobile ? 'flow-container-mobile' : 'flow-container'}`}
         >
-          {flows.map((flow, key) => (
-            <ClickAwayListener onClickAway={handleCloseContextMenu}>
-              <div className="grid-item" key={key}>
-                <div
-                  className="grid-item"
-                  onContextMenu={(event) => {
-                    setTarget(event.currentTarget);
-                    setIsMenuOpen(flow.id);
-                    event.preventDefault();
-                  }}
-                  key={key}
-                >
-                  <FlowButton
-                    onClick={() => toFlow(flow)}
-                    aria-controls="simple-menu"
-                    aria-haspopup="true"
-                  >
-                    {flow.thumbnail !== '' ? (
-                      <img style={{ objectFit: 'cover' }} loading="lazy">
-                        flow.thumbnail
-                      </img>
-                    ) : (
-                      `${t('Last Edit Time')}: ${flow.updateAt} ${t('hours')}`
-                    )}
-                  </FlowButton>
-                  <Typography>{flow.name}</Typography>
-                  <Menu
-                    // autoFocusItem={open}
-                    open={isMenuOpen == flow.id}
-                    // anchorEl={target}
-                    anchorOrigin={{
-                      vertical: 'center',
-                      horizontal: 'center',
+          {flows.map((flow, key) => {
+            const date = new Date();
+            date.setTime(flow.updateAt);
+            const formattedDate = date.toLocaleString();
+            return (
+              <ClickAwayListener onClickAway={handleCloseContextMenu}>
+                <div className="grid-item" key={key}>
+                  <div
+                    className="grid-item"
+                    onContextMenu={(event) => {
+                      setTarget(event.currentTarget);
+                      setIsMenuOpen(flow.id);
+                      event.preventDefault();
                     }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
+                    key={key}
                   >
-                    <MenuItem
-                      onClick={() => {
-                        openChangeTitle(flow.id, flow.name);
+                    <FlowButton
+                      onClick={() => toFlow(flow)}
+                      aria-controls="simple-menu"
+                      aria-haspopup="true"
+                    >
+                      {flow.thumbnail !== '' ? (
+                        <img
+                          style={{ objectFit: 'cover' }}
+                          loading="lazy"
+                          alt="flow.thumbnail"
+                        />
+                      ) : (
+                        `${t('Last Edit Time')}: ${formattedDate}`
+                      )}
+                    </FlowButton>
+                    <Typography>{flow.name}</Typography>
+                    <Menu
+                      // autoFocusItem={open}
+                      open={isMenuOpen == flow.id}
+                      anchorEl={target}
+                      anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
                       }}
                     >
-                      Rename
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        openAlert(flow.id, flow.name);
-                      }}
-                    >
-                      Delete
-                    </MenuItem>
-                  </Menu>
+                      <MenuItem
+                        onClick={() => {
+                          openChangeTitle(flow.id, flow.name);
+                        }}
+                      >
+                        Rename
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openAlert(flow.id, flow.name);
+                        }}
+                      >
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </div>
                 </div>
-              </div>
-            </ClickAwayListener>
-          ))}
+              </ClickAwayListener>
+            );
+          })}
 
           {containerRef?.current && (
             <BackToTopButton containerRef={containerRef} />

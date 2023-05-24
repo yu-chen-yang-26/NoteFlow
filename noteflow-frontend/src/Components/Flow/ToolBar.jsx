@@ -78,7 +78,7 @@ export default function ToolBar({
         >
           <BiFirstPage size={18} />
         </Button>
-        <input
+        {/* <input
           className="flowTitle"
           value={title}
           onChange={(event) => {
@@ -87,7 +87,7 @@ export default function ToolBar({
           type="text"
           ref={inputRef}
         />
-        <span className="focus-border"></span>
+        <span className="focus-border"></span> */}
       </div>
       <div className="mid">
         <Button
