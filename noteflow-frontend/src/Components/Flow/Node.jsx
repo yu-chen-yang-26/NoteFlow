@@ -64,11 +64,11 @@ const CustomNode = ({ id, data }) => {
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
             <MenuList>
-              <MenuItem onClick={() => setIsResizable(!isResizable)}>
+              {/* <MenuItem onClick={() => setIsResizable(!isResizable)}>
                 <ListItemText>
                   {isResizable ? 'Complete' : 'Resize'}
                 </ListItemText>
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem
                 onClick={(event) => {
                   data.onLabelChange(id, event);
