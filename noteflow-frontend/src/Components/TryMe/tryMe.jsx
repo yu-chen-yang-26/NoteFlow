@@ -46,7 +46,10 @@ const TryMe = () => {
         <ReactFlow
           nodes={nodes}
           edges={edgesWithUpdatedTypes}
-          onNodesChange={onNodesChange}
+          onNodesChange={(param) => {
+            console.log(param);
+            onNodesChange(param);
+          }}
           onEdgesChange={onEdgesChange}
           onNodeDoubleClick={onNodeDoubleClick}
           onConnect={onConnect}
