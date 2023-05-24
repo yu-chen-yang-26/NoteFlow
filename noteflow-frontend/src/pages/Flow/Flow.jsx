@@ -355,7 +355,7 @@ function Flow() {
           id: nodeId.current.toString(),
           data: {
             label: 'Untitle',
-            toolbarPosition: Position.Top,
+            toolbarPosition: Position.Right,
             openStyleBar: (id) => {
               openStyleBar(id);
             },
