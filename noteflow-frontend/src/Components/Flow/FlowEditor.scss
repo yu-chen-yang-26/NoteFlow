@@ -44,7 +44,11 @@
   border-radius: 10px;
   height: 50px;
   width: 150px;
-  // padding
   border: 2px solid #1a192b;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+.nodebar-item {
+  justify-content: center !important;
 }
