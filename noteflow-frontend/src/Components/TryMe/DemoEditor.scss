@@ -80,19 +80,24 @@
     }
   }
 
-  #toolbar {
-    height: 15%;
-    overflow-y: scroll;
-  }
   .text-editor {
     height: calc(100% - 80px);
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    #toolbar {
+      flex: 1;
+    }
 
     .editor-input {
-      height: 85%;
+      flex: 8;
       color: black;
-
+      overflow-y: scroll;
       .ql-container {
+        width: 100%;
+        height: 100%;
         border-radius: 0 0 15px 15px;
       }
     }
@@ -103,7 +108,7 @@
   display: flex;
   flex-direction: column;
   width: 90vw;
-  height: 40vh;
+  height: 45vh;
   align-items: center;
   justify-content: center;
   background-color: white;
@@ -178,19 +183,24 @@
     }
   }
 
-  #toolbar {
-    height: 30%;
-    overflow-y: scroll;
-  }
   .text-editor {
     height: calc(100% - 7vh);
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    #toolbar {
+      flex: 1;
+    }
 
     .editor-input {
-      height: 70%;
+      flex: 5;
       color: black;
-
+      overflow-y: scroll;
       .ql-container {
+        width: 100%;
+        height: 100%;
         border-radius: 0 0 15px 15px;
       }
     }
