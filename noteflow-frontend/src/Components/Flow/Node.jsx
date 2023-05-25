@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeToolbar, NodeResizer } from 'reactflow';
 import Button from 'react-bootstrap/Button';
 import './FlowEditor.scss';
@@ -49,8 +49,29 @@ const CustomNode = ({ id, data }) => {
     setNodeMenuOpen(null);
   };
 
+  // useEffect(() => {
+  //   const element = document.getElementById(`react-node-${id}`);
+  //   element.addEventListener('touchstart', () => {
+  //     console.log('hi');
+  //   });
+
+  //   return () => {
+  //     element.removeEventListener('touchstart', () => {
+  //       console.log('hi');
+  //     });
+  //   };
+  // }, []);
+
   return (
-    <div id={id} onContextMenu={onContextMenu}>
+    <div
+      // id={`react-node-${id}`}
+      id={id}
+      onContextMenu={onContextMenu}
+      // onTouchStart={() => {
+      //   console.log('hi');
+      // }}
+    >
+      {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
         minHeight={50}
         minWidth={150}

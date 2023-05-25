@@ -584,9 +584,9 @@ function Flow() {
           }}
           // onInit={setRfInstance}
           // onNodeDoubleClick={(event, node) => {
-          //   doubleClick(event, node);
-          //   console.log('double click');
+          //   nodeClick(event, node);
           // }}
+
           onNodeDoubleClick={(event, node) => {
             nodeClick(event, node);
           }}
