@@ -1,53 +1,52 @@
-import React, { useEffect, useState } from "react";
-import "./Sidebar.scss";
-import { FaPen, FaBook, FaCalendarAlt } from "react-icons/fa";
-import { AiTwotoneSetting } from "react-icons/ai";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import { useFlowStorage } from "../../storage/Storage";
+import React, { useEffect, useState } from 'react';
+import './Sidebar.scss';
+import { FaPen, FaBook, FaCalendarAlt } from 'react-icons/fa';
+import { AiTwotoneSetting } from 'react-icons/ai';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import { useParams } from '../../hooks/useParams';
 // import { useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useApp } from "../../hooks/useApp";
+import { useTranslation } from 'react-i18next';
+import { useApp } from '../../hooks/useApp';
 
 const Sidebar = () => {
   //rwd
   const { isMobile } = useApp();
 
   const { t } = useTranslation();
-  const changeMode = useFlowStorage((state) => state.changeMode);
-  const mode = useFlowStorage((state) => state.mode);
+  const { mode, changeMode } = useParams();
   // const tabList = useFlowStorage((state) => state.tabList);
   // const location = useLocation();
 
   const SideBarItem = styled(Box)(({ selected }) => ({
-    cursor: "pointer",
-    color: selected ? "black" : "white",
+    cursor: 'pointer',
+    color: selected ? 'black' : 'white',
     // color: selected ? "white" : "grey",
-    width: "70%",
-    height: "8px",
-    marginTop: isMobile ? "0px" : "10px",
-    padding: isMobile ? "0px" : "20px",
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    borderTopRightRadius: "50px",
-    borderBottomRightRadius: "50px",
-    backgroundColor: "black",
-    backgroundColor: selected ? "white" : "black",
+    width: '70%',
+    height: '8px',
+    marginTop: isMobile ? '0px' : '10px',
+    padding: isMobile ? '0px' : '20px',
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderTopRightRadius: '50px',
+    borderBottomRightRadius: '50px',
+    backgroundColor: 'black',
+    backgroundColor: selected ? 'white' : 'black',
 
     ...(isMobile && {
-      color: selected ? "white" : "grey",
-      borderTopRightRadius: "",
-      borderBottomRightRadius: "",
-      backgroundColor: "",
-      marginTop: "",
+      color: selected ? 'white' : 'grey',
+      borderTopRightRadius: '',
+      borderBottomRightRadius: '',
+      backgroundColor: '',
+      marginTop: '',
     }),
   }));
 
-  const SideBarText = styled("div")(() => ({
-    lineHeight: "2",
-    width: "55%",
+  const SideBarText = styled('div')(() => ({
+    lineHeight: '2',
+    width: '55%',
   }));
 
   // useEffect(() => {
@@ -135,32 +134,32 @@ const Sidebar = () => {
             onClick={() => changeMode(0)}
             selected={mode === 0}
           >
-            <FaPen size={20} style={{ width: "45%" }} />
-            <SideBarText>{t("Flows")}</SideBarText>
+            <FaPen size={20} style={{ width: '45%' }} />
+            <SideBarText>{t('Flows')}</SideBarText>
           </SideBarItem>
           <SideBarItem
             className="sidebar-item"
             onClick={() => changeMode(1)}
             selected={mode === 1}
           >
-            <FaBook size={20} style={{ width: "45%" }} />
-            <SideBarText>{t("Library")}</SideBarText>
+            <FaBook size={20} style={{ width: '45%' }} />
+            <SideBarText>{t('Library')}</SideBarText>
           </SideBarItem>
           <SideBarItem
             className="sidebar-item"
             onClick={() => changeMode(2)}
             selected={mode === 2}
           >
-            <FaCalendarAlt size={20} style={{ width: "45%" }} />
-            <SideBarText>{t("Calendar")}</SideBarText>
+            <FaCalendarAlt size={20} style={{ width: '45%' }} />
+            <SideBarText>{t('Calendar')}</SideBarText>
           </SideBarItem>
           <SideBarItem
             className="sidebar-item"
             onClick={() => changeMode(3)}
             selected={mode === 3}
           >
-            <AiTwotoneSetting size={20} style={{ width: "45%" }} />
-            <SideBarText>{t("Settings")}</SideBarText>
+            <AiTwotoneSetting size={20} style={{ width: '45%' }} />
+            <SideBarText>{t('Settings')}</SideBarText>
           </SideBarItem>
         </Stack>
       )}

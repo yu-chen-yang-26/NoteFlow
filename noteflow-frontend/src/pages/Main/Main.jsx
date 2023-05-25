@@ -4,14 +4,14 @@ import './Main.scss';
 import FlowGrid from '../../Components/FlowGrid/FlowGrid.jsx';
 import PageTab from '../../Components/PageTab/PageTab.jsx';
 import Library from '../Library/Library.jsx';
-import { useFlowStorage } from '../../storage/Storage';
+import { useParams } from '../../hooks/useParams';
 import Calendar from '../Calendar/Calendar.jsx';
 import Settings from '../../Components/Settings/Settings.jsx';
 import { useApp } from '../../hooks/useApp.jsx';
 import { usePageTab } from '../../hooks/usePageTab.jsx';
 
 export default function Main() {
-  const mode = useFlowStorage((state) => state.mode);
+  const { mode } = useParams();
   const { setActiveTab } = usePageTab();
   const containerRef = useRef(null);
 

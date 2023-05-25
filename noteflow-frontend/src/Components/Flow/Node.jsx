@@ -42,6 +42,7 @@ const CustomNode = ({ id, data }) => {
   const handleStopTyping = (event) => {
     if (event.keyCode == 13) {
       setIsInputDisable(true);
+      data.onLabelStopEdit();
     }
   };
   const handleCloseMenu = () => {
@@ -72,6 +73,7 @@ const CustomNode = ({ id, data }) => {
               <MenuItem
                 onClick={(event) => {
                   data.onLabelChange(id, event);
+                  data.onLabelEdit(id);
                   setIsInputDisable(false);
                   setNodeMenuOpen(null);
                 }}

@@ -10,9 +10,11 @@ import { Editor } from '../../Components/Editor/Editor';
 import { useApp } from '../../hooks/useApp';
 import { useState, useEffect } from 'react';
 import instance from '../../API/api';
+import { useParams } from '../../hooks/useParams';
 
 const Library = () => {
   const { t } = useTranslation();
+  const { changeMode } = useParams();
   const { isMobile } = useApp();
   const [nodes, setNodes] = useState([]);
   const [editorId, setEditorId] = useState(null);
@@ -216,12 +218,37 @@ const Library = () => {
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
         }}
       >
-        <Editor
-          editorId={editorId}
-          handleDrawerClose={() => {
-            setMobileEditorDisplay(false);
-          }}
-        />
+        {nodes.filter((node) => {
+          if (query === '') {
+            return true;
+          }
+          return node.name === query;
+        }).length === 0 ? (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#F0F0F0',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Typography
+              sx={{ fontSize: '20px', cursor: 'pointer' }}
+              onClick={() => changeMode(0)}
+            >
+              Add nodes to library now!
+            </Typography>
+          </div>
+        ) : (
+          <Editor
+            editorId={editorId}
+            handleDrawerClose={() => {
+              setMobileEditorDisplay(false);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   );

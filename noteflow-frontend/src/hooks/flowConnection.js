@@ -287,13 +287,11 @@ class FlowWebSocket {
 
         break;
       case 'title':
-        console.log('changing title');
         if (type === 'edge') throw Error('看不懂');
 
         let node =
           this.flow.data[type === 'node' ? 'nodes' : 'edges'][param[0].id];
         node.data.label = param[0].label;
-        console.log('changing title');
 
         op = [
           json1.replaceOp(
@@ -302,10 +300,8 @@ class FlowWebSocket {
             node,
           ),
         ].reduce(json1.type.compose, null);
-        console.log(node);
         break;
       case 'style':
-        console.log('changing style');
         if (type === 'edge') throw Error('看不懂');
 
         let styleNode =
@@ -319,7 +315,6 @@ class FlowWebSocket {
             styleNode,
           ),
         ].reduce(json1.type.compose, null);
-        console.log(styleNode);
         break;
       case 'select':
         // if (type === 'edges') return console.log('窩還沒做 qq');
