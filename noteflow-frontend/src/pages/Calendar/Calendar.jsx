@@ -48,6 +48,7 @@ const Calendar = () => {
     justifyContent: 'center',
     alignItems: 'center',
   }));
+
   const getDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -113,17 +114,18 @@ const Calendar = () => {
 
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
-      {/* <Grid item xs={6}> */}
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={5}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           {isMobile ? (
             <MobileDatePicker
               defaultValue={dayjs(getDate())}
               autoFocus={true}
-              format="YYYY-DD-MM"
+              format="YYYY-MM-DD"
+              value={date}
+              onChange={handleChange}
               sx={{
                 width: '100%',
-                display: mobileEditorDisplay ? 'none' : 'flex',
+                display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
               }}
             />
           ) : (
@@ -139,7 +141,7 @@ const Calendar = () => {
       <Grid
         item
         xs={12}
-        md={3}
+        md={2}
         sx={{
           //手機不顯示 border
           borderLeft: isMobile ? 'none' : '1px solid black',
@@ -148,7 +150,7 @@ const Calendar = () => {
           flexDirection: 'column',
           justifyContent: 'top',
           alignItems: 'center',
-          display: mobileEditorDisplay ? 'none' : 'flex',
+          display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
           height: '100%',
           overflowX: 'hidden',
           overflowY: 'scroll',
@@ -192,9 +194,6 @@ const Calendar = () => {
         xs={12}
         md={5}
         sx={{
-          //手機不顯示 border
-          borderLeft: isMobile ? 'none' : 'none',
-
           height: `calc(100% - 10px)`,
           display:
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',

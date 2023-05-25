@@ -433,7 +433,7 @@ function Flow() {
 
   let { x, y, zoom } = useViewport();
 
-  const onNodeDoubleClick = useCallback((event, node) => {
+  const nodeClick = useCallback((event, node) => {
     //open editor by nodeID
     zoom = 2;
     setEditorId(node.editorId);
@@ -566,7 +566,13 @@ function Flow() {
             );
           }}
           // onInit={setRfInstance}
-          onNodeDoubleClick={onNodeDoubleClick}
+          // onNodeDoubleClick={(event, node) => {
+          //   doubleClick(event, node);
+          //   console.log('double click');
+          // }}
+          onNodeDoubleClick={(event, node) => {
+            nodeClick(event, node);
+          }}
           nodeTypes={nodeTypes}
           // edgeTypes={edgeTypes}
         >
@@ -611,15 +617,18 @@ function Flow() {
       {isEdit && (
         // <div className="EditorContainer">
         <Resizable
-          className="box"
+          // className="box"
           height={Infinity}
-          width={nodeWidth}
+          // width={nodeWidth}
+          // width="400px"
           onResize={onResize}
           resizeHandles={['w']}
           minConstraints={[400, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
-          <div style={{ width: `${nodeWidth}px` }}>
+          <div
+          // style={{ width: `${nodeWidth}px` }}
+          >
             <Node
               nodeId={editorId}
               setIsEdit={setIsEdit}
