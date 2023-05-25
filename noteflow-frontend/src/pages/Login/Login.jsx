@@ -140,8 +140,8 @@ const Login = () => {
                   loading="lazy"
                   src="assets/logo.png"
                   alt=""
-                  width="190"
-                  height="190"
+                  width={isMobile ? '120' : '200'}
+                  height={isMobile ? '120' : '200'}
                 />
                 <h1>NoteFlow</h1>
               </div>

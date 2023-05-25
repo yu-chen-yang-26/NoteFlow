@@ -79,7 +79,7 @@ const CustomNode = ({ id, data }) => {
                 <ListItemText>Rename</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
-                <ListItemText>ChangeStyle</ListItemText>
+                <ListItemText>Change Style</ListItemText>
               </MenuItem>
               {/* <MenuItem onClick={() => setVisible(setNodeMenuOpen(null))}>
                 <ListItemText>CloseMenu</ListItemText>

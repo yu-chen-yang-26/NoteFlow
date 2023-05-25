@@ -22,7 +22,6 @@ export default function Main() {
   }, []);
 
   return (
-    // <div className="App">
     <div className={`${isMobile ? 'App-container-mobile' : 'App-container'}`}>
       <Sidebar />
       <div className="App-tab">
