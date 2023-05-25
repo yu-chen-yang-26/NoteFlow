@@ -113,7 +113,7 @@
     opacity: 1;
     transition: opacity 0.5s ease;
     background-color: black;
-    height: 45vh;
+    height: 50vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -130,12 +130,13 @@
     }
   }
   .info-mobile {
-    height: 55vh;
+    height: 50vh;
     margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: scroll;
 
     h2 {
       margin-bottom: 0%;
@@ -146,9 +147,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2vh;
+      gap: 0;
       justify-content: center;
-      border: red soild 2px;
+
+      .MuiBox-root {
+        display: flex;
+        flex-direction: column;
+      }
     }
     .horizontalLine {
       width: 55%;

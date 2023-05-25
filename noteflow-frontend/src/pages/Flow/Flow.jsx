@@ -86,6 +86,10 @@ function Flow() {
   const [changeStyleId, setChangeStyleId] = useState(null);
   const [changeStyleContent, setChangeStyleContent] = useState(null);
 
+  // for node remove
+  const [lastSelectedNode, setLastSelectedNode] = useState(null);
+  const [lastSelectedEdge, setLastSelectedEdge] = useState(null);
+
   const searchParams = new URLSearchParams(location.search);
   const { user } = useApp();
   const flowId = searchParams.get('id');
@@ -93,6 +97,31 @@ function Flow() {
   const { addTab, returnWS } = usePageTab();
 
   const navigateTo = useNavigate();
+
+  const deleteComponent = (event) => {
+    if (event.key === 'Backspace') {
+      const id = lastSelectedNode ? lastSelectedNode : lastSelectedEdge;
+      const type = lastSelectedNode ? 'node' : 'edge';
+
+      const param = [
+        {
+          type: 'remove',
+          id: id,
+        },
+      ];
+
+      flowWebSocket.editComponent(param, type);
+      if (type == 'node') {
+        setNodes(nodes.filter((nds) => nds.id !== id));
+        onNodesChange(param);
+        setLastSelectedNode(null);
+      } else {
+        setEdges(edges.filter((edg) => edg.id !== id));
+        onEdgesChange(param);
+        setLastSelectedEdge(null);
+      }
+    }
+  };
 
   const onLabelChange = (id, event) => {
     setNodes((nds) =>
@@ -143,7 +172,7 @@ function Flow() {
             case 'stroke':
               node.style = {
                 ...node.style,
-                borderWidth: event.target.value + 'px',
+                borderWidth: event.target.value,
               };
               setChangeStyleContent(node.style);
               break;
@@ -204,6 +233,7 @@ function Flow() {
         });
         // webSocket
         flowWebSocket.addComponent(newNode, 'node');
+        // nodeId.current++;
       })
       .catch((e) => console.log(e));
   });
@@ -288,18 +318,24 @@ function Flow() {
     };
   }, [flowId, user]);
 
+  useEffect(() => {
+    document.addEventListener('keydown', deleteComponent);
+    return () => document.removeEventListener('keydown', deleteComponent);
+  }, [lastSelectedNode, lastSelectedEdge]);
+
   const rerender = (data) => {
     // setNodes(data.nodes);
     rerenderNodes(data.nodes);
     setEdges(data.edges);
     setTitle(data.name);
     const node_ids = new Array(data.nodes.length);
-    Object.keys(data.nodes).forEach((element, index) => {
-      node_ids[index] = Number(element);
+    data.nodes.forEach((element, index) => {
+      node_ids[index] = Number(element.id);
     });
+
     const edge_ids = new Array(data.edges.length);
-    Object.keys(data.edges).forEach((element, index) => {
-      edge_ids[index] = Number(element);
+    data.edges.forEach((element, index) => {
+      edge_ids[index] = Number(element.id);
     });
     nodeId.current = data.nodes.length === 0 ? 0 : Math.max(...node_ids) + 1;
     edgeId.current = data.edges.length === 0 ? 0 : Math.max(...edge_ids) + 1;
@@ -317,29 +353,29 @@ function Flow() {
     [],
   );
 
-  const onNodesDelete = useCallback(
-    (deleted) => {
-      setEdges(
-        deleted.reduce((acc, node) => {
-          const incomers = getIncomers(node, nodes, edges);
-          const outgoers = getOutgoers(node, nodes, edges);
-          const connectedEdges = getConnectedEdges([node], edges);
-          const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge),
-          );
-          const createdEdges = incomers.flatMap(({ id: source }) =>
-            outgoers.map(({ id: target }) => ({
-              id: `${source}->${target}`,
-              source,
-              target,
-            })),
-          );
-          return [...remainingEdges, ...createdEdges];
-        }, edges),
-      );
-    },
-    [nodes, edges],
-  );
+  // const onNodesDelete = useCallback(
+  //   (deleted) => {
+  //     setEdges(
+  //       deleted.reduce((acc, node) => {
+  //         const incomers = getIncomers(node, nodes, edges);
+  //         const outgoers = getOutgoers(node, nodes, edges);
+  //         const connectedEdges = getConnectedEdges([node], edges);
+  //         const remainingEdges = acc.filter(
+  //           (edge) => !connectedEdges.includes(edge),
+  //         );
+  //         const createdEdges = incomers.flatMap(({ id: source }) =>
+  //           outgoers.map(({ id: target }) => ({
+  //             id: `${source}->${target}`,
+  //             source,
+  //             target,
+  //           })),
+  //         );
+  //         return [...remainingEdges, ...createdEdges];
+  //       }, edges),
+  //     );
+  //   },
+  //   [nodes, edges],
+  // );
 
   const onAdd = useCallback(() => {
     yPos.current += 50;
@@ -355,7 +391,7 @@ function Flow() {
           id: nodeId.current.toString(),
           data: {
             label: 'Untitle',
-            toolbarPosition: Position.Top,
+            toolbarPosition: Position.Right,
             openStyleBar: (id) => {
               openStyleBar(id);
             },
@@ -374,6 +410,7 @@ function Flow() {
         };
         // webSocket
         flowWebSocket.addComponent(newNode, 'node');
+        // nodeId.current++;
       })
       .catch((e) => console.log(e));
   }, [setNodes, flowWebSocket]);
@@ -394,11 +431,9 @@ function Flow() {
     setChangeLabelId({ id, label });
   };
 
-  const [restart, setRestart] = useState(false);
-
   let { x, y, zoom } = useViewport();
 
-  const onNodeDoubleClick = useCallback((event, node) => {
+  const nodeClick = useCallback((event, node) => {
     //open editor by nodeID
     zoom = 2;
     setEditorId(node.editorId);
@@ -437,7 +472,6 @@ function Flow() {
           label: changeLabelId.label,
         },
       ];
-      console.log('edit');
       flowWebSocket.editComponent(param, 'node');
     }
   }, [changeLabelId, flowWebSocket]);
@@ -511,9 +545,13 @@ function Flow() {
           onDragOver={onDragOver}
           onNodesChange={(param) => {
             onNodesChange(param);
+            setLastSelectedEdge(null);
+            setLastSelectedNode(param[0].id);
             flowWebSocket.editComponent(param, 'node');
           }}
           onEdgesChange={(param) => {
+            setLastSelectedNode(null);
+            setLastSelectedEdge(param[0].id);
             onEdgesChange(param);
             flowWebSocket.editComponent(param, 'edge');
           }}
@@ -528,13 +566,20 @@ function Flow() {
             );
           }}
           // onInit={setRfInstance}
-          onNodeDoubleClick={onNodeDoubleClick}
+          // onNodeDoubleClick={(event, node) => {
+          //   doubleClick(event, node);
+          //   console.log('double click');
+          // }}
+          onNodeDoubleClick={(event, node) => {
+            nodeClick(event, node);
+          }}
           nodeTypes={nodeTypes}
           // edgeTypes={edgeTypes}
         >
           {isStyleBarOpen ? (
             <StyleBar
               handleStyleBarClose={handleStyleBarClose}
+              nodes={nodes}
               nodeId={changeStyleId}
               nodeChangeStyle={(id, event, type) =>
                 nodeChangeStyle(id, event, type)
@@ -572,15 +617,18 @@ function Flow() {
       {isEdit && (
         // <div className="EditorContainer">
         <Resizable
-          className="box"
+          // className="box"
           height={Infinity}
-          width={nodeWidth}
+          // width={nodeWidth}
+          // width="400px"
           onResize={onResize}
           resizeHandles={['w']}
           minConstraints={[400, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
-          <div style={{ width: `${nodeWidth}px` }}>
+          <div
+          // style={{ width: `${nodeWidth}px` }}
+          >
             <Node
               nodeId={editorId}
               setIsEdit={setIsEdit}

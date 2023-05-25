@@ -14,7 +14,7 @@ import instance from '../../API/api';
 import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
 import { Colab } from '../../API/Colab';
-import BeatLoader from 'react-spinners/BeatLoader';
+// import BeatLoader from 'react-spinners/BeatLoader';
 
 const STATE = {
   peace: 0, // saved && editing

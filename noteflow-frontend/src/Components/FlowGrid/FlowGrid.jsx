@@ -149,13 +149,12 @@ export default function FlowGrid({ containerRef }) {
     setTitleToBeDeleted(null);
     setIdToBeDeleted(null);
     setIsAlertOpen(false);
-    console.log(id);
 
     instance
       .post('/flows/delete-flow', { id })
       .then((res) => {
         console.log('Delete Flow Success');
-        console.log(flows.filter((flow) => flow.id !== id));
+        // console.log(flows.filter((flow) => flow.id !== id));
         setFlows(flows.filter((flow) => flow.id !== id));
       })
       .catch((e) => {
@@ -168,23 +167,20 @@ export default function FlowGrid({ containerRef }) {
   };
 
   const changeTitle = (id, title) => {
-    setTitleToBeChanged(null);
-    setIdToBeChanged(null);
-    setIsChangeTitleOpen(false);
-
     instance
-      .get('flows/set-title', { id, title })
+      .post('flows/set-title', { id, title })
       .then((res) => {
         setFlows((fs) =>
           fs.map((flow) => {
             if (flow.id == id) {
-              flow.name = { title };
+              flow.name = title;
             }
             return flow;
           }),
         );
-        console.log(flows);
-        console.log(res.data);
+        setTitleToBeChanged(null);
+        setIdToBeChanged(null);
+        setIsChangeTitleOpen(false);
         console.log('Change Title Success');
       })
       .catch((e) => {
@@ -241,7 +237,7 @@ export default function FlowGrid({ containerRef }) {
               <Button
                 onClick={() => {
                   console.log(titleToBeChanged);
-                  changeTitle(idToBeDeleted, titleToBeChanged);
+                  changeTitle(idToBeChanged, titleToBeChanged);
                 }}
               >
                 Confirm
