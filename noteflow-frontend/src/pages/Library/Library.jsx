@@ -158,7 +158,7 @@ const Library = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'top',
-          display: mobileEditorDisplay ? 'none' : 'flex',
+          display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
           alignItems: 'center',
           height: '100%',
           overflowX: 'hidden',
@@ -206,7 +206,6 @@ const Library = () => {
               </NodeButton>
             );
           })}
-
       </Grid>{' '}
       <Grid
         item

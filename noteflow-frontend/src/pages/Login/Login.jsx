@@ -174,7 +174,7 @@ const Login = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            style={{ margin: '1vh 1vw' }}
+            style={{ margin: '1vh 1vw', width: isMobile ? '100%' : '' }}
           >
             <TextField
               margin="normal"
@@ -233,9 +233,9 @@ const Login = () => {
               className="links"
               style={{
                 display: 'flex',
-                // flexDirection: 'column',
+                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'space-between',
-                // alignItems: 'center',
+                alignItems: 'center',
               }}
             >
               <Link
