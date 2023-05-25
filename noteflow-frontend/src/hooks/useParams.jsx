@@ -16,5 +16,7 @@ const useParams = create((set) => ({
   setUser: (userObject) => set((state) => ({ user: userObject })),
   nodeMenuOpen: null,
   setNodeMenuOpen: (param) => set((state) => ({ nodeMenuOpen: param })),
+  mode: 0,
+  changeMode: (param) => set((state) => ({ mode: param })),
 }));
 export { useParams };
