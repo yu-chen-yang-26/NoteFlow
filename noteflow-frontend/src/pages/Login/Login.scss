@@ -24,10 +24,10 @@
     margin: 0;
     gap: 2vw;
 
-    .tryme-div {
-      width: 100%;
-      height: 100%;
-    }
+    // .tryme-div {
+    //   width: 100%;
+    //   height: 100%;
+    // }
   }
   .info {
     width: 50%;
@@ -109,11 +109,15 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
+   // do not modify this line
+   max-height: -webkit-fill-available;
+   max-width: -webkit-fill-available;
+
   .logo-mobile {
     opacity: 1;
     transition: opacity 0.5s ease;
     background-color: black;
-    height: 50vh;
+    height: 45%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -122,21 +126,22 @@
     color: white;
     margin: 0;
     gap: 1vh;
-    // padding-top: 5%;
+    padding-top: 5%;
 
-    .tryme-div {
-      width: 100%;
-      height: 100%;
-    }
+    // .tryme-div {
+    //   width: 100%;
+    //   height: 100%;
+    // }
   }
+
   .info-mobile {
-    height: 50vh;
+    height: 55%;
     margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: scroll;
+    overflow-y: scroll;
 
     h2 {
       margin-bottom: 0%;

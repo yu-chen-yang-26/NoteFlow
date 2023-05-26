@@ -85,6 +85,7 @@ function Flow() {
   const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
   const [changeStyleId, setChangeStyleId] = useState(null);
   const [changeStyleContent, setChangeStyleContent] = useState(null);
+  const [nodeIsEditing, setNodeIsEditing] = useState(null);
 
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null);
@@ -217,7 +218,13 @@ function Flow() {
               onLabelChange(id, event);
             },
             editLabel: (id, label) => {
-              editLabel(id, label);
+              setChangeLabelId({ id, label });
+            },
+            onLabelEdit: (id) => {
+              setNodeIsEditing(id);
+            },
+            onLabelStopEdit: () => {
+              setNodeIsEditing(null);
             },
           },
 
@@ -254,7 +261,13 @@ function Flow() {
           onLabelChange(id, event);
         },
         editLabel: (id, label) => {
-          editLabel(id, label);
+          setChangeLabelId({ id, label });
+        },
+        onLabelEdit: (id) => {
+          setNodeIsEditing(id);
+        },
+        onLabelStopEdit: () => {
+          setNodeIsEditing(null);
         },
       };
       return node;
@@ -319,9 +332,11 @@ function Flow() {
   }, [flowId, user]);
 
   useEffect(() => {
-    document.addEventListener('keydown', deleteComponent);
-    return () => document.removeEventListener('keydown', deleteComponent);
-  }, [lastSelectedNode, lastSelectedEdge]);
+    if (lastSelectedNode != nodeIsEditing) {
+      document.addEventListener('keydown', deleteComponent);
+      return () => document.removeEventListener('keydown', deleteComponent);
+    }
+  }, [lastSelectedNode, lastSelectedEdge, nodeIsEditing]);
 
   const rerender = (data) => {
     // setNodes(data.nodes);
@@ -399,7 +414,13 @@ function Flow() {
               onLabelChange(id, event);
             },
             editLabel: (id, label) => {
-              editLabel(id, label);
+              setChangeLabelId({ id, label });
+            },
+            onLabelEdit: (id) => {
+              setNodeIsEditing(id);
+            },
+            onLabelStopEdit: () => {
+              setNodeIsEditing(null);
             },
           },
           type: 'CustomNode',
@@ -425,10 +446,6 @@ function Flow() {
   const onSave = (title) => {
     flowWebSocket.editFlowTitle(title);
     setBack(true);
-  };
-
-  const editLabel = (id, label) => {
-    setChangeLabelId({ id, label });
   };
 
   let { x, y, zoom } = useViewport();
@@ -567,9 +584,9 @@ function Flow() {
           }}
           // onInit={setRfInstance}
           // onNodeDoubleClick={(event, node) => {
-          //   doubleClick(event, node);
-          //   console.log('double click');
+          //   nodeClick(event, node);
           // }}
+
           onNodeDoubleClick={(event, node) => {
             nodeClick(event, node);
           }}

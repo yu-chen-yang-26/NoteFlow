@@ -1,6 +1,4 @@
-// .App {
-//   width: 100vw;
-//   height: 100vh;
+// #root {
 //   display: flex;
 //   align-items: center;
 //   justify-content: center;
@@ -9,14 +7,6 @@
 //   padding: 0;
 // }
 
-#root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 .App-container {
   width: 100vw;
@@ -28,6 +18,8 @@
   margin: 0;
   padding: 0;
   gap: 0;
+  
+  
 
   .App-tab {
     padding: 0;
@@ -49,9 +41,14 @@
 
 .App-container-mobile {
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+
   display: flex;
+  height:100vh;
+  width:100vw;
+
+  // do not modify this line
+  max-height: -webkit-fill-available;
+  max-width: -webkit-fill-available;
 
   .App-tab {
     //   padding: 0;
