@@ -25,13 +25,8 @@ const client_id =
   '390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com';
 
 const Login = () => {
-  const languageDiv = {
-    en: <US title="United States" value="en" />,
-    zh: <TW tilte="Taiwan" value="zh" />,
-  };
-
   const divRef = useRef(null);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showLogo, setShowLogo] = useState(false);
@@ -82,6 +77,20 @@ const Login = () => {
           setAlarms('*Internal server error');
         }
       });
+  };
+  const changeLang = () => {
+    const newlang = (() => {
+      switch (i18n.language) {
+        case 'zh':
+          return 'en';
+        case 'en':
+          return 'zh';
+        default:
+          return '';
+      }
+    })();
+    localStorage.setItem('noteflow-lang', newlang);
+    i18n.changeLanguage(newlang);
   };
 
   useEffect(() => {
@@ -168,7 +177,7 @@ const Login = () => {
             </Select>
           </FormControl>
         </Box> */}
-        <h2>Login</h2>
+        <h2>{t('Login')}</h2>
         <div className="infoContainer">
           <Box
             component="form"
@@ -181,7 +190,7 @@ const Login = () => {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label={t('Email Address')}
               name="email"
               autoComplete="email"
               autoFocus
@@ -195,7 +204,7 @@ const Login = () => {
               required
               fullWidth
               name="password"
-              label="Password"
+              label={t('Password')}
               type="password"
               id="password"
               autoComplete="current-password"
@@ -227,7 +236,7 @@ const Login = () => {
                 textTransform: 'none',
               }}
             >
-              Login
+              {t('Login')}
             </Button>
             <div
               className="links"
@@ -247,7 +256,7 @@ const Login = () => {
                 }}
                 onClick={() => navigateTo('/forgotPassword')}
               >
-                Forgot password?
+                {t('Forgot password?')}
               </Link>
               <Link
                 variant="body2"
@@ -258,15 +267,30 @@ const Login = () => {
                 }}
                 onClick={() => navigateTo('/register')}
               >
-                {"Don't have an account? Sign Up"}
+                {t("Don't have an account? Sign Up")}
               </Link>
             </div>
           </Box>
         </div>
         <div className="horizontalLine">
-          <span>OR</span>
+          <span>{t('OR')}</span>
         </div>
         <div id="signInDiv" ref={divRef}></div>
+        <Button
+          type="submit"
+          variant="contained"
+          style={{
+            width: '200px',
+            maxWidth: '80%',
+            backgroundColor: '#0e1111',
+            color: 'white',
+            paddingTop: '1vh',
+            textTransform: 'none',
+          }}
+          onClick={() => changeLang()}
+        >
+          {t('Switch to ' + (i18n.language === 'en' ? 'Chinese' : 'English'))}
+        </Button>
       </div>
     </div>
   );
