@@ -146,14 +146,18 @@ class Flows {
 
     const owner = flowId.split('-')[0];
 
-    const result = await collection.findOneAndDelete({
-      user: owner,
-      'flows.id': flowId,
-    });
-
+    // const result = await collection.findOneAndDelete({
+    //   user: owner,
+    //   'flows.id': flowId,
+    // });
+    // console.log(result.lastErrorObject.updatedExisting);
+    const result = await collection.updateOne(
+      { user: owner },
+      { $pull: { flows: { id: flowId } } },
+    );
     // 搜集他的相關人士
 
-    return result.lastErrorObject.updatedExisting;
+    return result.matchedCount;
   }
 }
 
