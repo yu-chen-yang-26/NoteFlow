@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
 // import instance from '../../API/api';
+import React from 'react';
+import SuspenseEditor from '../../Components/Editor/SuspenseEditor';
 
 import './Node.scss';
 

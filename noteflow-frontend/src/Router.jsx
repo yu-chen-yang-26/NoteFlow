@@ -26,16 +26,23 @@ const Router = () => {
               <React.Suspense
                 fallback={
                   <div
+                    className="loadingContainer"
                     style={{
                       width: '100vw',
                       height: '100vh',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'white',
+                      position: 'relative',
+                      background: '#e6e6e6',
                     }}
                   >
-                    <LoadingScreen />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 'calc(45% - 75px)',
+                        left: 'calc(50% - 75px)',
+                      }}
+                    >
+                      <LoadingScreen />
+                    </div>
                   </div>
                 }
               >
