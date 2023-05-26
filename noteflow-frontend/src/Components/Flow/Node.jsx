@@ -67,32 +67,12 @@ const CustomNode = ({ id, data }) => {
   //   };
   // }, []);
 
-  const handleClick = (event) => {
-    setClickCount((prevCount) => prevCount + 1);
-    if (singleClickTimerRef.current !== null) {
-      // Clear the timer if it's a double click
-      clearTimeout(singleClickTimerRef.current);
-      singleClickTimerRef.current = null;
-      // console.log('雙擊事件觸發');
-      setClickCount(0);
-    } else {
-      singleClickTimerRef.current = setTimeout(() => {
-        console.log('單擊事件觸發');
-        singleClickTimerRef.current = null;
-        onContextMenu(event);
-        setClickCount(0);
-      }, 200);
-    }
-  };
-
   return (
     <div
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
-      onClick={(event) => {
-        handleClick(event);
-      }}
+
       // onTouchStart={() => {
       //   console.log('hi');
       // }}
