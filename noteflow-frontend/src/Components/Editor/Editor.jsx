@@ -67,6 +67,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
     if (!editorId) return;
 
     OpenEditor(editorId);
+    console.log('opening...', editorId);
     instance.get(`/nodes/get-title?id=${editorId}`).then((res) => {
       setTitle(res.data);
       setNewTitle(res.data);
