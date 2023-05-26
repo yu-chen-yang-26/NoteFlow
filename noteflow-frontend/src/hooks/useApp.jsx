@@ -48,9 +48,9 @@ const UserProvider = (props) => {
       .then((res) => {
         const user = res.data;
 
-        if (!user.logined && location.pathname !== '/resetPassword') {
-          navigate('/');
-        }
+        // if (!user.logined && location.pathname !== '/resetPassword') {
+        //   navigate('/');
+        // }
         setUser({
           ...user,
           picture: user.picture
@@ -84,7 +84,7 @@ const UserProvider = (props) => {
   useEffect(() => {
     if (!cssValue) return;
     console.log(`Change css style to ${cssValue}`);
-    import(`../../node_modules/highlight.js/styles/${cssValue}`);
+    import(`../../node_modules/highlight.js/styles/${cssValue}.css`);
     localStorage.setItem('noteflow-quill-css', cssValue);
   }, [cssValue]);
 

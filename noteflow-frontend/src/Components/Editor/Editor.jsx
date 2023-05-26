@@ -6,7 +6,7 @@ import './Editor.scss';
 import { IoIosArrowBack } from 'react-icons/io';
 import { BsShare } from 'react-icons/bs';
 import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
-import katex from 'katex';
+
 import 'katex/dist/katex.min.css';
 import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material';
@@ -15,6 +15,8 @@ import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
 import { Colab } from '../../API/Colab';
 // import BeatLoader from 'react-spinners/BeatLoader';
+
+const katex = import('katex');
 
 const STATE = {
   peace: 0, // saved && editing

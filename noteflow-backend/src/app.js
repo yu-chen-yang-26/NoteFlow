@@ -137,7 +137,7 @@ const router = new WsRouter()
       });
     });
   })
-  .session('/flow', (ws, can) => {
+  .no_session('/flow', (ws, can) => {
     ws.on('message', (message) => {
       const query = JSON.parse(message.toString('utf-8'));
       const { a, d } = query;

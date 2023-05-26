@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import ReactFlow, { addEdge, useNodesState, useEdgesState } from 'reactflow';
-import DemoEditor from './DemoEditor';
+
+const DemoEditor = React.lazy(() => import('./DemoEditor'));
 
 import {
   nodes as initialNodes,
