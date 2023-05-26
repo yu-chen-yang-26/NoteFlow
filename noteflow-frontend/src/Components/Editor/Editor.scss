@@ -15,8 +15,7 @@
     }
 
     .title-input {
-      width: 15vw;
-      min-width: 15vw;
+      width: 35%;
       margin-left: 10px;
       margin-bottom: 0;
       font-size: 30px;
@@ -31,7 +30,7 @@
       }
 
       &:focus + .focus-border {
-        width: 15vw;
+        width: 35%;
         transition: 0.4s;
       }
     }
@@ -123,7 +122,7 @@
       border: none;
       background: transparent;
       color: #1e1e1e;
-      width: 50vw;
+      width: 50%;
 
       &:focus {
         outline: none;
@@ -131,7 +130,7 @@
       }
 
       &:focus + .focus-border {
-        width: 35vw;
+        width: 50%;
         transition: 0.4s;
       }
     }
