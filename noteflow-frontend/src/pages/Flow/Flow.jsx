@@ -587,6 +587,7 @@ function Flow() {
           // }}
           snapToGrid={true}
           onNodeDoubleClick={(event, node) => {
+            console.log('雙擊事件觸發');
             nodeClick(event, node);
           }}
           nodeTypes={nodeTypes}

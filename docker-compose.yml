@@ -58,7 +58,7 @@ services:
   frontend:
     image: "node:lts"
     working_dir: /frontend
-    command: sh -c "yarn preview"
+    command: sh -c "yarn && yarn build && yarn vite"
     networks:
       - noteflow
     ports:

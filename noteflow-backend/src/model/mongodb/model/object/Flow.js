@@ -7,6 +7,7 @@ import json1 from 'ot-json1';
 import sharedb from '../../sharedb.js';
 import { getMongoClient } from '../../mongoClient.js';
 import FlowList from './FlowList.js';
+import Flows from './Flows.js';
 
 class Flow {
   constructor(
@@ -45,7 +46,7 @@ class Flow {
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flows');
 
-    await collection.findOneAndUpdate(
+    const is = await collection.findOneAndUpdate(
       {
         user: this.owner,
       },
@@ -59,6 +60,23 @@ class Flow {
         },
       },
     );
+    if (!is.lastErrorObject.updatedExisting) {
+      await Flows.genFlowsProfile(this.owner);
+      await collection.findOneAndUpdate(
+        {
+          user: this.owner,
+        },
+        {
+          $addToSet: {
+            flows: _.omit({ ...this, updateAt: Date.now() }, [
+              'owner',
+              'edges',
+              'nodes',
+            ]),
+          },
+        },
+      );
+    }
 
     const flowList = new FlowList(this.owner);
     await flowList.addSomebodyToFlowList(this.owner, this.id);

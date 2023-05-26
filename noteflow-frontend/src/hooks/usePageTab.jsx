@@ -14,6 +14,7 @@ const PageTabContext = createContext({
   closeTab: () => {},
   deleteTab: () => {}, //Use when deleting a flow
   toTab: () => {},
+  renameTab: () => {},
 });
 
 const PageTabProvider = (props) => {
@@ -95,6 +96,13 @@ const PageTabProvider = (props) => {
     navigateTo(`/${type}?id=${objectId}`);
   };
 
+  const renameTab = (tabId, name) => {
+    setTabList((state) => {
+      state[tabId] = name;
+      return state;
+    });
+  };
+
   return (
     <PageTabContext.Provider
       value={{
@@ -103,6 +111,7 @@ const PageTabProvider = (props) => {
         closeTab,
         toTab,
         deleteTab,
+        renameTab,
         activeTab,
         setActiveTab,
         setTabList,
