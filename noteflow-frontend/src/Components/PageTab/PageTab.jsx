@@ -72,7 +72,7 @@ export default function PageTab() {
       .then(async (res) => {
         if (res.status === 200) {
           navigate(`/flow?id=${res.data}`);
-          addTab({ type: 'flow', objectId: res.data, name: 'undefined' }); // name 應該在 flows/create 拿
+          addTab({ type: 'flow', objectId: res.data, name: 'untitled' }); // name 應該在 flows/create 拿
         }
       })
       .catch((e) => console.log(e));
