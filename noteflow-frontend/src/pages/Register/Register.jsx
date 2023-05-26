@@ -113,106 +113,103 @@ const Register = () => {
         <h2>{t('Register')}</h2>
         <div className="infoContainer">
           {Object.keys(user).length === 0 && (
-            <>
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                noValidate
-                style={{ margin: '1vh 1vw', width: isMobile ? '100%' : '' }}
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              style={{ margin: '1vh 1vw', width: '  80%' }}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label={t('Name')}
+                name="name"
+                autoComplete="name"
+                autoFocus
+                size="small"
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label={t('Email Address')}
+                name="email"
+                autoComplete="email"
+                size="small"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label={t('Password')}
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                size="small"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label={t('Check Password')}
+                type="password"
+                id="check-password"
+                autoComplete="current-password"
+                size="small"
+                onChange={(e) => {
+                  setCheckPassword(e.target.value);
+                }}
+              />
+              <div
+                style={{
+                  color: 'red',
+                  height: '18px',
+                  textAlign: 'left',
+                  padding: '0 10px 0 10px',
+                }}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label={t('Name')}
-                  name="name"
-                  autoComplete="name"
-                  autoFocus
-                  size="small"
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label={t('Email Address')}
-                  name="email"
-                  autoComplete="email"
-                  size="small"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label={t('Password')}
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  size="small"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label={t('Check Password')}
-                  type="password"
-                  id="check-password"
-                  autoComplete="current-password"
-                  size="small"
-                  onChange={(e) => {
-                    setCheckPassword(e.target.value);
-                  }}
-                />
-                <div
-                  style={{
-                    color: 'red',
-                    height: '18px',
-                    // border: '1px solid black',
-                    textAlign: 'left',
-                    padding: '0 10px 0 10px',
-                  }}
+                {alarms}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  sx={{ mt: 2, mb: 2, width: '45%' }}
+                  style={{ backgroundColor: 'white', color: 'black' }}
+                  onClick={() => navigateTo('/')}
                 >
-                  {alarms}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-around',
-                    width: '100%',
-                  }}
+                  {t('Cancel')}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2, mb: 2, width: '45%' }}
+                  style={{ backgroundColor: '#0e1111', color: 'white' }}
                 >
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2, mb: 2, width: '45%' }}
-                    style={{ backgroundColor: 'white', color: 'black' }}
-                    onClick={() => navigateTo('/')}
-                  >
-                    {t('Cancel')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{ mt: 2, mb: 2, width: '45%' }}
-                    style={{ backgroundColor: '#0e1111', color: 'white' }}
-                  >
-                    {t('Register')}
-                  </Button>
-                </div>
-              </Box>
-            </>
+                  {t('Register')}
+                </Button>
+              </div>
+            </Box>
           )}
         </div>
       </div>
