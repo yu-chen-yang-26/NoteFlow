@@ -14,6 +14,7 @@ import { AiOutlineBorderlessTable } from 'react-icons/ai';
 import { Menu, MenuItem } from '@mui/material';
 import { usePageTab } from '../../hooks/usePageTab';
 import Colabs from './Colabs';
+import { useTranslation } from 'react-i18next';
 
 export default function ToolBar({
   addNode,
@@ -24,6 +25,7 @@ export default function ToolBar({
   isEdit,
   handleNodeBarOpen,
 }) {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const { flowWebSocket, renewFlowWebSocket } = usePageTab();
   const handleShow = () => setShow(true);
@@ -75,13 +77,13 @@ export default function ToolBar({
           onClose={handleClose}
         >
           <MenuItem key="lines" onClick={() => changeBG('lines')}>
-            <AiOutlineBorderlessTable /> Lines
+            <AiOutlineBorderlessTable /> {t('Lines')}
           </MenuItem>
           <MenuItem key="dots" onClick={() => changeBG('dots')}>
-            <BsDot /> Dots
+            <BsDot /> {t('Dots')}
           </MenuItem>
           <MenuItem key="cross" onClick={() => changeBG('cross')}>
-            <BiCross /> Cross
+            <BiCross /> {t('Cross')}
           </MenuItem>
         </Menu>
 
