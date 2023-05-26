@@ -457,11 +457,11 @@ function Flow() {
     setLastSelectedNode(null);
     setLastSelectedEdge(null);
     setIsEdit(true);
-    addTab({
-      type: 'node',
-      objectId: node.editorId,
-      name: node.data.label ? node.data.label : ':)',
-    });
+    // addTab({
+    //   type: 'node',
+    //   objectId: node.editorId,
+    //   name: node.data.label ? node.data.label : ':)',
+    // });
   });
 
   const canvasRef = useRef();
