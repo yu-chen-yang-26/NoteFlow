@@ -6,24 +6,26 @@ import CODE from '../../lib/httpStatus.js';
 const whoAmI = async (ctx) => {
   const { email, logined, name } = ctx.session;
 
+  console.log(ctx.session);
+
   let result;
   if (email) {
-    result = await db('users').first().where({ email: ctx.session.email });
-  }
+    result = await db('users').first().where({ email });
+    if (result.picture) {
+      if (!fs.existsSync(path.join(process.cwd(), 'images', result.picture))) {
+        result.picture = null;
+        db('users').insert({ picture: null }).where({ email });
+      }
+    }
 
-  let { picture } = result;
-  if (!fs.existsSync(path.join(process.cwd(), 'images', picture))) {
-    console.log('不存在', picture);
-    picture = null;
+    ctx.body = JSON.stringify({
+      email,
+      logined: !!logined,
+      name,
+      picture: result.picture,
+    });
+    ctx.status = CODE.success;
   }
-
-  ctx.body = JSON.stringify({
-    email,
-    logined: !!logined,
-    name,
-    picture,
-  });
-  ctx.status = CODE.success;
 };
 
 export default whoAmI;
