@@ -27,7 +27,9 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
       style={nodeId && { width: isMobile ? '100vw' : `${nodeWidth}px` }}
     >
       <div className="editor">
-        <Editor editorId={editorId} handleDrawerClose={handleDrawerClose} />
+        <React.Suspense fallback={<SuspenseEditor />}>
+          <Editor editorId={editorId} handleDrawerClose={handleDrawerClose} />
+        </React.Suspense>
       </div>
     </div>
   );
