@@ -157,7 +157,7 @@ class Flows {
     );
     // 搜集他的相關人士
 
-    return result.matchedCount;
+    return result.modifiedCount;
   }
 }
 
