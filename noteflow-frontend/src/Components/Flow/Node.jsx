@@ -6,6 +6,7 @@ import { MenuList, MenuItem, ListItemText, Input, Paper } from '@mui/material';
 // import styled from "styled-components";
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { useParams } from '../../hooks/useParams';
+import { useTranslation } from 'react-i18next';
 
 const defaultTypeStyle = {
   // border: '0px',
@@ -27,6 +28,7 @@ const defaultTypeStyle = {
 };
 
 const CustomNode = ({ id, data }) => {
+  const { t } = useTranslation();
   const [isVisible, setVisible] = useState(false);
   const [isInputDisable, setIsInputDisable] = useState(true);
   const [isResizable, setIsResizable] = useState(false);
@@ -99,10 +101,10 @@ const CustomNode = ({ id, data }) => {
                   setNodeMenuOpen(null);
                 }}
               >
-                <ListItemText>Rename</ListItemText>
+                <ListItemText>{t('Rename')}</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
-                <ListItemText>Change Style</ListItemText>
+                <ListItemText>{t('Change Style')}</ListItemText>
               </MenuItem>
               {/* <MenuItem onClick={() => setVisible(setNodeMenuOpen(null))}>
                 <ListItemText>CloseMenu</ListItemText>

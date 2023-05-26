@@ -67,7 +67,11 @@ export default function FlowGrid({ containerRef }) {
           if (res.data.length == 0) {
             observeforFetching.unobserve(loadingCheckPointRef.current);
           } else {
-            setFlows([...flows, ...res.data]);
+            setFlows(
+              res.data.sort((a, b) =>
+                a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
+              ),
+            );
             setPage(nextPage);
           }
         }
