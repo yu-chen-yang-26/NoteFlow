@@ -100,8 +100,15 @@ const Library = () => {
       .get('/library')
       .then((res) => {
         console.log('fetch');
-        setNodes(res.data);
+        if (flag !== 0) {
+          setNodes(res.data);
+        }
         if (res.data.length !== 0 && flag === 0) {
+          // setNodes(
+          //   res.data.sort((a, b) =>
+          //     a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
+          //   ),
+          // );
           setEditorId(res.data[0].id);
         }
       })
@@ -172,7 +179,7 @@ const Library = () => {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search…"
+            placeholder={t('Search...')}
             inputProps={{ 'aria-label': 'search' }}
             onFocus={() => clearInterval(intervalId)}
             onBlur={() => setIntervalId('')}
@@ -238,7 +245,7 @@ const Library = () => {
               sx={{ fontSize: '20px', cursor: 'pointer' }}
               onClick={() => changeMode(0)}
             >
-              Add nodes to library now!
+              {t('Add nodes to library now!')}
             </Typography>
           </div>
         ) : (

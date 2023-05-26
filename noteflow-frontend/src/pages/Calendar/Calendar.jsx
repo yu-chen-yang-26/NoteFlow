@@ -224,7 +224,7 @@ const Calendar = () => {
               sx={{ fontSize: '20px', cursor: 'pointer' }}
               onClick={() => changeMode(0)}
             >
-              Add nodes to library now!
+              {t('Add nodes to library now!')}
             </Typography>
           </div>
         ) : (
