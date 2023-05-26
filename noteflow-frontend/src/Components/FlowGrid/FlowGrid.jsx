@@ -186,7 +186,9 @@ export default function FlowGrid({ containerRef }) {
       });
     //change Title API
   };
-
+  document.addEventListener('click', () => {
+    setIsMenuOpen(null);
+  });
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -200,11 +202,13 @@ export default function FlowGrid({ containerRef }) {
             onClose={closeAlert}
           >
             <DialogTitle>
-              Do you want to delete the follow {titleToBeDeleted} ?
+              {t('Do you want to delete the follow ') + titleToBeDeleted + '?'}
             </DialogTitle>
             <DialogActions>
-              <Button onClick={() => deleteFlow(idToBeDeleted)}>Yes</Button>
-              <Button onClick={closeAlert}>Cancel</Button>
+              <Button onClick={() => deleteFlow(idToBeDeleted)}>
+                {t('Yes')}
+              </Button>
+              <Button onClick={closeAlert}>{t('Cancel')}</Button>
             </DialogActions>
           </Dialog>
         ) : (
@@ -216,14 +220,14 @@ export default function FlowGrid({ containerRef }) {
             fullWidth="true"
             maxWidth="sm"
           >
-            <DialogTitle>Change Name</DialogTitle>
+            <DialogTitle>{t('Change Name')}</DialogTitle>
             <DialogContent>
               <TextField
                 autoFocus
                 margin="dense"
                 fullWidth
                 variant="standard"
-                label="Flow Name"
+                label={t('Flow Name')}
                 multiline
                 value={titleToBeChanged}
                 onChange={(event) => {
@@ -238,9 +242,9 @@ export default function FlowGrid({ containerRef }) {
                   changeTitle(idToBeChanged, titleToBeChanged);
                 }}
               >
-                Confirm
+                {t('Confirm')}
               </Button>
-              <Button onClick={closeChangeTitle}>Cancel</Button>
+              <Button onClick={closeChangeTitle}>{t('Cancel')}</Button>
             </DialogActions>
           </Dialog>
         )
@@ -261,6 +265,7 @@ export default function FlowGrid({ containerRef }) {
                       setTarget(event.currentTarget);
                       setIsMenuOpen(flow.id);
                       event.preventDefault();
+                      event.stopPropagation();
                     }}
                     key={key}
                   >
@@ -276,7 +281,17 @@ export default function FlowGrid({ containerRef }) {
                           alt="flow.thumbnail"
                         />
                       ) : (
-                        `${t('Last Edit Time')}: ${formattedDate}`
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography>{t('Last Edit Time:')}</Typography>
+                          <Typography>{formattedDate}</Typography>
+                        </div>
                       )}
                     </FlowButton>
                     <Typography>{flow.name}</Typography>
@@ -298,14 +313,14 @@ export default function FlowGrid({ containerRef }) {
                           openChangeTitle(flow.id, flow.name);
                         }}
                       >
-                        Rename
+                        {t('Rename')}
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
                           openAlert(flow.id, flow.name);
                         }}
                       >
-                        Delete
+                        {t('Delete')}
                       </MenuItem>
                     </Menu>
                   </div>
