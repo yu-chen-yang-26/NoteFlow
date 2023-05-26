@@ -17,8 +17,10 @@ import { FaPen, FaBook, FaCalendarAlt } from 'react-icons/fa';
 import './PageTab.scss';
 
 export default function PageTab() {
-  const { tabList, addTab, closeTab, toTab, activeTab } = usePageTab();
+  const { tabList, addTab, closeTab, toTab, activeTab, renewFlowWebSocket } =
+    usePageTab();
   const [isHovered, setIsHovered] = useState(false);
+
   const { user } = useApp();
   const navigate = useNavigate();
 
@@ -61,6 +63,7 @@ export default function PageTab() {
   }));
   const backToHome = () => {
     navigate('/home');
+    renewFlowWebSocket(null);
   };
 
   const addNewFlow = () => {

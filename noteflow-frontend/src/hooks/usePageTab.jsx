@@ -1,4 +1,10 @@
-import { useContext, createContext, useState, useEffect } from 'react';
+import {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from './useApp';
 
@@ -14,6 +20,7 @@ const PageTabProvider = (props) => {
   const [tabList, setTabList] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useApp();
+  const [flowWebSocket, setFlowWebSocket] = useState(null);
 
   useEffect(() => {
     const tabListCache = JSON.parse(localStorage.getItem('tabList'));
@@ -23,8 +30,19 @@ const PageTabProvider = (props) => {
 
   const navigateTo = useNavigate();
 
+  const renewFlowWebSocket = useCallback(
+    (ws) => {
+      if (flowWebSocket) {
+        flowWebSocket.close();
+      }
+      setFlowWebSocket(ws);
+    },
+    [flowWebSocket],
+  );
+
   const addTab = (payload) => {
     const exist = tabList.filter((tab) => tab.objectId == payload.objectId);
+    console.log(exist);
     if (exist.length === 0)
       setTabList((prevTabList) => {
         let maxId = 0;
@@ -36,28 +54,31 @@ const PageTabProvider = (props) => {
           'tabList',
           JSON.stringify([...prevTabList, newTab]),
         );
+        setActiveTab(maxId + 1);
         return [...prevTabList, newTab];
       });
     else setActiveTab(exist[0].tabId);
   };
 
   const closeTab = (tabId) => {
-    const lastTab = tabList.length == 1;
+    const lastTab = tabList.length === 1;
     if (lastTab) {
       setTabList([]);
+      localStorage.setItem('tabList', null);
       navigateTo('/home');
     } else {
       const tabListUpdated = tabList.filter((tab) => tab.tabId !== tabId);
       localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
       setTabList(tabListUpdated);
-      toTab(tabList[0].tabId);
+      toTab(tabListUpdated[tabListUpdated.length - 1].tabId);
     }
   };
 
   const deleteTab = (id) => {
-    const lastTab = tabList.length == 1;
+    const lastTab = tabList.length === 1;
     if (lastTab) {
       setTabList([]);
+      localStorage.setItem('tabList', null);
     } else {
       const tabListUpdated = tabList.filter((tab) => tab.objectId !== id);
       localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
@@ -85,6 +106,8 @@ const PageTabProvider = (props) => {
         activeTab,
         setActiveTab,
         setTabList,
+        flowWebSocket,
+        renewFlowWebSocket,
       }}
       {...props}
     />

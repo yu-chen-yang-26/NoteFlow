@@ -85,4 +85,4 @@ const ForgotPassword = () => {
   );
 };
 
-export { ForgotPassword };
+export default ForgotPassword;

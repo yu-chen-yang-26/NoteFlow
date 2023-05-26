@@ -6,7 +6,7 @@ import './Editor.scss';
 import { IoIosArrowBack } from 'react-icons/io';
 import { BsShare } from 'react-icons/bs';
 import { MdFavoriteBorder, MdFavorite } from 'react-icons/md';
-import katex from 'katex';
+
 import 'katex/dist/katex.min.css';
 import { useApp } from '../../hooks/useApp';
 import { Button, IconButton } from '@mui/material';
@@ -15,6 +15,8 @@ import EditorSettings from './EditorSettings';
 import { useQuill } from '../../API/useQuill';
 import { Colab } from '../../API/Colab';
 // import BeatLoader from 'react-spinners/BeatLoader';
+
+const katex = import('katex');
 
 const STATE = {
   peace: 0, // saved && editing
@@ -37,21 +39,12 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   const [favorite, setFavorite] = useState(false);
   const [canEdit, setCanEdit] = useState(true);
 
-  // 1-Title and content Display
-  useEffect(() => {
-    setState({
-      title: '',
-      value: '',
-    });
-  }, []);
-
   useEffect(() => {
     if (status === STATE.turb) {
       stateTransInt = setTimeout(() => {
         clearInterval(stateTransInt);
         setStatus(STATE.peace);
         const ele = document.getElementsByClassName('focus-border');
-        console.log(ele);
         if (!ele || ele.length === 0) return;
         ele[0].classList.add('active');
         // ele[0].classList.remove('active');
@@ -86,11 +79,8 @@ const Editor = ({ handleDrawerClose, editorId }) => {
 
     instance
       .get(`/nodes/get-colab-list?id=${editorId}`)
-      .then((res) => {
-        console.log(res);
-      })
+      .then((res) => {})
       .catch((e) => {
-        console.log('wrong:', e);
         setCanEdit(false);
       });
     // setColabInput('');
@@ -159,7 +149,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
                   title: newTitle,
                 })
                 .then((res) => {
-                  console.log(res.status);
+                  // console.log(res.status);
                 });
             }
           }}
@@ -238,11 +228,6 @@ const Editor = ({ handleDrawerClose, editorId }) => {
               setStatus(STATE.turb);
             }
           }}
-          // onKeyUp={(e) => {
-          //   if (e.key === 'meta') {
-          //     commandMode = false;
-          //   }
-          // }}
           placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}

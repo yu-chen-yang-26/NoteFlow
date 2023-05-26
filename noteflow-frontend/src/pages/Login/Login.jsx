@@ -5,10 +5,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 
 import jwt_decode from 'jwt-decode';
 import './Login.scss';
@@ -278,4 +274,4 @@ const Login = () => {
   );
 };
 
-export { Login };
+export default Login;

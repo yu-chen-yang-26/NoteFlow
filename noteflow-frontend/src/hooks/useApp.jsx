@@ -49,9 +49,9 @@ const UserProvider = (props) => {
       .then((res) => {
         const user = res.data;
 
-        if (!user.logined && location.pathname !== '/resetPassword') {
-          navigate('/');
-        }
+        // if (!user.logined && location.pathname !== '/resetPassword') {
+        //   navigate('/');
+        // }
         setUser({
           ...user,
           picture: user.picture
@@ -73,7 +73,6 @@ const UserProvider = (props) => {
     setCssValue(key);
 
     const lang = localStorage.getItem('noteflow-lang');
-    console.log(i18n.language);
     if (!lang) {
       i18n.changeLanguage(i18n.languages[0]);
       localStorage.setItem('noteflow-lang', i18n.languages[0]);
@@ -85,7 +84,7 @@ const UserProvider = (props) => {
   useEffect(() => {
     if (!cssValue) return;
     console.log(`Change css style to ${cssValue}`);
-    import(`../../node_modules/highlight.js/styles/${cssValue}`);
+    import(`../../node_modules/highlight.js/styles/${cssValue}.css`);
     localStorage.setItem('noteflow-quill-css', cssValue);
   }, [cssValue]);
 
