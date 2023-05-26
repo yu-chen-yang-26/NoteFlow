@@ -13,9 +13,11 @@ import { Editor } from '../../Components/Editor/Editor';
 import { useApp } from '../../hooks/useApp';
 import { useState, useEffect } from 'react';
 import instance from '../../API/api';
+import { useParams } from '../../hooks/useParams';
 
 const Calendar = () => {
   const { isMobile } = useApp();
+  const { changeMode } = useParams();
   const { t } = useTranslation();
   const [nodes, setNodes] = useState([]);
   const [editorId, setEditorId] = useState(null);
@@ -48,6 +50,7 @@ const Calendar = () => {
     justifyContent: 'center',
     alignItems: 'center',
   }));
+
   const getDate = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -78,9 +81,15 @@ const Calendar = () => {
       .get('/library')
       .then((res) => {
         console.log('fetch');
-        setNodes(res.data);
-        if (res.data.length !== 0 && flag === 0) {
-          setEditorId(res.data[0].id);
+        if (res.data.length !== 0) {
+          setNodes(
+            res.data.sort((a, b) =>
+              a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
+            ),
+          );
+          if (flag === 0) {
+            setEditorId(res.data[0].id);
+          }
         }
       })
       .catch((e) => {
@@ -113,17 +122,18 @@ const Calendar = () => {
 
   return (
     <Grid container columns={12} sx={{ p: 0, m: 0, height: '100%' }}>
-      {/* <Grid item xs={6}> */}
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={5}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           {isMobile ? (
             <MobileDatePicker
               defaultValue={dayjs(getDate())}
               autoFocus={true}
-              format="YYYY-DD-MM"
+              format="YYYY-MM-DD"
+              value={date}
+              onChange={handleChange}
               sx={{
                 width: '100%',
-                display: mobileEditorDisplay ? 'none' : 'flex',
+                display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
               }}
             />
           ) : (
@@ -139,7 +149,7 @@ const Calendar = () => {
       <Grid
         item
         xs={12}
-        md={3}
+        md={2}
         sx={{
           //手機不顯示 border
           borderLeft: isMobile ? 'none' : '1px solid black',
@@ -148,7 +158,7 @@ const Calendar = () => {
           flexDirection: 'column',
           justifyContent: 'top',
           alignItems: 'center',
-          display: mobileEditorDisplay ? 'none' : 'flex',
+          display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
           height: '100%',
           overflowX: 'hidden',
           overflowY: 'scroll',
@@ -192,20 +202,45 @@ const Calendar = () => {
         xs={12}
         md={5}
         sx={{
-          //手機不顯示 border
-          borderLeft: isMobile ? 'none' : 'none',
-
           height: `calc(100% - 10px)`,
           display:
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
         }}
       >
-        <Editor
-          editorId={editorId}
-          handleDrawerClose={() => {
-            setMobileEditorDisplay(false);
-          }}
-        />
+        {nodes.filter((node) => {
+          if (date === '') {
+            return true;
+          }
+          return (
+            dayjs(node.updateAt).format('YYYY-MM-DD') ===
+            date.format('YYYY-MM-DD')
+          );
+        }).length === 0 ? (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#F0F0F0',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Typography
+              sx={{ fontSize: '20px', cursor: 'pointer' }}
+              onClick={() => changeMode(0)}
+            >
+              {t('Add nodes to library now!')}
+            </Typography>
+          </div>
+        ) : (
+          <Editor
+            editorId={editorId}
+            handleDrawerClose={() => {
+              setMobileEditorDisplay(false);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   );

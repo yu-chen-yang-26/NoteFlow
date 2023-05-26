@@ -10,9 +10,11 @@ import { Editor } from '../../Components/Editor/Editor';
 import { useApp } from '../../hooks/useApp';
 import { useState, useEffect } from 'react';
 import instance from '../../API/api';
+import { useParams } from '../../hooks/useParams';
 
 const Library = () => {
   const { t } = useTranslation();
+  const { changeMode } = useParams();
   const { isMobile } = useApp();
   const [nodes, setNodes] = useState([]);
   const [editorId, setEditorId] = useState(null);
@@ -98,9 +100,15 @@ const Library = () => {
       .get('/library')
       .then((res) => {
         console.log('fetch');
-        setNodes(res.data);
-        if (res.data.length !== 0 && flag === 0) {
-          setEditorId(res.data[0].id);
+        if (res.data.length !== 0) {
+          setNodes(
+            res.data.sort((a, b) =>
+              a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
+            ),
+          );
+          if (flag === 0) {
+            setEditorId(res.data[0].id);
+          }
         }
       })
       .catch((e) => {
@@ -158,7 +166,7 @@ const Library = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'top',
-          display: mobileEditorDisplay ? 'none' : 'flex',
+          display: isMobile && mobileEditorDisplay ? 'none' : 'flex',
           alignItems: 'center',
           height: '100%',
           overflowX: 'hidden',
@@ -170,7 +178,7 @@ const Library = () => {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search…"
+            placeholder={t('Search...')}
             inputProps={{ 'aria-label': 'search' }}
             onFocus={() => clearInterval(intervalId)}
             onBlur={() => setIntervalId('')}
@@ -206,7 +214,6 @@ const Library = () => {
               </NodeButton>
             );
           })}
-
       </Grid>{' '}
       <Grid
         item
@@ -217,12 +224,37 @@ const Library = () => {
             !isMobile || (isMobile && mobileEditorDisplay) ? 'flex' : 'none',
         }}
       >
-        <Editor
-          editorId={editorId}
-          handleDrawerClose={() => {
-            setMobileEditorDisplay(false);
-          }}
-        />
+        {nodes.filter((node) => {
+          if (query === '') {
+            return true;
+          }
+          return node.name === query;
+        }).length === 0 ? (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#F0F0F0',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Typography
+              sx={{ fontSize: '20px', cursor: 'pointer' }}
+              onClick={() => changeMode(0)}
+            >
+              {t('Add nodes to library now!')}
+            </Typography>
+          </div>
+        ) : (
+          <Editor
+            editorId={editorId}
+            handleDrawerClose={() => {
+              setMobileEditorDisplay(false);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   );

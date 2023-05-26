@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useFlowStorage } from '../storage/Storage';
+// import { set } from 'immer/dist/internal';
 
 const UserContext = createContext({
   user: {},
@@ -72,7 +73,6 @@ const UserProvider = (props) => {
     setCssValue(key);
 
     const lang = localStorage.getItem('noteflow-lang');
-    console.log(i18n.language);
     if (!lang) {
       i18n.changeLanguage(i18n.languages[0]);
       localStorage.setItem('noteflow-lang', i18n.languages[0]);
@@ -109,7 +109,22 @@ const UserProvider = (props) => {
 const MediaProvider = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // const [isMobile, setIsMobile] = useState(false);
   // console.log(isMobile);
+
+  // function isMobileBrowser() {
+  //   console.log(navigator.userAgent);
+  //   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  //     navigator.userAgent,
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   if (isMobileBrowser()) {
+  //     setIsMobile(true);
+  //     console.log(isMobile);
+  //   }
+  // }, []);
 
   return (
     <MediaContext.Provider value={{ isMobile }}>

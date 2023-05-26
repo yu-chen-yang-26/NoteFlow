@@ -1,43 +1,45 @@
-import React, { useState } from "react";
-import Stack from "@mui/material/Stack";
-import { styled, createTheme } from "@mui/material/styles";
+import React, { useState } from 'react';
+import Stack from '@mui/material/Stack';
+import { styled, createTheme } from '@mui/material/styles';
 // import { grey } from "@mui/material/colors";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import Button from "@mui/material/Button";
-import { Toolbar, Typography } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import { FaHome } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa";
-import { RxCross2 } from "react-icons/rx";
-import { useNavigate } from "react-router-dom";
-import instance from "../../API/api";
-import { useApp } from "../../hooks/useApp";
-import { usePageTab } from "../../hooks/usePageTab";
-import { FaPen, FaBook, FaCalendarAlt } from "react-icons/fa";
-import "./PageTab.scss";
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Button from '@mui/material/Button';
+import { Toolbar, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { FaHome } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
+import { RxCross2 } from 'react-icons/rx';
+import { useNavigate } from 'react-router-dom';
+import instance from '../../API/api';
+import { useApp } from '../../hooks/useApp';
+import { usePageTab } from '../../hooks/usePageTab';
+import { FaPen, FaBook, FaCalendarAlt } from 'react-icons/fa';
+import './PageTab.scss';
 
 export default function PageTab() {
-  const { tabList, addTab, closeTab, toTab, activeTab } = usePageTab();
+  const { tabList, addTab, closeTab, toTab, activeTab, renewFlowWebSocket } =
+    usePageTab();
   const [isHovered, setIsHovered] = useState(false);
+
   const { user } = useApp();
   const navigate = useNavigate();
 
   const TabButton = styled(Button)(({ theme }) => ({
     // backgroundColor: grey[700],
     // border: "0px",
-    border: "1px solid white",
+    border: '1px solid white',
     // borderColor: grey[700],
     // borderRight: "0",
-    paddingRight: "20%",
-    "&:hover": {
+    paddingRight: '20%',
+    '&:hover': {
       // backgroundColor: grey[600],
-      backgroundColor: "white",
+      backgroundColor: 'white',
       // border: "0px",
-      "& > icon": {
-        color: "black",
+      '& > icon': {
+        color: 'black',
       },
-      "& > p": {
-        color: "black",
+      '& > p': {
+        color: 'black',
       },
     },
     width: 130,
@@ -48,11 +50,11 @@ export default function PageTab() {
     // color: theme.palette.getContrastText(grey[100]),
     // backgroundColor: grey[700],
     // border: "0px",
-    border: "1px solid white",
-    borderLeft: "0",
-    "&:hover": {
+    border: '1px solid white',
+    borderLeft: '0',
+    '&:hover': {
       // backgroundColor: grey[600],
-      backgroundColor: "white",
+      backgroundColor: 'white',
       // color: "black",
       // border: "0px",
     },
@@ -61,6 +63,7 @@ export default function PageTab() {
   }));
   const backToHome = () => {
     navigate('/home');
+    renewFlowWebSocket(null);
   };
 
   const addNewFlow = () => {
@@ -82,9 +85,9 @@ export default function PageTab() {
         sx={{
           backgroundColor: 'black',
           paddingBottom: 0,
-          height: "7%",
-          maxHeight: "30px",
-          overflowX: "scroll",
+          height: '5%',
+          // maxHeight: '7%',
+          overflowX: 'scroll',
         }}
         className="toolbar"
         direction="row"
@@ -117,20 +120,20 @@ export default function PageTab() {
                   }}
                 >
                   <Typography
-                    color={tab.tabId == activeTab ? "black" : "white"}
-                    style={{ overflow: "hidden" }}
+                    color={tab.tabId == activeTab ? 'black' : 'white'}
+                    style={{ overflow: 'hidden' }}
                   >
                     {tabTitle}
                   </Typography>
                   <div
                     className="tabIcon"
                     style={{
-                      position: "absolute",
-                      top: "20%",
-                      right: "8%",
+                      position: 'absolute',
+                      top: '20%',
+                      right: '8%',
                       padding: 0,
                       margin: 0,
-                      color: tab.tabId === activeTab ? "black" : "",
+                      color: tab.tabId === activeTab ? 'black' : '',
                     }}
                   >
                     {tab.type == 'node' ? <FaBook /> : <FaPen />}

@@ -1,5 +1,6 @@
 {
-    "Log in": "登入",
+    "Login": "登入",
+    "Forgot password": "忘記密碼",
     "Forgot password?": "忘記密碼?",
     "Don't have an account? Sign Up": "還沒有帳號?",
     "OR": "或",
@@ -16,7 +17,7 @@
     "Library": "收藏",
     "Calendar": "日曆",
     "Settings": "設定",
-    "Last Edit Time": "上次編輯時間",
+    "Last Edit Time:": "上次編輯時間:",
     "hours": "小時",
     "days": "天",
     "minutes": "分鐘",
@@ -24,11 +25,19 @@
     "day": "天",
     "minute": "分鐘",
     "ago": "前",
-    "Search": "搜尋",
+    "Search...": "搜尋...",
     "Newest to oldest": "最新到最舊",
     "Email": "電子郵件",
     "Reset Password": "重設密碼",
     "Switch to Chinese" : "切換至中文",
     "Switch to English" : "切換至英文",
-    "Log out": "登出"
+    "Log out": "登出",
+    "Add nodes to library now!": "新增收藏！",
+    "Yes": "是",
+    "Do you want to delete the follow ": "確定要刪除",
+    "Change Name": "重新命名",
+    "Confirm": "確定",
+    "Rename": "重新命名",
+    "Delete": "刪除",
+    "Flow Name": "名稱"
 }

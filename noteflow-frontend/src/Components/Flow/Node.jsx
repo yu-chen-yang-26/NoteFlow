@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeToolbar, NodeResizer } from 'reactflow';
 import Button from 'react-bootstrap/Button';
 import './FlowEditor.scss';
@@ -42,14 +42,36 @@ const CustomNode = ({ id, data }) => {
   const handleStopTyping = (event) => {
     if (event.keyCode == 13) {
       setIsInputDisable(true);
+      data.onLabelStopEdit();
     }
   };
   const handleCloseMenu = () => {
     setNodeMenuOpen(null);
   };
 
+  // useEffect(() => {
+  //   const element = document.getElementById(`react-node-${id}`);
+  //   element.addEventListener('touchstart', () => {
+  //     console.log('hi');
+  //   });
+
+  //   return () => {
+  //     element.removeEventListener('touchstart', () => {
+  //       console.log('hi');
+  //     });
+  //   };
+  // }, []);
+
   return (
-    <div id={id} onContextMenu={onContextMenu}>
+    <div
+      // id={`react-node-${id}`}
+      id={id}
+      onContextMenu={onContextMenu}
+      // onTouchStart={() => {
+      //   console.log('hi');
+      // }}
+    >
+      {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
         minHeight={50}
         minWidth={150}
@@ -72,6 +94,7 @@ const CustomNode = ({ id, data }) => {
               <MenuItem
                 onClick={(event) => {
                   data.onLabelChange(id, event);
+                  data.onLabelEdit(id);
                   setIsInputDisable(false);
                   setNodeMenuOpen(null);
                 }}
@@ -79,7 +102,7 @@ const CustomNode = ({ id, data }) => {
                 <ListItemText>Rename</ListItemText>
               </MenuItem>
               <MenuItem onClick={() => data.openStyleBar(id)}>
-                <ListItemText>ChangeStyle</ListItemText>
+                <ListItemText>Change Style</ListItemText>
               </MenuItem>
               {/* <MenuItem onClick={() => setVisible(setNodeMenuOpen(null))}>
                 <ListItemText>CloseMenu</ListItemText>

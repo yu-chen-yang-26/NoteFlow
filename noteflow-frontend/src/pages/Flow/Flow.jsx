@@ -49,13 +49,13 @@ const defaultNodeStyle = {
   width: 150,
 };
 
-function downloadImage(dataUrl) {
-  const a = document.createElement('a');
+// function downloadImage(dataUrl) {
+//   const a = document.createElement('a');
 
-  a.setAttribute('download', 'reactflow.png');
-  a.setAttribute('href', dataUrl);
-  a.click();
-}
+//   a.setAttribute('download', 'reactflow.png');
+//   a.setAttribute('href', dataUrl);
+//   a.click();
+// }
 
 function Flow() {
   const rfInstance = useReactFlow();
@@ -73,28 +73,23 @@ function Flow() {
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [nodeWidth, setNodeWidth] = useState(700);
   const [editorId, setEditorId] = useState(null);
-  const [flowWebSocket, setFlowWebSocket] = useState(null);
+  const { flowWebSocket, renewFlowWebSocket } = usePageTab();
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
   const [dragNode, setDragNode] = useState({});
   const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
   const [changeStyleId, setChangeStyleId] = useState(null);
   const [changeStyleContent, setChangeStyleContent] = useState(null);
-
+  const [nodeIsEditing, setNodeIsEditing] = useState(null);
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null);
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null);
-
   const searchParams = new URLSearchParams(location.search);
   const { user } = useApp();
   const flowId = searchParams.get('id');
 
-  const { addTab, returnWS } = usePageTab();
-
   const navigateTo = useNavigate();
-
   const deleteComponent = (event) => {
     if (event.key === 'Backspace') {
       const id = lastSelectedNode ? lastSelectedNode : lastSelectedEdge;
@@ -147,7 +142,6 @@ function Flow() {
 
   const nodeChangeStyle = (id, event, type) => {
     // setChangeStyleId(id);
-    // console.log(id);
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id == id) {
@@ -188,7 +182,6 @@ function Flow() {
     event.preventDefault();
 
     const type = event.dataTransfer.getData('application/reactflow');
-    console.log(type);
     if (typeof type === 'undefined' || !type) {
       return;
     }
@@ -200,7 +193,6 @@ function Flow() {
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        console.log('res:', res.data);
         const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
@@ -214,7 +206,13 @@ function Flow() {
               onLabelChange(id, event);
             },
             editLabel: (id, label) => {
-              editLabel(id, label);
+              setChangeLabelId({ id, label });
+            },
+            onLabelEdit: (id) => {
+              setNodeIsEditing(id);
+            },
+            onLabelStopEdit: () => {
+              setNodeIsEditing(null);
             },
           },
 
@@ -226,7 +224,6 @@ function Flow() {
         };
         setNodes((nds) => {
           nds.concat(newNode);
-          console.log(nodes);
         });
         // webSocket
         flowWebSocket.addComponent(newNode, 'node');
@@ -237,7 +234,6 @@ function Flow() {
 
   const onResize = (event, { element, size, handle }) => {
     setNodeWidth(size.width);
-    console.log(size.width);
   };
 
   const rerenderNodes = (nodes) => {
@@ -251,7 +247,13 @@ function Flow() {
           onLabelChange(id, event);
         },
         editLabel: (id, label) => {
-          editLabel(id, label);
+          setChangeLabelId({ id, label });
+        },
+        onLabelEdit: (id) => {
+          setNodeIsEditing(id);
+        },
+        onLabelStopEdit: () => {
+          setNodeIsEditing(null);
         },
       };
       return node;
@@ -264,10 +266,20 @@ function Flow() {
       // [1234-gmail_com: {email: ..., name: ..., x: ..., y: ...}]
       // 創一個 child element
       if (!subRef.current) return;
+
       Object.keys(tracker).forEach((email, index) => {
         if (!(email in record)) {
           record[email] = true;
           FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
+            const oldInstance = document.querySelector('.sub-flow');
+            if (oldInstance) {
+              const parent = oldInstance.parentNode;
+              if (parent) {
+                while (parent.firstChild) {
+                  parent.removeChild(parent.firstChild);
+                }
+              }
+            }
             instance.onclick = (e) => {
               console.log(e);
               const { xPort, yPort } = tracker[email];
@@ -292,6 +304,10 @@ function Flow() {
   );
 
   useEffect(() => {
+    if (!rfInstance) return;
+  }, [rfInstance]);
+
+  useEffect(() => {
     if (!flowId) {
       navigateTo('/home');
     }
@@ -304,11 +320,13 @@ function Flow() {
         if (data.error) {
           navigateTo('/error');
           navigateTo('/home');
-        } else rerender(data);
+        } else {
+          rerender(data);
+        }
       },
       trackerCallback,
     );
-    setFlowWebSocket(flowConnection);
+    renewFlowWebSocket(flowConnection);
 
     return () => {
       flowConnection.close();
@@ -316,9 +334,11 @@ function Flow() {
   }, [flowId, user]);
 
   useEffect(() => {
-    document.addEventListener('keydown', deleteComponent);
-    return () => document.removeEventListener('keydown', deleteComponent);
-  }, [lastSelectedNode, lastSelectedEdge]);
+    if (lastSelectedNode != nodeIsEditing) {
+      document.addEventListener('keydown', deleteComponent);
+      return () => document.removeEventListener('keydown', deleteComponent);
+    }
+  }, [lastSelectedNode, lastSelectedEdge, nodeIsEditing]);
 
   const rerender = (data) => {
     // setNodes(data.nodes);
@@ -396,7 +416,13 @@ function Flow() {
               onLabelChange(id, event);
             },
             editLabel: (id, label) => {
-              editLabel(id, label);
+              setChangeLabelId({ id, label });
+            },
+            onLabelEdit: (id) => {
+              setNodeIsEditing(id);
+            },
+            onLabelStopEdit: () => {
+              setNodeIsEditing(null);
             },
           },
           type: 'CustomNode',
@@ -419,27 +445,19 @@ function Flow() {
     setIsNodeBarOpen(false);
   };
 
-  const onSave = (title) => {
-    flowWebSocket.editFlowTitle(title);
+  const backToHome = () => {
     setBack(true);
-  };
-
-  const editLabel = (id, label) => {
-    setChangeLabelId({ id, label });
   };
 
   let { x, y, zoom } = useViewport();
 
-  const onNodeDoubleClick = useCallback((event, node) => {
+  const nodeClick = useCallback((event, node) => {
     //open editor by nodeID
     zoom = 2;
     setEditorId(node.editorId);
+    setLastSelectedNode(null);
+    setLastSelectedEdge(null);
     setIsEdit(true);
-    addTab({
-      type: 'node',
-      objectId: node.editorId,
-      name: node.data.label ? node.data.label : ':)',
-    });
   });
 
   const canvasRef = useRef();
@@ -536,6 +554,7 @@ function Flow() {
       {!back ? (
         <ReactFlow
           className="NodePanel"
+          fitView={true}
           nodes={nodes}
           edges={edges}
           onDrop={onDrop}
@@ -563,7 +582,13 @@ function Flow() {
             );
           }}
           // onInit={setRfInstance}
-          onNodeDoubleClick={onNodeDoubleClick}
+          // onNodeDoubleClick={(event, node) => {
+          //   nodeClick(event, node);
+          // }}
+          snapToGrid={true}
+          onNodeDoubleClick={(event, node) => {
+            nodeClick(event, node);
+          }}
           nodeTypes={nodeTypes}
           // edgeTypes={edgeTypes}
         >
@@ -587,7 +612,7 @@ function Flow() {
             setTitle={setTitle}
             title={title}
             addNode={onAdd}
-            onSave={onSave}
+            backToHome={backToHome}
             handleNodeBarOpen={handleNodeBarOpen}
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle);
@@ -608,15 +633,18 @@ function Flow() {
       {isEdit && (
         // <div className="EditorContainer">
         <Resizable
-          className="box"
+          // className="box"
           height={Infinity}
           width={nodeWidth}
+          // width="400px"
           onResize={onResize}
           resizeHandles={['w']}
           minConstraints={[400, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
-          <div style={{ width: `${nodeWidth}px` }}>
+          <div
+          // style={{ width: `${nodeWidth}px` }}
+          >
             <Node
               nodeId={editorId}
               setIsEdit={setIsEdit}
