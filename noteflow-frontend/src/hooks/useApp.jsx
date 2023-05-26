@@ -4,8 +4,6 @@ import instance from '../API/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useFlowStorage } from '../storage/Storage';
-// import { set } from 'immer/dist/internal';
 
 const UserContext = createContext({
   user: {},
@@ -30,7 +28,6 @@ VITE_AVAI_CSS = JSON.parse(VITE_AVAI_CSS);
 const UserProvider = (props) => {
   const [user, setUser] = useState(null);
   const { i18n } = useTranslation();
-
   const [rerender, setRerender] = useState(false);
   const [cssValue, setCssValue] = useState(VITE_AVAI_CSS[0]);
 

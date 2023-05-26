@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import ReactFlow, { addEdge, useNodesState, useEdgesState } from 'reactflow';
-
+import SuspenseDemoEditor from './SuspenseDemoEditor';
 const DemoEditor = React.lazy(() => import('./DemoEditor'));
 
 import {
@@ -39,11 +39,14 @@ const TryMe = () => {
       {/* <h1>Try Me</h1> */}
 
       {isEdit ? (
-        <DemoEditor
-          editorId={editorId}
-          handleDrawerClose={() => setIsEdit(false)}
-        />
+        <React.Suspense fallback={<SuspenseDemoEditor />}>
+          <DemoEditor
+            editorId={editorId}
+            handleDrawerClose={() => setIsEdit(false)}
+          />
+        </React.Suspense>
       ) : (
+        // <SuspenseDemoEditor />
         <ReactFlow
           nodes={nodes}
           edges={edgesWithUpdatedTypes}
