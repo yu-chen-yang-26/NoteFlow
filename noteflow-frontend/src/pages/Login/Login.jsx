@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-
 import jwt_decode from 'jwt-decode';
 import './Login.scss';
 import instance from '../../API/api';
@@ -15,7 +14,7 @@ import { useApp } from '../../hooks/useApp';
 import TryMe from '../../Components/TryMe/tryMe';
 import { US, TW } from 'country-flag-icons/react/3x2';
 import { useTranslation } from 'react-i18next';
-
+import { useParams } from 'react-router-dom';
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
   '390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com';
@@ -28,6 +27,7 @@ const Login = () => {
   const [showLogo, setShowLogo] = useState(false);
   const [showTryMe, setShowTryMe] = useState(false); //切換 logo 以及 tryme
   const [alarms, setAlarms] = useState('');
+  const { changeMode } = useParams();
 
   const navigateTo = useNavigate();
   const { refetchFromLocalStorage, user, isMobile } = useApp();
@@ -64,6 +64,7 @@ const Login = () => {
       .post('/user/login', request)
       .then((res) => {
         refetchFromLocalStorage();
+        changeMode(0);
         navigateTo('/home');
       })
       .catch((e) => {

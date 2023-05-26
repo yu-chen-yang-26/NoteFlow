@@ -1,15 +1,9 @@
 import React from 'react';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
-// import Login from './pages/Login/Login';
-// import { Register } from './pages/Register/Register';
-// import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
-// import Main from './pages/Main/Main';
-// import Flow from './pages/Flow/Flow';
-// import Node from './pages/Node/Node';
-// import ResetPage from './pages/ForgotPassword/ResetPage';
 import { UserProvider, MediaProvider } from './hooks/useApp';
 import { PageTabProvider } from './hooks/usePageTab';
 import { QuillProvider } from './API/useQuill';
+import LoadingScreen from './Components/LoadingScreen/LoadingScreen';
 
 const Login = React.lazy(() => import('./pages/Login/Login'));
 const Register = React.lazy(() => import('./pages/Register/Register'));
@@ -29,9 +23,32 @@ const Router = () => {
         <MediaProvider>
           <PageTabProvider>
             <QuillProvider>
-              <React.Suspense fallback={<div>loading...</div>}>
+              <React.Suspense
+                fallback={
+                  <div
+                    className="loadingContainer"
+                    style={{
+                      width: '100vw',
+                      height: '100vh',
+                      position: 'relative',
+                      background: '#e6e6e6',
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 'calc(45% - 75px)',
+                        left: 'calc(50% - 75px)',
+                      }}
+                    >
+                      <LoadingScreen />
+                    </div>
+                  </div>
+                }
+              >
                 <Routes>
                   <Route element={<Login />} path="/" />
+
                   <Route element={<Register />} path="/register" />
                   <Route element={<ForgotPassword />} path="/forgotPassword" />
                   <Route element={<Main />} path="/home" />

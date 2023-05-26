@@ -61,7 +61,7 @@ class NodeRepo {
      *  3. Produce a ref to the flow
      */
     const nodeId = await this.generateNodeId(this.user);
-    const node = new Node(nodeId, 'customNode', this.user);
+    const node = new Node(nodeId, 'CustomNode', this.user);
 
     const mongoClient = getMongoClient();
     const database = mongoClient.db('noteflow');

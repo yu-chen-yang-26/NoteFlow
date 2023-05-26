@@ -4,8 +4,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import './Colabs.scss';
 import instance from '../../API/api';
+import { useTranslation } from 'react-i18next';
 
 export default function Colabs({ show, setShow, handleClose, flowId }) {
+  const { t } = useTranslation();
   const [allColabs, setAllColabs] = useState(null);
   const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState('');
@@ -90,7 +92,11 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
     >
       <Fade in={show}>
         <Box className="modal-content">
-          {allColabs === null ? <h2>載入中⋯</h2> : <h2>使用者清單</h2>}
+          {allColabs === null ? (
+            <h2>{t('Loading...')}</h2>
+          ) : (
+            <h2>{t('User list')}</h2>
+          )}
           <TextField
             margin="normal"
             // required
@@ -175,7 +181,7 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
               textTransform: 'none',
             }}
           >
-            更新清單
+            {t('Update')}
           </Button>
         </Box>
       </Fade>

@@ -21,6 +21,7 @@ const example_2 = `Or you can add math notation in Latex, below is the recursive
 const closing = `There are still a lot of features you can discover!\n\nDon't hesitate to try!`;
 
 window.katex = katex;
+
 const DemoEditor = ({ handleDrawerClose, editorId }) => {
   const [state, setState] = useState({
     title: '',

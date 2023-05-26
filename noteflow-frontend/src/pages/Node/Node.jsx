@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { useApp } from '../../hooks/useApp';
 // import instance from '../../API/api';
+import React from 'react';
+import SuspenseEditor from '../../Components/Editor/SuspenseEditor';
 
 import './Node.scss';
 
@@ -25,7 +27,9 @@ const Node = ({ nodeId, setIsEdit, nodeWidth }) => {
       style={nodeId && { width: isMobile ? '100vw' : `${nodeWidth}px` }}
     >
       <div className="editor">
-        <Editor editorId={editorId} handleDrawerClose={handleDrawerClose} />
+        <React.Suspense fallback={<SuspenseEditor />}>
+          <Editor editorId={editorId} handleDrawerClose={handleDrawerClose} />
+        </React.Suspense>
       </div>
     </div>
   );
