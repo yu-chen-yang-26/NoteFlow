@@ -73,7 +73,6 @@ const UserProvider = (props) => {
     setCssValue(key);
 
     const lang = localStorage.getItem('noteflow-lang');
-    console.log(i18n.language);
     if (!lang) {
       i18n.changeLanguage(i18n.languages[0]);
       localStorage.setItem('noteflow-lang', i18n.languages[0]);

@@ -11,51 +11,25 @@ import {
 } from 'react-icons/bs';
 import { BiFirstPage, BiCross } from 'react-icons/bi';
 import { AiOutlineBorderlessTable } from 'react-icons/ai';
-// import { MdOutlineLibraryBooks } from 'react-icons/md';
 import { Menu, MenuItem } from '@mui/material';
+import { usePageTab } from '../../hooks/usePageTab';
 import Colabs from './Colabs';
 
 export default function ToolBar({
-  setTitle,
   addNode,
-  title,
+  backToHome,
   changeBackground,
-  onSave,
-  flowWebSocket,
   flowId,
   subRef,
   isEdit,
-  rfInstance,
   handleNodeBarOpen,
 }) {
   const [show, setShow] = useState(false);
-  const inputRef = useRef(null);
-  const [isFocus, setIsFocus] = useState(false);
-  // const handleClose = () => setShow(false);
+  const { flowWebSocket, renewFlowWebSocket } = usePageTab();
   const handleShow = () => setShow(true);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
-
-  useEffect(() => {
-    function checkFocus() {
-      if (document.activeElement === inputRef.current) {
-        setIsFocus(true);
-      } else {
-        setIsFocus(false);
-      }
-    }
-    document.addEventListener('click', checkFocus);
-    return () => {
-      document.removeEventListener('click', checkFocus);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isFocus && flowWebSocket) {
-      flowWebSocket.editFlowTitle(title);
-    }
-  }, [isFocus]);
 
   const changeBG = (bg) => {
     changeBackground(bg);
@@ -73,21 +47,14 @@ export default function ToolBar({
       <div className="left">
         <Button
           variant="dark"
-          onClick={() => onSave(title)}
+          onClick={() => {
+            backToHome();
+            renewFlowWebSocket(null);
+          }}
           className="toolBarButton lastPageButton"
         >
           <BiFirstPage size={18} />
         </Button>
-        {/* <input
-          className="flowTitle"
-          value={title}
-          onChange={(event) => {
-            setTitle(event.target.value);
-          }}
-          type="text"
-          ref={inputRef}
-        />
-        <span className="focus-border"></span> */}
       </div>
       <div className="mid">
         <Button

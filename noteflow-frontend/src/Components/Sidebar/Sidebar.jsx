@@ -9,11 +9,11 @@ import { useParams } from '../../hooks/useParams';
 // import { useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../../hooks/useApp';
+import { usePageTab } from '../../hooks/usePageTab';
 
 const Sidebar = () => {
   //rwd
   const { isMobile } = useApp();
-
   const { t } = useTranslation();
   const { mode, changeMode } = useParams();
   // const tabList = useFlowStorage((state) => state.tabList);
@@ -80,7 +80,9 @@ const Sidebar = () => {
         <Stack direction="row" className="sidebar-mobile">
           <SideBarItem
             className="sidebar-item-mobile"
-            onClick={() => changeMode(0)}
+            onClick={() => {
+              changeMode(0);
+            }}
             selected={mode === 0}
           >
             <FaPen size={20} />

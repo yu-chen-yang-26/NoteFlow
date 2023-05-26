@@ -10,7 +10,6 @@ sharedb.types.register(json1.type);
 
 class FlowWebSocket {
   constructor(flowId, email, updateData, subscribeToToolbar) {
-    console.log('flowId', flowId);
     this.subscribeToToolbar = subscribeToToolbar;
     this.lastUpdated = Date.now();
     this.email = email;
@@ -203,6 +202,7 @@ class FlowWebSocket {
   }
 
   close() {
+    console.log('CLOSING IN FLOWCONNECTION');
     if (this.socket) {
       this.socket.close();
     }

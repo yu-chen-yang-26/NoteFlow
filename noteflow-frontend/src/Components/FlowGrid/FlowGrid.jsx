@@ -102,14 +102,12 @@ export default function FlowGrid({ containerRef }) {
   }, [user]);
 
   const toFlow = (flow) => {
-    if (!tabList.find((f) => f.objectId == flow.id)) {
-      addTab({
-        type: 'flow',
-        objectId: flow.id,
-        name: flow.name ? flow.name : 'UnTitled',
-      }); // name 應該在 flows/create 拿
-    }
-    console.log(flow);
+    addTab({
+      type: 'flow',
+      objectId: flow.id,
+      name: flow.name ? flow.name : 'UnTitled',
+    }); // name 應該在 flows/create 拿
+
     navigateTo(`/flow?id=${flow.id}`);
   };
   const handleCloseContextMenu = () => {
@@ -255,8 +253,8 @@ export default function FlowGrid({ containerRef }) {
             date.setTime(flow.updateAt);
             const formattedDate = date.toLocaleString();
             return (
-              <ClickAwayListener onClickAway={handleCloseContextMenu}>
-                <div className="grid-item" key={key}>
+              <ClickAwayListener onClickAway={handleCloseContextMenu} key={key}>
+                <div className="grid-item">
                   <div
                     className="grid-item"
                     onContextMenu={(event) => {
@@ -285,7 +283,7 @@ export default function FlowGrid({ containerRef }) {
                     <Menu
                       // autoFocusItem={open}
                       open={isMenuOpen == flow.id}
-                      anchorEl={target}
+                      // anchorEl={target}
                       anchorOrigin={{
                         vertical: 'center',
                         horizontal: 'center',
