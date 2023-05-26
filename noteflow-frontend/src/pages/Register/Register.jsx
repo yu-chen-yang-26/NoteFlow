@@ -102,7 +102,7 @@ const Register = () => {
                   width={isMobile ? '120' : '200'}
                   height={isMobile ? '120' : '200'}
                 />
-                <h1>NoteFlow</h1>
+                <h1 className="noteflow-title">NoteFlow</h1>
               </div>
             )}
           </CSSTransition>
@@ -110,7 +110,7 @@ const Register = () => {
       </div>
 
       <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
-        <h2>Register</h2>
+        <h2>{t('Register')}</h2>
         <div className="infoContainer">
           {Object.keys(user).length === 0 && (
             <>

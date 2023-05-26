@@ -119,7 +119,7 @@
     opacity: 1;
     transition: opacity 0.5s ease;
     background-color: black;
-    height: 45%;
+    height: 55%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -128,22 +128,23 @@
     color: white;
     margin: 0;
     gap: 1vh;
-    padding-top: 5%;
 
-    // .tryme-div {
-    //   width: 100%;
-    //   height: 100%;
-    // }
+    .noteflow-title{
+      margin-top: 8%;
+      margin-bottom: 0%;
+    }
   }
 
   .info-mobile {
-    height: 55%;
+    // height: 55%;
     margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow-y: scroll;
+    padding-top:10%;
+    padding-bottom: 8%;
 
     h2 {
       margin-bottom: 0%;

@@ -151,7 +151,7 @@ const Login = () => {
                   width={isMobile ? '120' : '200'}
                   height={isMobile ? '120' : '200'}
                 />
-                <h1>NoteFlow</h1>
+                <h1 className="noteflow-title">NoteFlow</h1>
               </div>
             )}
           </CSSTransition>
