@@ -67,11 +67,12 @@ export default function FlowGrid({ containerRef }) {
           if (res.data.length == 0) {
             observeforFetching.unobserve(loadingCheckPointRef.current);
           } else {
-            setFlows(
-              res.data.sort((a, b) =>
+            setFlows([
+              ...flows,
+              ...res.data.sort((a, b) =>
                 a.updateAt < b.updateAt ? 1 : a.updateAt > b.updateAt ? -1 : 0,
               ),
-            );
+            ]);
             setPage(nextPage);
           }
         }
@@ -196,7 +197,7 @@ export default function FlowGrid({ containerRef }) {
   return loading ? (
     <LoadingScreen />
   ) : (
-    <>
+    <div className="flow-grid">
       {isAlertOpen || isChangeTitleOpen ? (
         isAlertOpen ? (
           <Dialog
@@ -262,72 +263,70 @@ export default function FlowGrid({ containerRef }) {
             const formattedDate = date.toLocaleString();
             return (
               <ClickAwayListener onClickAway={handleCloseContextMenu} key={key}>
-                <div className="grid-item">
-                  <div
-                    className="grid-item"
-                    onContextMenu={(event) => {
-                      setTarget(event.currentTarget);
-                      setIsMenuOpen(flow.id);
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }}
-                    key={key}
+                <div
+                  className="grid-item"
+                  onContextMenu={(event) => {
+                    setTarget(event.currentTarget);
+                    setIsMenuOpen(flow.id);
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                  key={key}
+                >
+                  <FlowButton
+                    onClick={() => toFlow(flow)}
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
                   >
-                    <FlowButton
-                      onClick={() => toFlow(flow)}
-                      aria-controls="simple-menu"
-                      aria-haspopup="true"
-                    >
-                      {flow.thumbnail !== '' ? (
-                        <img
-                          style={{ objectFit: 'cover' }}
-                          loading="lazy"
-                          alt="flow.thumbnail"
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Typography>{t('Last Edit Time:')}</Typography>
-                          <Typography>{formattedDate}</Typography>
-                        </div>
-                      )}
-                    </FlowButton>
-                    <Typography>{flow.name}</Typography>
-                    <Menu
-                      // autoFocusItem={open}
-                      open={isMenuOpen == flow.id}
-                      // anchorEl={target}
-                      anchorOrigin={{
-                        vertical: 'center',
-                        horizontal: 'center',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                      }}
-                    >
-                      <MenuItem
-                        onClick={() => {
-                          openChangeTitle(flow.id, flow.name);
+                    {flow.thumbnail !== '' ? (
+                      <img
+                        style={{ objectFit: 'cover' }}
+                        loading="lazy"
+                        alt="flow.thumbnail"
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
                         }}
                       >
-                        {t('Rename')}
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          openAlert(flow.id, flow.name);
-                        }}
-                      >
-                        {t('Delete')}
-                      </MenuItem>
-                    </Menu>
-                  </div>
+                        <Typography>{t('Last Edit Time:')}</Typography>
+                        <Typography>{formattedDate}</Typography>
+                      </div>
+                    )}
+                  </FlowButton>
+                  <Typography>{flow.name}</Typography>
+                  <Menu
+                    // autoFocusItem={open}
+                    open={isMenuOpen == flow.id}
+                    // anchorEl={target}
+                    anchorOrigin={{
+                      vertical: 'center',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        openChangeTitle(flow.id, flow.name);
+                      }}
+                    >
+                      {t('Rename')}
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        openAlert(flow.id, flow.name);
+                      }}
+                    >
+                      {t('Delete')}
+                    </MenuItem>
+                  </Menu>
                 </div>
               </ClickAwayListener>
             );
@@ -336,16 +335,11 @@ export default function FlowGrid({ containerRef }) {
           {containerRef?.current && (
             <BackToTopButton containerRef={containerRef} />
           )}
-
-          <div
-            className="loading-checkpoint"
-            ref={loadingCheckPointRef}
-            style={{ visibility: 'hidden' }}
-          >
-            CHECKPOINT
-          </div>
         </div>
       )}
-    </>
+      <div className="loading-checkpoint" ref={loadingCheckPointRef}>
+        CHECKPOINT
+      </div>
+    </div>
   );
 }
