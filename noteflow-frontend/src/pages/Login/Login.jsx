@@ -266,7 +266,7 @@ const Login = () => {
             maxWidth: '80%',
             backgroundColor: '#0e1111',
             color: 'white',
-            paddingTop: '1vh',
+            marginTop: '1vh',
             textTransform: 'none',
           }}
           onClick={() => changeLang()}
