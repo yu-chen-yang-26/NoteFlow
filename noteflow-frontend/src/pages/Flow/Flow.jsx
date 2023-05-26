@@ -454,6 +454,8 @@ function Flow() {
     //open editor by nodeID
     zoom = 2;
     setEditorId(node.editorId);
+    setLastSelectedNode(null);
+    setLastSelectedEdge(null);
     setIsEdit(true);
     addTab({
       type: 'node',
@@ -556,6 +558,7 @@ function Flow() {
       {!back ? (
         <ReactFlow
           className="NodePanel"
+          fitView={true}
           nodes={nodes}
           edges={edges}
           onDrop={onDrop}
@@ -586,7 +589,7 @@ function Flow() {
           // onNodeDoubleClick={(event, node) => {
           //   nodeClick(event, node);
           // }}
-
+          snapToGrid={true}
           onNodeDoubleClick={(event, node) => {
             nodeClick(event, node);
           }}
