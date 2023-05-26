@@ -35,10 +35,6 @@ const nodeTypes = {
   CustomNode,
 };
 
-// const edgeTypes = {
-//   CustomEdge,
-// };
-
 const defaultNodeStyle = {
   borderWidth: '2px',
   borderStyle: 'solid',
@@ -48,14 +44,6 @@ const defaultNodeStyle = {
   height: 50,
   width: 150,
 };
-
-// function downloadImage(dataUrl) {
-//   const a = document.createElement('a');
-
-//   a.setAttribute('download', 'reactflow.png');
-//   a.setAttribute('href', dataUrl);
-//   a.click();
-// }
 
 function Flow() {
   const rfInstance = useReactFlow();
@@ -185,15 +173,16 @@ function Flow() {
     if (typeof type === 'undefined' || !type) {
       return;
     }
+    // ? 要從 event.clientX cast 到 react flow 的 x, y
     const position = {
       x: event.clientX,
       y: event.clientY,
     };
-
+    // console.log('dragged:', dragNode);
+    const editorId = dragNode.id;
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
           data: {
@@ -216,17 +205,20 @@ function Flow() {
             },
           },
 
-          type: 'CustomNode',
+          type: dragNode.type,
           position,
           style: defaultNodeStyle,
           class: 'Node',
           editorId: editorId,
         };
+
         setNodes((nds) => {
           nds.concat(newNode);
         });
+
         // webSocket
         flowWebSocket.addComponent(newNode, 'node');
+        setDragNode({});
         // nodeId.current++;
       })
       .catch((e) => console.log(e));
@@ -504,6 +496,12 @@ function Flow() {
     }
   }, [changeStyleContent, flowWebSocket]);
 
+  useEffect(() => {
+    if (isEdit) {
+      setIsNodeBarOpen(false);
+    }
+  }, [isEdit]);
+
   const handleMouseMove = (e) => {
     if (isEdit || !flowWebSocket) return;
     const { clientX, clientY } = e;
@@ -602,10 +600,10 @@ function Flow() {
               }
             />
           ) : null}
-          {isNodeBarOpen ? (
+          {isNodeBarOpen && !isEdit ? (
             <NodeBar
               handleNodeBarClose={handleNodeBarClose}
-              addNode={setDragNode}
+              setDragNode={setDragNode}
             />
           ) : null}
           <ToolBar

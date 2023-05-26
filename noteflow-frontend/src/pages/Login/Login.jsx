@@ -162,7 +162,7 @@ const Login = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            style={{ margin: '1vh 1vw', width: isMobile ? '100%' : '' }}
+            style={{ margin: '1vh 1vw', width: '80%' }}
           >
             <TextField
               margin="normal"

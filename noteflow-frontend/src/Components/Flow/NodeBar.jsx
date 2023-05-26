@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import Box from '@mui/material/Box';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import instance from '../../API/api';
 import './FlowEditor.scss';
 import { useTranslation } from 'react-i18next';
 import { Divider } from '@mui/material';
 
-export default function NodeBar({ handleNodeBarClose, addNode }) {
+export default function NodeBar({ handleNodeBarClose, setDragNode }) {
   const { t } = useTranslation();
   const [nodes, setNodes] = useState([]);
 
@@ -36,7 +33,7 @@ export default function NodeBar({ handleNodeBarClose, addNode }) {
   const onDragStart = (event, node, type) => {
     event.dataTransfer.setData('application/reactflow', type);
     event.dataTransfer.effectAllowed = 'move';
-    addNode(node);
+    setDragNode(node);
   };
   const getTime = (time) => {
     const now = new Date();

@@ -29,8 +29,8 @@
     "Newest to oldest": "最新到最舊",
     "Email": "電子郵件",
     "Reset Password": "重設密碼",
-    "Switch to Chinese" : "切換至中文",
-    "Switch to English" : "切換至英文",
+    "Switch to Chinese" : "Switch to Chinese",
+    "Switch to English" : "Switch to English",
     "Log out": "登出",
     "Add nodes to library now!": "新增收藏！",
     "Yes": "是",
@@ -48,5 +48,9 @@
     "Change Style": "編輯樣式",
     "Lines": "線段",
     "Dots": "點",
-    "Cross": "十字"
+    "Cross": "十字",
+    "Loading...": "載入中...",
+    "User list": "使用者清單",
+    "Update": "更新",
+    "New Password": "新密碼"
 }

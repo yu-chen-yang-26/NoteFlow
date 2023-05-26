@@ -33,7 +33,7 @@ const findCss = () => {
 
   for (let i = 0; i < files.length; i += 1) {
     if (/.css/.test(files[i])) {
-      available.push(files[i].split(".")[0]);
+      available.push(files[i].split('.')[0]);
     }
   }
 

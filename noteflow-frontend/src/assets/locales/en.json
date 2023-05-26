@@ -12,7 +12,7 @@
     "Email Address": "Email Address",
     "Password": "Password",
     "Check Password": "Check Password", 
-    "Send": "Send me an email",
+    "Send": "Send",
     "Flows": "Flows",
     "Library": "Library",
     "Calendar": "Calendar",
@@ -29,8 +29,8 @@
     "Newest to oldest": "Newest to oldest",
     "Email": "Email",
     "Reset Password": "Reset Password",
-    "Switch to Chinese" : "Switch to Chinese",
-    "Switch to English" : "Switch to English",
+    "Switch to Chinese" : "切換至中文",
+    "Switch to English" : "切換至英文",
     "Log out": "Log out",
     "Add nodes to library now!": "Add nodes to library now!",
     "Yes": "Yes",
@@ -48,5 +48,9 @@
     "Change Style": "Change Style",
     "Lines": "Lines",
     "Dots": "Dots",
-    "Cross": "Cross"
+    "Cross": "Cross",
+    "Loading...": "Loading...",
+    "User list": "User list",
+    "Update": "Update",
+    "New Password": "New Password"
 }
