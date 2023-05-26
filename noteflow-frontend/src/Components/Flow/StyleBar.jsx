@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import './FlowEditor.scss';
+import { useTranslation } from 'react-i18next';
 
 export default function StyleBar({
   nodeId,
@@ -18,6 +19,7 @@ export default function StyleBar({
   nodeChangeStyle,
   handleStyleBarClose,
 }) {
+  const { t } = useTranslation();
   const [border, setBorder] = useState(2);
   const [style, setStyle] = useState(
     nodes.filter((nd) => nd.id == nodeId)[0].style,
@@ -45,11 +47,11 @@ export default function StyleBar({
             {/* {nodeId} */}
           </ListItem>
           <ListItem sx={{ fontSize: '20px', marginBottom: '10px' }}>
-            Border Style
+            {t('Border Style')}
           </ListItem>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              Color
+              {t('Color')}
             </Grid>
             <Grid item xs={6}>
               <input
@@ -69,7 +71,7 @@ export default function StyleBar({
             spacing={2}
           >
             <Grid item xs={6}>
-              Width
+              {t('Width')}
             </Grid>
             <Grid item xs={6}>
               <Select
@@ -90,11 +92,11 @@ export default function StyleBar({
           <ListItem
             sx={{ fontSize: '20px', marginTop: '20px', marginBottom: '10px' }}
           >
-            Node Color
+            {t('Node Color')}
           </ListItem>
           <Grid container spacing={2}>
             <Grid sx={{ justifyContent: 'flex-start' }} item xs={6}>
-              Color
+              {t('Color')}
             </Grid>
             <Grid item xs={6}>
               <input

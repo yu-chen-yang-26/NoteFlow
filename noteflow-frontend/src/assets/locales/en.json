@@ -12,7 +12,7 @@
     "Email Address": "Email Address",
     "Password": "Password",
     "Check Password": "Check Password", 
-    "Send me an email": "Send me an email",
+    "Send": "Send me an email",
     "Flows": "Flows",
     "Library": "Library",
     "Calendar": "Calendar",
@@ -39,5 +39,14 @@
     "Confirm": "Confirm",
     "Rename": "Rename",
     "Delete": "Delete",
-    "Flow Name": "Flow Name"
+    "Flow Name": "Flow Name",
+    "Library Nodes": "Library Nodes",
+    "Border Style": "Border Style",
+    "Color": "Color",
+    "Width": "Width",
+    "Node Color": "Node Color",
+    "Change Style": "Change Style",
+    "Lines": "Lines",
+    "Dots": "Dots",
+    "Cross": "Cross"
 }
