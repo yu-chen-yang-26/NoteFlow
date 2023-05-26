@@ -75,7 +75,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
           noValidate
           style={{ margin: '10px 15px' }}
         >
-          <h2>更改密碼</h2>
+          <h2>{t('Reset Password')}</h2>
           <TextField
             margin="normal"
             required
@@ -141,7 +141,7 @@ export default function ResetModal({ show, setShow, handleClose, flowId }) {
               textTransform: 'none',
             }}
           >
-            更新清單
+            {t('Update')}
           </Button>
         </Box>
       </Fade>
