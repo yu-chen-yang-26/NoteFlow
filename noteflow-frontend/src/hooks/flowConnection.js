@@ -202,7 +202,6 @@ class FlowWebSocket {
   }
 
   close() {
-    console.log('CLOSING IN FLOWCONNECTION');
     if (this.socket) {
       this.socket.close();
     }
