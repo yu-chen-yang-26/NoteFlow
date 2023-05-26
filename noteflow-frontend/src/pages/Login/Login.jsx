@@ -148,7 +148,6 @@ const Login = () => {
                 <img
                   loading="lazy"
                   src="assets/logo.png"
-                  alt=""
                   width={isMobile ? '120' : '200'}
                   height={isMobile ? '120' : '200'}
                 />
@@ -160,23 +159,6 @@ const Login = () => {
       </div>
 
       <div className={`${isMobile ? 'info-mobile' : 'info'}`}>
-        {/* <Box sx={{ minWidth: 50 }}>
-          <FormControl fullWidth>
-            <InputLabel>{languageDiv[i18n.language]}</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Age"
-              onChange={(e) => {
-                i18n.changeLanguage(e.target.value);
-              }}
-            >
-              {Object.keys(languageDiv).map((key) => {
-                return <MenuItem value={key}>{languageDiv[key]}</MenuItem>;
-              })}
-            </Select>
-          </FormControl>
-        </Box> */}
         <h2>{t('Login')}</h2>
         <div className="infoContainer">
           <Box
