@@ -257,7 +257,7 @@ export default function FlowGrid({ containerRef }) {
             date.setTime(flow.updateAt);
             const formattedDate = date.toLocaleString();
             return (
-              <ClickAwayListener onClickAway={handleCloseContextMenu}>
+              <ClickAwayListener onClickAway={handleCloseContextMenu} key={key}>
                 <div className="grid-item" key={key}>
                   <div
                     className="grid-item"
