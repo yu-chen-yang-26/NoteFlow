@@ -280,7 +280,17 @@ export default function FlowGrid({ containerRef }) {
                           alt="flow.thumbnail"
                         />
                       ) : (
-                        `${t('Last Edit Time:')} ${formattedDate}`
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography>{t('Last Edit Time:')}</Typography>
+                          <Typography>{formattedDate}</Typography>
+                        </div>
                       )}
                     </FlowButton>
                     <Typography>{flow.name}</Typography>
