@@ -155,6 +155,7 @@
           border-bottom: none;
         }
 
+<<<<<<< HEAD
         &:focus + .focus-border {
           width: 30%;
           transition: 0.4s;
@@ -167,6 +168,25 @@
         width: 0px;
         height: 2px;
         background-color: #7b7b7b;
+=======
+    .title-input {
+      margin-left: 10px;
+      margin-bottom: 0;
+      font-size: 30px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: #1e1e1e;
+      width: 50%;
+
+      &:focus {
+        outline: none;
+        border-bottom: none;
+      }
+
+      &:focus + .focus-border {
+        width: 50%;
+>>>>>>> 15ff9aa1b9f3e16c4958df0ba69859a0ab64dd7c
         transition: 0.4s;
       }
     }

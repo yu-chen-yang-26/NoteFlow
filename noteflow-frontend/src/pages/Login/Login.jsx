@@ -14,7 +14,7 @@ import { useApp } from '../../hooks/useApp';
 import TryMe from '../../Components/TryMe/tryMe';
 import { US, TW } from 'country-flag-icons/react/3x2';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams } from '../../hooks/useParams';
 // gcloud 註冊的 ＮoteFlow Project 帳號
 const client_id =
   '390935399634-2aeudohkkr8kf634paoub0sjnlp7c1ap.apps.googleusercontent.com';

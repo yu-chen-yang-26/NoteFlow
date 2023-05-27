@@ -303,7 +303,7 @@ export default function FlowGrid({ containerRef }) {
                   <Menu
                     // autoFocusItem={open}
                     open={isMenuOpen == flow.id}
-                    // anchorEl={target}
+                    anchorEl={target}
                     anchorOrigin={{
                       vertical: 'center',
                       horizontal: 'center',
