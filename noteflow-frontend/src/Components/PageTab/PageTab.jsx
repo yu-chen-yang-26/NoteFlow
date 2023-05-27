@@ -103,8 +103,10 @@ export default function PageTab() {
         <Stack direction="row" spacing={1}>
           {tabList.map((tab, i) => {
             let tabTitle = tab.name;
-            if (tabTitle?.length > 15) {
-              tabTitle = tabTitle.substring(0, 14) + '...';
+            console.log(tabTitle.length, '個字');
+            const leng = 10;
+            if (tabTitle?.length > leng) {
+              tabTitle = tabTitle.substring(0, leng - 1) + '...';
             }
 
             return (
@@ -117,11 +119,16 @@ export default function PageTab() {
                   style={{
                     backgroundColor: tab.tabId == activeTab && '#ffffff',
                     position: 'relative',
+                    width: '150px',
                   }}
                 >
                   <Typography
                     color={tab.tabId == activeTab ? 'black' : 'white'}
-                    style={{ overflow: 'hidden' }}
+                    style={{
+                      height: '100%',
+                      overflow: 'hidden',
+                      fontSize: '15px',
+                    }}
                   >
                     {tabTitle}
                   </Typography>

@@ -10,7 +10,7 @@ import {
   BsPalette,
 } from 'react-icons/bs';
 import { BiFirstPage, BiCross } from 'react-icons/bi';
-import { AiOutlineBorderlessTable } from 'react-icons/ai';
+import { AiOutlineBorderlessTable, AiOutlineEdit } from 'react-icons/ai';
 import { Menu, MenuItem } from '@mui/material';
 import { usePageTab } from '../../hooks/usePageTab';
 import Colabs from './Colabs';
@@ -23,7 +23,9 @@ export default function ToolBar({
   flowId,
   subRef,
   isEdit,
+  isNodeSelected,
   handleNodeBarOpen,
+  openNodeContextMenu,
 }) {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
@@ -66,7 +68,6 @@ export default function ToolBar({
         >
           <BsNodePlus size={18} />
         </Button>
-
         <Button variant="dark" onClick={handleClick} className="toolBarButton">
           <BsPalette size={18} />
         </Button>
@@ -86,13 +87,20 @@ export default function ToolBar({
             <BiCross /> {t('Cross')}
           </MenuItem>
         </Menu>
-
         <Button
           variant="dark"
           className="toolBarButton"
           onClick={handleNodeBarOpen}
         >
           <BsBookmarkHeart size={18} />
+        </Button>
+        <Button
+          variant="dark"
+          className="toolBarButton"
+          onClick={openNodeContextMenu}
+          disabled={isNodeSelected == null ? true : false}
+        >
+          <AiOutlineEdit size={18} />
         </Button>
       </div>
       <div className="right">

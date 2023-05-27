@@ -80,7 +80,6 @@ const Calendar = () => {
     instance
       .get('/library')
       .then((res) => {
-        console.log('fetch');
         if (res.data.length !== 0) {
           setNodes(
             res.data.sort((a, b) =>

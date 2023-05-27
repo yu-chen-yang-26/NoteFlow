@@ -5,7 +5,7 @@ import {
   useEffect,
   useCallback,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from './useApp';
 
 const PageTabContext = createContext({
@@ -14,6 +14,7 @@ const PageTabContext = createContext({
   closeTab: () => {},
   deleteTab: () => {}, //Use when deleting a flow
   toTab: () => {},
+  renameTab: () => {},
 });
 
 const PageTabProvider = (props) => {
@@ -59,18 +60,22 @@ const PageTabProvider = (props) => {
       });
     else setActiveTab(exist[0].tabId);
   };
-
+  console.log(tabList);
   const closeTab = (tabId) => {
+    console.log('close', activeTab);
     const lastTab = tabList.length === 1;
     if (lastTab) {
       setTabList([]);
+      setActiveTab(0);
       localStorage.setItem('tabList', null);
       navigateTo('/home');
     } else {
       const tabListUpdated = tabList.filter((tab) => tab.tabId !== tabId);
       localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
       setTabList(tabListUpdated);
-      toTab(tabListUpdated[tabListUpdated.length - 1].tabId);
+      if (activeTab !== 0) {
+        toTab(tabListUpdated[tabListUpdated.length - 1].tabId);
+      }
     }
   };
 
@@ -95,6 +100,27 @@ const PageTabProvider = (props) => {
     navigateTo(`/${type}?id=${objectId}`);
   };
 
+  const renameTab = (tabId, newName) => {
+    setTabList((state) => {
+      const newState = [...state];
+      for (let i = 0; i < newState.length; i += 1) {
+        if (newState[i].objectId === tabId) {
+          newState[i].name = newName;
+          break;
+        }
+      }
+      localStorage.setItem('tabList', JSON.stringify(newState));
+      return newState;
+    });
+  };
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/flow')) {
+      setActiveTab(0);
+    }
+  }, [location]);
+
   return (
     <PageTabContext.Provider
       value={{
@@ -106,6 +132,7 @@ const PageTabProvider = (props) => {
         activeTab,
         setActiveTab,
         setTabList,
+        renameTab,
         flowWebSocket,
         renewFlowWebSocket,
       }}

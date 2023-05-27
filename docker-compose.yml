@@ -49,16 +49,20 @@ services:
     image: "redis:7.0"
     networks:
       - noteflow
+    ports:
+      - 6380:6379
 
   redis-session:
     image: "redis:7.0"
     networks:
       - noteflow
+    ports:
+      - 6381:6379
 
   frontend:
     image: "node:lts"
     working_dir: /frontend
-    command: sh -c "yarn preview"
+    command: sh -c "yarn && yarn start"
     networks:
       - noteflow
     ports:

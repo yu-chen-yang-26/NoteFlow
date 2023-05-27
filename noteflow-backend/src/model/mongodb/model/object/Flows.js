@@ -59,8 +59,8 @@ class Flows {
           { $limit: 1 },
           { $unwind: '$flows' },
           { $match: { 'flows.id': { $in: requestMapper[key] } } },
-          { $skip: 10 * page },
-          { $limit: 10 },
+          { $skip: 20 * page },
+          { $limit: 20 },
           // 篩選
           {
             $project: {

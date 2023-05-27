@@ -16,6 +16,7 @@ import CustomNode from '../../Components/Flow/Node';
 import ToolBar from '../../Components/Flow/ToolBar';
 import StyleBar from '../../Components/Flow/StyleBar';
 import NodeBar from '../../Components/Flow/NodeBar';
+import { useParams } from '../../hooks/useParams';
 
 import PageTab from '../../Components/PageTab/PageTab';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -35,10 +36,6 @@ const nodeTypes = {
   CustomNode,
 };
 
-// const edgeTypes = {
-//   CustomEdge,
-// };
-
 const defaultNodeStyle = {
   borderWidth: '2px',
   borderStyle: 'solid',
@@ -48,14 +45,6 @@ const defaultNodeStyle = {
   height: 50,
   width: 150,
 };
-
-// function downloadImage(dataUrl) {
-//   const a = document.createElement('a');
-
-//   a.setAttribute('download', 'reactflow.png');
-//   a.setAttribute('href', dataUrl);
-//   a.click();
-// }
 
 function Flow() {
   const rfInstance = useReactFlow();
@@ -73,7 +62,7 @@ function Flow() {
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [nodeWidth, setNodeWidth] = useState(700);
+  const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4);
   const [editorId, setEditorId] = useState(null);
   const { flowWebSocket, renewFlowWebSocket } = usePageTab();
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
@@ -82,6 +71,8 @@ function Flow() {
   const [changeStyleId, setChangeStyleId] = useState(null);
   const [changeStyleContent, setChangeStyleContent] = useState(null);
   const [nodeIsEditing, setNodeIsEditing] = useState(null);
+  const { nodeMenuOpen, setNodeMenuOpen } = useParams();
+
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null);
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null);
@@ -113,6 +104,10 @@ function Flow() {
         setLastSelectedEdge(null);
       }
     }
+  };
+
+  const openNodeContextMenu = () => {
+    setNodeMenuOpen(lastSelectedNode);
   };
 
   const onLabelChange = (id, event) => {
@@ -185,15 +180,16 @@ function Flow() {
     if (typeof type === 'undefined' || !type) {
       return;
     }
+    // ? 要從 event.clientX cast 到 react flow 的 x, y
     const position = {
       x: event.clientX,
       y: event.clientY,
     };
-
+    // console.log('dragged:', dragNode);
+    const editorId = dragNode.id;
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        const editorId = res.data.nodeId;
         const newNode = {
           id: nodeId.current.toString(),
           data: {
@@ -216,17 +212,20 @@ function Flow() {
             },
           },
 
-          type: 'CustomNode',
+          type: dragNode.type,
           position,
           style: defaultNodeStyle,
           class: 'Node',
           editorId: editorId,
         };
+
         setNodes((nds) => {
           nds.concat(newNode);
         });
+
         // webSocket
         flowWebSocket.addComponent(newNode, 'node');
+        setDragNode({});
         // nodeId.current++;
       })
       .catch((e) => console.log(e));
@@ -451,13 +450,22 @@ function Flow() {
 
   let { x, y, zoom } = useViewport();
 
-  const nodeClick = useCallback((event, node) => {
+  const onNodeDoubleClick = useCallback((event, node) => {
     //open editor by nodeID
     zoom = 2;
     setEditorId(node.editorId);
-    setLastSelectedNode(null);
+    // setLastSelectedNode(node.id);
     setLastSelectedEdge(null);
     setIsEdit(true);
+  });
+
+  const onNodeClick = useCallback((event, node) => {
+    setLastSelectedNode(node.id);
+  });
+
+  const onPaneClick = useCallback((event, node) => {
+    setLastSelectedNode(null);
+    setNodeMenuOpen(null);
   });
 
   const canvasRef = useRef();
@@ -503,6 +511,12 @@ function Flow() {
       flowWebSocket.editComponent(param, 'node');
     }
   }, [changeStyleContent, flowWebSocket]);
+
+  useEffect(() => {
+    if (isEdit) {
+      setIsNodeBarOpen(false);
+    }
+  }, [isEdit]);
 
   const handleMouseMove = (e) => {
     if (isEdit || !flowWebSocket) return;
@@ -559,10 +573,11 @@ function Flow() {
           edges={edges}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          onPaneClick={(event) => onPaneClick(event)}
           onNodesChange={(param) => {
             onNodesChange(param);
             setLastSelectedEdge(null);
-            setLastSelectedNode(param[0].id);
+            // setLastSelectedNode(param[0].id);
             flowWebSocket.editComponent(param, 'node');
           }}
           onEdgesChange={(param) => {
@@ -582,12 +597,12 @@ function Flow() {
             );
           }}
           // onInit={setRfInstance}
-          // onNodeDoubleClick={(event, node) => {
-          //   nodeClick(event, node);
-          // }}
           snapToGrid={true}
           onNodeDoubleClick={(event, node) => {
-            nodeClick(event, node);
+            onNodeDoubleClick(event, node);
+          }}
+          onNodeClick={(event, node) => {
+            onNodeClick(event, node);
           }}
           nodeTypes={nodeTypes}
           // edgeTypes={edgeTypes}
@@ -602,10 +617,10 @@ function Flow() {
               }
             />
           ) : null}
-          {isNodeBarOpen ? (
+          {isNodeBarOpen && !isEdit ? (
             <NodeBar
               handleNodeBarClose={handleNodeBarClose}
-              addNode={setDragNode}
+              setDragNode={setDragNode}
             />
           ) : null}
           <ToolBar
@@ -617,7 +632,9 @@ function Flow() {
             changeBackground={(bgStyle) => {
               setBgVariant(bgStyle);
             }}
+            isNodeSelected={lastSelectedNode}
             flowWebSocket={flowWebSocket}
+            openNodeContextMenu={openNodeContextMenu}
             flowId={flowId}
             subRef={subRef}
             isEdit={isEdit}
@@ -639,7 +656,7 @@ function Flow() {
           // width="400px"
           onResize={onResize}
           resizeHandles={['w']}
-          minConstraints={[400, Infinity]}
+          minConstraints={[window.innerWidth * 0.37, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
           <div
