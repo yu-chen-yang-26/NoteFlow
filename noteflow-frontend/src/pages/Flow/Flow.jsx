@@ -61,7 +61,7 @@ function Flow() {
   const [isStyleBarOpen, setIsStyleBarOpen] = useState(false);
   const [back, setBack] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [nodeWidth, setNodeWidth] = useState(700);
+  const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4);
   const [editorId, setEditorId] = useState(null);
   const { flowWebSocket, renewFlowWebSocket } = usePageTab();
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
@@ -637,7 +637,7 @@ function Flow() {
           // width="400px"
           onResize={onResize}
           resizeHandles={['w']}
-          minConstraints={[400, Infinity]}
+          minConstraints={[window.innerWidth * 0.37, Infinity]}
           maxConstraints={[window.innerWidth * 0.7, Infinity]}
         >
           <div

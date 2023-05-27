@@ -41,7 +41,7 @@ export default function FlowGrid({ containerRef }) {
   const [target, setTarget] = useState({});
 
   const navigateTo = useNavigate();
-  const { tabList, addTab, deleteTab } = usePageTab();
+  const { tabList, addTab, deleteTab, renameTab } = usePageTab();
   const loadingCheckPointRef = useRef(null);
   const FlowButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[100]),
@@ -117,7 +117,7 @@ export default function FlowGrid({ containerRef }) {
   };
   const handleCloseContextMenu = () => {
     setTarget(null);
-    setIsMenuOpen(null);
+    setIsMenuOpen(false);
   };
 
   const openAlert = (id, title) => {
@@ -181,6 +181,7 @@ export default function FlowGrid({ containerRef }) {
             return flow;
           }),
         );
+        renameTab(id, title);
         setTitleToBeChanged(null);
         setIdToBeChanged(null);
         setIsChangeTitleOpen(false);

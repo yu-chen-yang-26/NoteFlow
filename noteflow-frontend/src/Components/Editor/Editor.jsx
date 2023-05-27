@@ -124,85 +124,88 @@ const Editor = ({ handleDrawerClose, editorId }) => {
   return (
     <div className={`${isMobile ? 'editor-mobile' : 'editor'}`}>
       <div className="header">
-        <IconButton
-          size="large"
-          onClick={() => {
-            handleDrawerClose();
-          }}
-        >
-          <IoIosArrowBack size={20} />
-        </IconButton>
-        <input
-          className="title-input"
-          type="text"
-          placeholder="Untitled..."
-          value={newTitle}
-          onChange={(e) => {
-            setNewTitle(e.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              sendNewTitle(newTitle);
-              instance
-                .post('/nodes/set-title', {
-                  id: editorId,
-                  title: newTitle,
-                })
-                .then((res) => {
-                  // console.log(res.status);
-                });
-            }
-          }}
-        />
-        <span className="focus-border" on></span>
-        <div className="status-holder">
-          {/* <BeatLoader
-            // color="a2d2ff"
-            loading={status}
-            size={5}
-            // cssOverride={{ transition: '0.4s' }}
-          /> */}
+        <div className="left">
+          <IconButton
+            size="large"
+            onClick={() => {
+              handleDrawerClose();
+            }}
+          >
+            <IoIosArrowBack size={20} />
+          </IconButton>
+          <input
+            className="title-input"
+            type="text"
+            placeholder="Untitled..."
+            value={newTitle}
+            onChange={(e) => {
+              setNewTitle(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                sendNewTitle(newTitle);
+                instance
+                  .post('/nodes/set-title', {
+                    id: editorId,
+                    title: newTitle,
+                  })
+                  .then((res) => {
+                    // console.log(res.status);
+                  });
+              }
+            }}
+          />
+          <span className="focus-border" on></span>
         </div>
-        <Button
-          variant="dark"
-          onClick={() => {
-            if (canEdit) setShowSettings((state) => !state);
-          }}
-          className="toolBarButton"
-        >
-          <BsShare size={18} />
-        </Button>
-        <Button
-          variant="dark"
-          size="small"
-          onClick={() => {
-            const fav = favorite;
-            setFavorite((state) => !state);
-            instance.post(!fav ? '/library/add-node' : 'library/remove-node', {
-              id: editorId,
-            });
-          }}
-          className="toolBarButton"
-        >
-          {favorite ? <MdFavorite size={18} /> : <MdFavoriteBorder size={18} />}
-        </Button>
+        <div className="right">
+          <Button
+            variant="dark"
+            onClick={() => {
+              if (canEdit) setShowSettings((state) => !state);
+            }}
+            className="toolBarButton"
+          >
+            <BsShare size={18} />
+          </Button>
+          <Button
+            variant="dark"
+            size="small"
+            onClick={() => {
+              const fav = favorite;
+              setFavorite((state) => !state);
+              instance.post(
+                !fav ? '/library/add-node' : 'library/remove-node',
+                {
+                  id: editorId,
+                },
+              );
+            }}
+            className="toolBarButton"
+          >
+            {favorite ? (
+              <MdFavorite size={18} />
+            ) : (
+              <MdFavoriteBorder size={18} />
+            )}
+          </Button>
 
-        {!canEdit && (
-          <div className="viewOnly" style={{ color: '#828282' }}>
-            view only
+          {!canEdit && (
+            <div className="viewOnly" style={{ color: '#828282' }}>
+              view only
+            </div>
+          )}
+
+          <div className="users">
+            {/* 右上角可愛的大頭貼 */}
+            {colab.map((element, index) => {
+              return (
+                <div className="user" key={index}>
+                  <img src={element.picture} alt="" />
+                </div>
+              );
+            })}
           </div>
-        )}
-
-        <div className="users">
-          {/* 右上角可愛的大頭貼 */}
-          {colab.map((element, index) => {
-            return (
-              <div className="user" key={index}>
-                <img src={element.picture} alt="" />
-              </div>
-            );
-          })}
         </div>
       </div>
       <div className="text-editor">
