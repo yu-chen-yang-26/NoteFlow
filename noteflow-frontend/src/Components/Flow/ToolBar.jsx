@@ -33,6 +33,8 @@ export default function ToolBar({
   const handleShow = () => setShow(true);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  console.log('anchor element:', anchorEl);
+
   const open = Boolean(anchorEl);
 
   const changeBG = (bg) => {
@@ -68,6 +70,7 @@ export default function ToolBar({
         >
           <BsNodePlus size={18} />
         </Button>
+        {/* 調色盤，需要 handleClick */}
         <Button variant="dark" onClick={handleClick} className="toolBarButton">
           <BsPalette size={18} />
         </Button>

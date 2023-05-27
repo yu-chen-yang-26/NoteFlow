@@ -31,14 +31,20 @@ export default function FlowGrid({ containerRef }) {
   const [flows, setFlows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
+  // 按右鍵的時候會出現的 menu
   const [isMenuOpen, setIsMenuOpen] = useState(null);
+  // 刪除 flow 會出現的警告
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // 更改 flow 名稱時的警告
   const [isChangeTitleOpen, setIsChangeTitleOpen] = useState(false);
-  const [titleToBeDeleted, setTitleToBeDeleted] = useState(null);
-  const [idToBeDeleted, setIdToBeDeleted] = useState(null);
+
+  const [focus, setFocus] = useState({
+    title: null,
+    id: null,
+  });
+
   const [titleToBeChanged, setTitleToBeChanged] = useState(null);
-  const [idToBeChanged, setIdToBeChanged] = useState(null);
-  const [target, setTarget] = useState({});
+  const [target, setTarget] = useState(null);
 
   const navigateTo = useNavigate();
   const { tabList, addTab, deleteTab, renameTab } = usePageTab();
@@ -120,44 +126,29 @@ export default function FlowGrid({ containerRef }) {
     setIsMenuOpen(false);
   };
 
-  const openAlert = (id, title) => {
-    setTitleToBeDeleted(title);
-    setIdToBeDeleted(id);
+  const openAlert = () => {
     setIsAlertOpen(true);
-    setIsMenuOpen(null);
   };
 
-  const openChangeTitle = (id, title) => {
-    setTitleToBeChanged(title);
-    setIdToBeChanged(id);
+  const openChangeTitle = () => {
     setIsChangeTitleOpen(true);
-    setIsMenuOpen(null);
   };
+
   const closeAlert = () => {
-    setTitleToBeDeleted(null);
-    setIdToBeDeleted(null);
     setIsAlertOpen(false);
-    console.log('Cancel Delete Flow');
   };
 
   const closeChangeTitle = () => {
-    setTitleToBeChanged(null);
-    setIdToBeChanged(null);
     setIsChangeTitleOpen(false);
-    // console.log("Cancel Delete Flow");
   };
 
   const deleteFlow = (id) => {
     // flowdd = 'yuti@gmail.com-flow-1b6837f7-10d3-4501-9d9c-f5ad8be24f17';
-    setTitleToBeDeleted(null);
-    setIdToBeDeleted(null);
     setIsAlertOpen(false);
 
     instance
       .post('/flows/delete-flow', { id })
       .then((res) => {
-        console.log('Delete Flow Success');
-        // console.log(flows.filter((flow) => flow.id !== id));
         setFlows(flows.filter((flow) => flow.id !== id));
       })
       .catch((e) => {
@@ -182,10 +173,7 @@ export default function FlowGrid({ containerRef }) {
           }),
         );
         renameTab(id, title);
-        setTitleToBeChanged(null);
-        setIdToBeChanged(null);
         setIsChangeTitleOpen(false);
-        console.log('Change Title Success');
       })
       .catch((e) => {
         console.log(e);
@@ -208,12 +196,10 @@ export default function FlowGrid({ containerRef }) {
             onClose={closeAlert}
           >
             <DialogTitle>
-              {t('Do you want to delete the follow ') + titleToBeDeleted + '?'}
+              {t('Do you want to delete the follow ') + focus.title + '?'}
             </DialogTitle>
             <DialogActions>
-              <Button onClick={() => deleteFlow(idToBeDeleted)}>
-                {t('Yes')}
-              </Button>
+              <Button onClick={() => deleteFlow(focus.id)}>{t('Yes')}</Button>
               <Button onClick={closeAlert}>{t('Cancel')}</Button>
             </DialogActions>
           </Dialog>
@@ -235,7 +221,7 @@ export default function FlowGrid({ containerRef }) {
                 variant="standard"
                 label={t('Flow Name')}
                 multiline
-                value={titleToBeChanged}
+                value={focus.title}
                 onChange={(event) => {
                   setTitleToBeChanged(event.target.value);
                 }}
@@ -244,8 +230,7 @@ export default function FlowGrid({ containerRef }) {
             <DialogActions>
               <Button
                 onClick={() => {
-                  console.log(titleToBeChanged);
-                  changeTitle(idToBeChanged, titleToBeChanged);
+                  changeTitle(focus.id, titleToBeChanged);
                 }}
               >
                 {t('Confirm')}
@@ -315,14 +300,22 @@ export default function FlowGrid({ containerRef }) {
                   >
                     <MenuItem
                       onClick={() => {
-                        openChangeTitle(flow.id, flow.name);
+                        setFocus({
+                          id: flow.id,
+                          title: flow.name,
+                        });
+                        openChangeTitle();
                       }}
                     >
                       {t('Rename')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        openAlert(flow.id, flow.name);
+                        setFocus({
+                          id: flow.id,
+                          title: flow.name,
+                        });
+                        openAlert();
                       }}
                     >
                       {t('Delete')}

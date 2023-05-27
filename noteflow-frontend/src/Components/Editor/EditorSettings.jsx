@@ -66,9 +66,7 @@ const Settings = ({ editorId, setShowSettings }) => {
 
   useEffect(() => {
     if (allColabs) {
-      console.log(allColabs);
       allColabs.forEach((data, index) => {
-        console.log(index);
         const each = document.querySelector(`#colab-node-${index}`);
         if (data.status === 200) {
           each.style.border = undefined;

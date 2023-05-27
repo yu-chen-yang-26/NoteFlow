@@ -51,19 +51,6 @@ const CustomNode = ({ id, data }) => {
     setNodeMenuOpen(null);
   };
 
-  // useEffect(() => {
-  //   const element = document.getElementById(`react-node-${id}`);
-  //   element.addEventListener('touchstart', () => {
-  //     console.log('hi');
-  //   });
-
-  //   return () => {
-  //     element.removeEventListener('touchstart', () => {
-  //       console.log('hi');
-  //     });
-  //   };
-  // }, []);
-
   return (
     <div
       // id={`react-node-${id}`}

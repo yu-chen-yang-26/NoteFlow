@@ -29,7 +29,7 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
           setAllColabs(new_array);
         })
         .catch((e) => {
-          console.log('wrong:', e);
+          // console.log('wrong:', e);
         });
     }
     setColabInput('');
@@ -41,7 +41,6 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
       .then((res) => {
         if (res.status === 200) {
           let canClose = true;
-          console.log(res.data);
           res.data.map((data, index) => {
             if (data.status !== 200) {
               canClose = false;

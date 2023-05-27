@@ -10,17 +10,17 @@ services:
       MONGO_NOTEFLOW_USERNAME: $MONGO_NOTEFLOW_USERNAME
       MONGO_NOTEFLOW_PASSWORD: $MONGO_NOTEFLOW_PASSWORD
       MONGO_INITDB_DATABASE: $MONGO_DB
-    volumes:
-      - noteflow_data:/data/db
-      - noteflow_config:/data/configdb
-      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    # volumes:
+    #   - noteflow_data:/data/db
+    #   - noteflow_config:/data/configdb
+    #   - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - noteflow
 
   postgres:
     image: "postgres:14.5-alpine"
-    volumes:
-      - data:/var/lib/postgresql/data
+    # volumes:
+    #   - data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
@@ -52,33 +52,33 @@ services:
     ports:
       - 6380:6379
 
-  redis-session:
-    image: "redis:7.0"
-    networks:
-      - noteflow
-    ports:
-      - 6381:6379
+  # redis-session:
+  #   image: "redis:7.0"
+  #   networks:
+  #     - noteflow
+  #   ports:
+  #     - 6381:6379
 
-  frontend:
-    image: "node:lts"
-    working_dir: /frontend
-    command: sh -c "yarn && yarn start"
-    networks:
-      - noteflow
-    ports:
-      - $FRONTEND_EXPOSE_PORT:$FRONTEND_EXPOSE_PORT
-    environment:
-      VITE_NOTEFLOW_BACKEND: $NOTEFLOW_BACKEND
-      VITE_NOTEFLOW_PORT: $BACKEND_EXPOSE_PORT
-      VITE_DEV: $VITE_DEV
-      FRONTEND_EXPOSE_PORT: $FRONTEND_EXPOSE_PORT
-    volumes:
-      - ./noteflow-frontend:/frontend
+  # frontend:
+  #   image: "node:lts"
+  #   working_dir: /frontend
+  #   command: sh -c "yarn && yarn build && yarn preview"
+  #   networks:
+  #     - noteflow
+  #   ports:
+  #     - $FRONTEND_EXPOSE_PORT:$FRONTEND_EXPOSE_PORT
+  #   environment:
+  #     VITE_NOTEFLOW_BACKEND: $NOTEFLOW_BACKEND
+  #     VITE_NOTEFLOW_PORT: $BACKEND_EXPOSE_PORT
+  #     VITE_DEV: $VITE_DEV
+  #     FRONTEND_EXPOSE_PORT: $FRONTEND_EXPOSE_PORT
+    # volumes:
+    #   - ./noteflow-frontend:/frontend
 
   backend:
     image: "node:lts"
     working_dir: /backend
-    command: sh -c "npm install && npm run start"
+    command: sh -c "npm install && npm run check:migrate && npm run start"
     networks:
       - noteflow
     ports:
@@ -121,22 +121,22 @@ services:
     volumes:
       - ./noteflow-backend:/backend
 
-  migrate:
-    image: "node:lts"
-    working_dir: /backend
-    command: sh -c "npm install && npm run db:migrate"
-    networks:
-      - noteflow
-    environment:
-      POSTGRES_HOST: $POSTGRES_HOST
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_PORT: $POSTGRES_PORT
-    depends_on:
-      - backend
-    volumes:
-      - ./noteflow-backend:/backend
+  # migrate:
+  #   image: "node:lts"
+  #   working_dir: /backend
+  #   command: sh -c "npm install && npm run db:migrate"
+  #   networks:
+  #     - noteflow
+  #   environment:
+  #     POSTGRES_HOST: $POSTGRES_HOST
+  #     POSTGRES_DB: $POSTGRES_DB
+  #     POSTGRES_USER: $POSTGRES_USER
+  #     POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+  #     POSTGRES_PORT: $POSTGRES_PORT
+  #   depends_on:
+  #     - backend
+  #   volumes:
+  #     - ./noteflow-backend:/backend
 
 volumes:
   data:

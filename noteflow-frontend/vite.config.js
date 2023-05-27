@@ -21,6 +21,12 @@ export default ({ mode }) => {
       },
       hmr: false,
     },
+    build: {
+      manifest: true,
+      rollupOptions: {
+        input: '/index.html',
+      },
+    },
   });
 };
 
@@ -36,8 +42,6 @@ const findCss = () => {
       available.push(files[i].split('.')[0]);
     }
   }
-
-  console.log(available);
 
   return available;
 };
