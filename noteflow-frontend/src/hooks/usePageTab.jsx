@@ -73,7 +73,7 @@ const PageTabProvider = (props) => {
       const tabListUpdated = tabList.filter((tab) => tab.tabId !== tabId);
       localStorage.setItem('tabList', JSON.stringify(tabListUpdated));
       setTabList(tabListUpdated);
-      if (activeTab !== 0) {
+      if (activeTab !== 0 && location.pathname !== '/home') {
         toTab(tabListUpdated[tabListUpdated.length - 1].tabId);
       }
     }

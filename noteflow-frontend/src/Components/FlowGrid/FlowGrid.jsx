@@ -192,9 +192,6 @@ export default function FlowGrid({ containerRef }) {
       });
     //change Title API
   };
-  document.addEventListener('click', () => {
-    setIsMenuOpen(null);
-  });
   return loading ? (
     <LoadingScreen />
   ) : (
