@@ -287,10 +287,6 @@ export default function FlowGrid({ containerRef }) {
                     event.preventDefault();
                     event.stopPropagation();
                   }}
-                  // onMouseDown={(event) => {
-                  //   startPress(event, flow);
-                  // }}
-                  // onMouseUp={cancelPress}
                   onTouchStart={(event) => {
                     startPress(event, flow);
                   }}
