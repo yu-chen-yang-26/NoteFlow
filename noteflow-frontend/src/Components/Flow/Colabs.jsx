@@ -76,10 +76,12 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
     if (allColabs) {
       allColabs.forEach((data, index) => {
         const each = document.querySelector(`#colab-${index}`);
-        if (data.status === 200) {
-          each.style.border = undefined;
-        } else {
-          each.style.border = '1px solid red';
+        if (each) {
+          if (data.status === 200) {
+            each.style.border = undefined;
+          } else {
+            each.style.border = '1px solid red';
+          }
         }
       });
     }
