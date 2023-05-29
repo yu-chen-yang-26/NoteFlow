@@ -5,7 +5,6 @@ import { koaBody } from 'koa-body';
 import logger from 'koa-logger';
 import { WebSocketServer } from 'ws';
 import http from 'http';
-import koaSslify from 'koa-sslify';
 
 import cors from '@koa/cors';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
@@ -25,7 +24,6 @@ const app = new Koa();
 if (!fs.existsSync(path.join(process.cwd(), 'images'))) {
   fs.mkdirSync(path.join(process.cwd(), 'images'));
 }
-
 
 app.use(logger());
 app.use(
@@ -49,9 +47,7 @@ app.use(redisSession(app));
 app.use(koaBody());
 app.use(routes.allowedMethods());
 
-const server = http.createServer(
-  app.callback()
-);
+const server = http.createServer(app.callback());
 
 const wsServer = new WebSocketServer({ server });
 

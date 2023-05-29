@@ -7,8 +7,8 @@
   "scripts": {
     "start": "set NODE_ENV=development && npx nodemon ./src/app.js",
     "start-prod": "set NODE_ENV=production && npx nodemon ./src/app.js",
-    "test": "set NODE_ENV=test && jest --detectOpenHandles",
-    "test:coverage": "set NODE_ENV=test && jest --coverage",
+    "test": "set NODE_ENV=test && jest --runInBand --detectOpenHandles",
+    "test:coverage": "set NODE_ENV=test && jest --runInBand --watchAll --coverage --detectOpenHandles",
     "format": "prettier --config .prettierrc \"**/*.+(js|json)\" --write",
     "lint": "eslint src/**/*.js --fix && eslint tests/**/*.js --fix",
     "db:migrate": "knex --knexfile src/model/postgres/knexfile.js migrate:latest",
@@ -19,10 +19,27 @@
   "author": "sdm-group-6",
   "license": "ISC",
   "jest": {
+    "verbose": true,
+    "rootDir": "./src",
     "testTimeout": 60000,
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "coverageReporters": ["json", "html"]
+    "coverageProvider": "v8",
+    "testEnvironment": "node",
+    "coverageDirectory": "<rootDir>/coverage/",
+    "collectCoverageFrom": [
+      "**/*.js"
+    ],
+    "coverageReporters": ["json", "html"],
+
+    "testRegex": ".*/test/.*\\.test\\.js?$",
+    "testPathIgnorePatterns": ["./node_modules/"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 20,
+        "functions": 30,
+        "lines": 50,
+        "statements": 50
+      }
+    }
 
   },
   "dependencies": {
