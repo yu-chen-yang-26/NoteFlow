@@ -13,14 +13,14 @@
   justify-content: 'center';
 }
 
-.colab-tags {
-  height: 30px;
-  padding: 5px 10px 5px 10px;
+// .colab-tags {
+//   height: 30px;
+//   padding: 5px 10px 5px 10px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
 
 .editor-settings {
   position: absolute;
@@ -49,19 +49,22 @@
     max-height: 500px;
     padding: 20px;
     position: relative;
-    .title {
-      height: 20%;
-      position: absolute;
-      left: 20px;
-      top: 10px;
-      h2 {
-        font-size: 25px;
-        font-weight: 400;
-      }
+    // .title {
+    //   height: 20%;
+    //   position: absolute;
+    //   left: 20px;
+    //   top: 10px;
+    //   h2 {
+    //     font-size: 25px;
+    //     font-weight: 400;
+    //   }
+    // }
+    h2 {
+      margin: 0;
     }
 
     .buttons {
-      height: 10%;
+      // height: 10%;
       display: flex;
       width: 80%;
       flex-direction: row;

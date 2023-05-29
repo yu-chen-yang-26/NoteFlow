@@ -129,6 +129,7 @@ const PageTabProvider = (props) => {
         closeTab,
         toTab,
         deleteTab,
+        renameTab,
         activeTab,
         setActiveTab,
         setTabList,

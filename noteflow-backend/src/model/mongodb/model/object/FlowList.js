@@ -4,7 +4,7 @@ import { getMongoClient } from '../../mongoClient.js';
 class FlowList {
   constructor(user) {
     this.user = user;
-    this.flowList = {};
+    this.flowList = [];
   }
 
   static async genFlowListProfile(userEmail) {
@@ -29,11 +29,15 @@ class FlowList {
     const database = mongoClient.db('noteflow');
     const collection = database.collection('flowList');
 
-    this.flowList = (
-      await collection.findOne({
-        user: this.user,
-      })
-    ).flowList;
+    const result = await collection.findOne({
+      user: this.user,
+    });
+
+    if (result) {
+      this.flowList = result.flowList;
+    } else {
+      FlowList.genFlowListProfile(this.user);
+    }
   }
 
   async addSomebodyToFlowList(userEmail, flowId) {
