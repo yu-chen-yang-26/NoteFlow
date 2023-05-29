@@ -270,14 +270,9 @@ function Flow() {
         if (!(email in record)) {
           record[email] = true;
           FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
-            const oldInstance = document.querySelector('.sub-flow');
+            const oldInstance = document.getElementById(`sub-flow-${email}`);
             if (oldInstance) {
-              const parent = oldInstance.parentNode;
-              if (parent) {
-                while (parent.firstChild) {
-                  parent.removeChild(parent.firstChild);
-                }
-              }
+              subRef.current.removeChild(oldInstance);
             }
             instance.onclick = (e) => {
               console.log(e);

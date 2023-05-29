@@ -106,7 +106,7 @@ export default function ToolBar({
       <div className="right">
         <div
           ref={subRef}
-          style={{ display: isEdit ? 'none' : 'flex' }}
+          style={{ display: 'flex' }}
           className="mouse-dot-subscribe"
         ></div>
         <Button
