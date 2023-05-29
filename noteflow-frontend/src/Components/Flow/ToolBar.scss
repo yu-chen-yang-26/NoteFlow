@@ -14,13 +14,15 @@
     align-items: center;
     justify-content: flex-start;
     z-index: 3;
-    width: 20vw;
+    width: 25vw;
   }
 
   .mid {
-    justify-self: center;
     display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 3;
+    width: 50vw;
   }
 
   .right {
@@ -30,7 +32,7 @@
     justify-content: flex-end;
     position: relative;
     height: 100%;
-    width: 20vw;
+    width: 27vw;
     // border: red solid 2px;
     .mouse-dot-subscribe {
       z-index: 10;
