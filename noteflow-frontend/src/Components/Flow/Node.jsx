@@ -35,9 +35,6 @@ const CustomNode = ({ id, data }) => {
   const [label, setLabel] = useState(data.label);
   const { nodeMenuOpen, setNodeMenuOpen } = useParams();
 
-  const [clickCount, setClickCount] = useState(0);
-  const singleClickTimerRef = useRef(null);
-
   const onContextMenu = (event) => {
     event.preventDefault();
     // setVisible(true);
@@ -52,6 +49,21 @@ const CustomNode = ({ id, data }) => {
   };
   const handleCloseMenu = () => {
     setNodeMenuOpen(null);
+  };
+
+  // 長按功能
+  const pressTimer = useRef(null);
+
+  const startPress = (event) => {
+    pressTimer.current = setTimeout(() => {
+      console.log('hi');
+      onContextMenu(event);
+    }, 1000);
+  };
+
+  const cancelPress = () => {
+    clearTimeout(pressTimer.current);
+    pressTimer.current = null;
   };
 
   // useEffect(() => {
@@ -72,6 +84,14 @@ const CustomNode = ({ id, data }) => {
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
+      // onMouseDown={(event) => {
+      //   startPress(event);
+      // }}
+      // onMouseUp={cancelPress}
+      onTouchStart={(event) => {
+        startPress(event);
+      }}
+      onTouchEnd={cancelPress}
 
       // onTouchStart={() => {
       //   console.log('hi');
