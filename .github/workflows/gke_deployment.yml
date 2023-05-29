@@ -41,9 +41,10 @@ jobs:
         location: ${{ env.GKE_ZONE }}
 
     # Build and push the Docker image
-    #- name: BuildAndPublish
-    #  run: |-
-    #    bin/bash bind.build.sh
+    - name: BuildAndPublish
+      working-directory: ./
+      run: |-
+        bin/bash bind.build.sh
 
     # Deploy the Docker image to the GKE cluster
     #- name: Deploy
