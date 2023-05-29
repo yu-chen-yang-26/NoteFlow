@@ -112,7 +112,6 @@ export default function FlowGrid({ containerRef }) {
       objectId: flow.id,
       name: flow.name ? flow.name : 'UnTitled',
     }); // name 應該在 flows/create 拿
-
     navigateTo(`/flow?id=${flow.id}`);
   };
   const handleCloseContextMenu = () => {
@@ -284,7 +283,7 @@ export default function FlowGrid({ containerRef }) {
                   className="grid-item"
                   onContextMenu={(event) => {
                     setTarget(event.currentTarget);
-                    setIsMenuOpen(flow.id);
+                    setIsMenuOpen((prev) => !prev);
                     event.preventDefault();
                     event.stopPropagation();
                   }}
@@ -295,7 +294,7 @@ export default function FlowGrid({ containerRef }) {
                   // onMouseLeave={cancelPress}
                   // onTouchStart={startPress}
                   // onTouchEnd={cancelPress}
-                  key={key}
+                  // key={key}
                 >
                   <FlowButton
                     onClick={() => toFlow(flow)}
@@ -325,7 +324,7 @@ export default function FlowGrid({ containerRef }) {
                   <Typography>{flow.name}</Typography>
                   <Menu
                     // autoFocusItem={open}
-                    open={isMenuOpen == flow.id}
+                    open={isMenuOpen}
                     anchorEl={target}
                     anchorOrigin={{
                       vertical: 'center',
