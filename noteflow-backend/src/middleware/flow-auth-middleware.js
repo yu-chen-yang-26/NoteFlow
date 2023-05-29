@@ -3,7 +3,7 @@ import CODE from '..//lib/httpStatus.js';
 
 const authorized = async (ctx, next) => {
   let { id } = ctx.query;
-  if (ctx.request.body.id) {
+  if (ctx.request.body && ctx.request.body.id) {
     id = ctx.request.body.id;
   }
 

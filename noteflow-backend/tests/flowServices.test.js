@@ -4,14 +4,22 @@ import server from '../src/app.js'
 import { expect } from 'chai'
 import crypto from 'crypto-js';
 
+const {
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB
+} = process.env;
+
 const k = knex({
   client: 'pg',
   connection: {
-    host: "localhost",
-    port: 5432,
-    user: "user",
-    password: "112a",
-    database: "noteflow",
+    host: POSTGRES_HOST,
+    port: POSTGRES_PORT,
+    user: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
+    database: POSTGRES_DB,
   },
 });
 
@@ -127,5 +135,48 @@ describe('Real flow service🌼', function () {
     
     const res2 = await instance.get(`/api/flows/get-title?id=${flowId}`).send();
     expect(JSON.parse(res2.text)).equal(target)
+  })
+});
+
+describe('Delete Flows😶‍🌫️', function () {
+
+  let instance = request.agent(server);
+  let flowId;
+
+  before(async () => {
+    const { name, email, password } = info;
+    const getter1 = await k("users").first().where({email});
+
+    if(!getter1){
+      await request(server)
+      .post('/api/user/register')
+      .send({
+        user: {
+          name,
+          email,
+          password,
+        },
+      });
+    }
+
+    await instance
+      .post('/api/user/login')
+      .send({
+        user: {
+          name,
+          email,
+          password
+        },
+      });
+
+    const res = await instance.post("/api/flows/create").send();
+    flowId = JSON.parse(res.text);
+  });
+
+  it('api: /api/flows/delete-flow', async () => {
+    await instance.post('/api/flows/delete-flow').expect(422).send()
+    await instance.post('/api/flows/delete-flow').expect(200).send({
+        id: flowId
+    })
   })
 });

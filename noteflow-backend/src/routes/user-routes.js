@@ -24,10 +24,8 @@ router
   .post('/user/login', user.login)
   .post('/user/logout', user.logout)
   .post('/user/register', user.register)
-  .get('/user/verify', user.verifyToken)
   .post('/user/google-login', user.googleLogin)
   .get('/user/who-am-i', user.whoAmI)
-  .post('/user/update', logined, user.updateUserInfo)
   .post(
     '/user/set-photo',
     logined,

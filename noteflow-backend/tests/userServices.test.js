@@ -4,14 +4,22 @@ import server from '../src/app.js'
 import { expect } from 'chai'
 import crypto from 'crypto-js';
 
+const {
+  POSTGRES_HOST,
+  POSTGRES_PORT,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB
+} = process.env;
+
 const k = knex({
   client: 'pg',
   connection: {
-    host: "localhost",
-    port: 5432,
-    user: "user",
-    password: "112a",
-    database: "noteflow",
+    host: POSTGRES_HOST,
+    port: POSTGRES_PORT,
+    user: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
+    database: POSTGRES_DB,
   },
 });
 
