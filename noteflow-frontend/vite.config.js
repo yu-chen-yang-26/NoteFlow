@@ -15,10 +15,6 @@ export default ({ mode }) => {
     server: {
       host: '0.0.0.0',
       port: process.env.FRONTEND_EXPOSE_PORT,
-      https: {
-        key: './server.key',
-        cert: './server.cert',
-      },
       hmr: false,
     },
   });

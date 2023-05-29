@@ -1,0 +1,6 @@
+when opening up mongo:
+
+mongosh -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} -e ${MONGO_BOOTSTRAP_CMD}
+
+
+GCP: 34.36.95.12
