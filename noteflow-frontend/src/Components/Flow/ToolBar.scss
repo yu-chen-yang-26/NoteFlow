@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: flex-start;
     z-index: 3;
-    width: 25vw;
+    width: 20vw;
   }
 
   .mid {
@@ -30,11 +30,11 @@
     justify-content: flex-end;
     position: relative;
     height: 100%;
-    width: 25vw;
+    width: 20vw;
     // border: red solid 2px;
     .mouse-dot-subscribe {
       z-index: 10;
-      max-width: 20vw;
+      max-width: 15vw;
       // overflow: hidden;
       aspect-ratio: 1;
       height: 100%;
@@ -44,7 +44,7 @@
       gap: 4px;
       align-items: center;
       justify-content: flex-end;
-      padding: 0 10px;
+      padding: 0 5px;
 
       .sub-flow {
         display: flex;
@@ -81,5 +81,10 @@
 
   .toolBarButton {
     border-radius: 15px;
+  }
+
+  .MuiButtonBase-root {
+    padding: 0;
+    min-width: 3vw;
   }
 }
