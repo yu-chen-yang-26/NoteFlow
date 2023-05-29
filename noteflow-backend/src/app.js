@@ -52,10 +52,6 @@ const server = http.createServer(app.callback());
 const wsServer = new WebSocketServer({ server });
 
 app.use(async (ctx, next) => {
-  if (server instanceof http.Server) {
-    const { user } = ctx.request.body;
-    ctx.session = user ? { ...user } : ctx.session;
-  }
   await next();
 });
 

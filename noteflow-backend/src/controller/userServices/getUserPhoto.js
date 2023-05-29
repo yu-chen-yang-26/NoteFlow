@@ -6,14 +6,16 @@ const getUserPhoto = async (ctx) => {
   if (!email) {
     email = ctx.session.email;
   }
-  try {
-    const result = await db('users').first().where({ email });
 
-    ctx.status = CODE.success;
-    ctx.body = result.picture;
-  } catch (e) {
-    ctx.throw(CODE.internal_error);
-  }
+  let result;
+  try {
+    result = await db('users').first().where({ email });
+  } catch (e) {}
+
+  ctx.status = CODE.success;
+  ctx.body = JSON.stringify(result ? result.picture : null);
+  ctx.set('Content-Type', 'application/json')
+  
 };
 
 export default getUserPhoto;

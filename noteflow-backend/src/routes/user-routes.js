@@ -10,7 +10,7 @@ const upload = multer();
 
 const router = new Router();
 router
-  .get('hello-world', async (ctx) => {
+  .get('/hello-world', async (ctx) => {
     ctx.session.hello = 'hi';
     await ctx.session.save();
 
