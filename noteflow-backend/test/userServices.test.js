@@ -1,43 +1,24 @@
 import request from 'supertest';
-import routes from '../src/routes/index.js';
-import bodyParser from 'body-parser';
-import Koa from 'koa';
-import { koaBody } from 'koa-body';
-import redisSession from '../src/model/redis/redisSession.js';
-import http from 'http';
-import mongoose from 'mongoose';
-import db from '../src/lib/db.js';
-import { getMongoClient } from '../src/model/mongodb/mongoClient.js';
+import knex from 'knex';
+const baseUrl = 'http://localhost';
 
-let app, server, wsServer, mongoServer, uri;
-const baseUrl = 'https://localhost:9999';
-
-app = new Koa();
-app.use(koaBody());
-app.use(redisSession(app));
-app.use(routes.routes());
-server = http.createServer(app.callback());
-
-const startMongodb = () => {
-  const mongoClient = getMongoClient();
-  const collection = mongoClient.db('noteflow_test').collection('flows');
-};
-
-const startServer = () => {
-  server.listen(9999);
-};
-
-const closeServer = () => {
-  server.close();
-};
-
-beforeAll(async () => {
-  startServer();
-  startMongodb();
+beforeEach(async () => {
+  jest.setTimeout(30000);
+  const getter = await k("users").first().where({email: "test123@gmail.com"});
+  if(getter){
+    await k("users").where({email: "test123@gmail.com"}).del();
+  }
 });
 
-afterAll(async () => {
-  closeServer();
+const k = knex({
+  client: 'pg',
+  connection: {
+    host: "localhost",
+    port: 5432,
+    user: "user",
+    password: "112a",
+    database: "noteflow",
+  },
 });
 
 describe('userService API', function () {
@@ -46,44 +27,43 @@ describe('userService API', function () {
       .post('/api/user/register')
       .send({
         user: {
-          name: 'test',
-          email: 'test@gmail.com',
-          password: 'test',
+          name: Math.random().toString(20),
+          email: 'test123@gmail.com',
+          password: Math.random().toString(20),
         },
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('user');
   });
-  // test('api: /api/user/register', async () => {
-  //   // const User = mongoose.model('User', new mongoose.Schema({ name: String }));
-  //   // const cnt = await User.count();
 
-  //   const response = await request(baseUrl)
-  //     .post('/api/user/register')
-  //     .send({
-  //       user: {
-  //         name: 'test',
-  //         email: 'test@gmail.com',
-  //         password: 'test',
-  //       },
-  //     })
-  //     .expect(200)
-  //     .end((err, res) => {
-  //       process.removeListener('uncaughtException', unhandledExceptionCallback);
-  //       if (unhandledException !== undefined) {
-  //         return done(unhandledException);
-  //       } else if (err) {
-  //         return done(err);
-  //       }
-  //       newGame = res.body;
-  //       done();
-  //     });
+  test('api: /api/user/login', async () => {
 
-  //   expect(response.status).toBe(200);
+    const response = await request(baseUrl)
+      .post('/api/user/login')
+      .send({
+        user: {
+          name: 'test',
+          email: 'test@gmail.com',
+          password: 'test',
+        },
+      })
+      .expect(200)
+      .end((err, res) => {
+        process.removeListener('uncaughtException', unhandledExceptionCallback);
+        if (unhandledException !== undefined) {
+          return done(unhandledException);
+        } else if (err) {
+          return done(err);
+        }
+        newGame = res.body;
+        done();
+      });
 
-  //   // const updatedCnt = await User.countDocuments();
-  //   // expect(updatedCnt).toBe(cnt + 1);
-  // });
+    expect(response.status).toBe(200);
+
+    // const updatedCnt = await User.countDocuments();
+    // expect(updatedCnt).toBe(cnt + 1);
+  });
 
   test('api: /api/user/login', async () => {
     const response = await request(baseUrl)
