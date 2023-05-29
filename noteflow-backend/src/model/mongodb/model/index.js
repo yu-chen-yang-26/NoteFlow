@@ -3,7 +3,6 @@ import Flow from './object/Flow.js';
 import Library from './object/Library.js';
 import NodeRepo from './object/NodeRepo.js';
 import Node from './object/Node.js';
-import Edge from './object/Edge.js';
 import FlowList from './object/FlowList.js';
 
 const createUserBucket = async (userEmail) => {
@@ -17,7 +16,6 @@ export {
   Library,
   NodeRepo,
   Node,
-  Edge,
   Flows,
   Flow,
   FlowList,

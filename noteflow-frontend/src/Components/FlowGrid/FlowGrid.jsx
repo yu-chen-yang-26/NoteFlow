@@ -293,7 +293,9 @@ export default function FlowGrid({ containerRef }) {
                   }}
                   onMouseUp={cancelPress}
                   // onMouseLeave={cancelPress}
-                  // onTouchStart={startPress}
+                  onTouchStart={(event) => {
+                    startPress(event, flow);
+                  }}
                   // onTouchEnd={cancelPress}
                   key={key}
                 >
