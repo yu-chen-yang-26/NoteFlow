@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { Handle, Position, NodeToolbar, NodeResizer } from 'reactflow';
 import Button from 'react-bootstrap/Button';
 import './FlowEditor.scss';
@@ -29,15 +29,18 @@ const defaultTypeStyle = {
 
 const CustomNode = ({ id, data }) => {
   const { t } = useTranslation();
-  const [isVisible, setVisible] = useState(false);
+  // const [isVisible, setVisible] = useState(false);
   const [isInputDisable, setIsInputDisable] = useState(true);
   const [isResizable, setIsResizable] = useState(false);
   const [label, setLabel] = useState(data.label);
   const { nodeMenuOpen, setNodeMenuOpen } = useParams();
 
+  const [clickCount, setClickCount] = useState(0);
+  const singleClickTimerRef = useRef(null);
+
   const onContextMenu = (event) => {
     event.preventDefault();
-    setVisible(true);
+    // setVisible(true);
     setNodeMenuOpen(id);
   };
 
@@ -69,6 +72,7 @@ const CustomNode = ({ id, data }) => {
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
+
       // onTouchStart={() => {
       //   console.log('hi');
       // }}

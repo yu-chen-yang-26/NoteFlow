@@ -450,6 +450,7 @@ function Flow() {
     zoom = 2;
     setEditorId(node.editorId);
     // setLastSelectedNode(node.id);
+    setNodeIsEditing(node.id);
     setLastSelectedEdge(null);
     setIsEdit(true);
   });
@@ -659,6 +660,7 @@ function Flow() {
           >
             <Node
               nodeId={editorId}
+              setNodeIsEditing={setNodeIsEditing}
               setIsEdit={setIsEdit}
               nodeWidth={nodeWidth}
             />
