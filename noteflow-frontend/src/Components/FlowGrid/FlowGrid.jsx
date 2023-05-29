@@ -193,16 +193,15 @@ export default function FlowGrid({ containerRef }) {
     //change Title API
   };
 
+  // 長按功能
   const pressTimer = useRef(null);
 
   const startPress = (event, flow) => {
     pressTimer.current = setTimeout(() => {
-      console.log('長按事件觸發');
       setTarget(event.currentTarget);
       setIsMenuOpen(flow.id);
       event.preventDefault();
       event.stopPropagation();
-      // 在這裡執行長按事件的操作
     }, 1000);
   };
 
@@ -288,13 +287,14 @@ export default function FlowGrid({ containerRef }) {
                     event.preventDefault();
                     event.stopPropagation();
                   }}
-                  onMouseDown={(event) => {
+                  // onMouseDown={(event) => {
+                  //   startPress(event, flow);
+                  // }}
+                  // onMouseUp={cancelPress}
+                  onTouchStart={(event) => {
                     startPress(event, flow);
                   }}
-                  onMouseUp={cancelPress}
-                  // onMouseLeave={cancelPress}
-                  // onTouchStart={startPress}
-                  // onTouchEnd={cancelPress}
+                  onTouchEnd={cancelPress}
                   key={key}
                 >
                   <FlowButton
