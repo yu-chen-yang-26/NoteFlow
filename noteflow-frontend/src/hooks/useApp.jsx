@@ -49,11 +49,15 @@ const UserProvider = (props) => {
         // if (!user.logined && location.pathname !== '/resetPassword') {
         //   navigate('/');
         // }
+        console.log(user);
+        const picture = user.picture
+          ? user.picture.startsWith('http')
+            ? user.picture
+            : `/api/${user.picture}`
+          : getRandomPicture(user.email);
         setUser({
           ...user,
-          picture: user.picture
-            ? `/api/${user.picture}`
-            : getRandomPicture(user.email),
+          picture,
         });
       })
       .catch((e) => {
