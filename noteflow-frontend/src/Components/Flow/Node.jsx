@@ -55,9 +55,11 @@ const CustomNode = ({ id, data }) => {
   const pressTimer = useRef(null);
 
   const startPress = (event) => {
+    event.preventDefault();
     pressTimer.current = setTimeout(() => {
       console.log('hi');
-      onContextMenu(event);
+      // setVisible(true);
+      setNodeMenuOpen(id);
     }, 1000);
   };
 
@@ -84,18 +86,6 @@ const CustomNode = ({ id, data }) => {
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
-      // onMouseDown={(event) => {
-      //   startPress(event);
-      // }}
-      // onMouseUp={cancelPress}
-      onTouchStart={(event) => {
-        startPress(event);
-      }}
-      onTouchEnd={cancelPress}
-
-      // onTouchStart={() => {
-      //   console.log('hi');
-      // }}
     >
       {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
