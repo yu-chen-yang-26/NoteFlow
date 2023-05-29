@@ -49,6 +49,7 @@ jobs:
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
+      working-directory: ./k8s_deployment/
       run: |-
         bash k8s_setup.sh
 
