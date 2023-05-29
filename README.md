@@ -1,5 +1,10 @@
 前後端開發
 
+    // "transform": {
+    //   "^.+\\.(js|jsx)$": "babel-jest",
+    //   "^.+\\.tsx?$": "ts-jest"
+    // },
+
 ```bash
 docker compose --env-file .compose.env up -d
 ## frontend will be open on 7415 by default.

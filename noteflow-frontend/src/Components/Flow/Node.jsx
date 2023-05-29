@@ -35,9 +35,6 @@ const CustomNode = ({ id, data }) => {
   const [label, setLabel] = useState(data.label);
   const { nodeMenuOpen, setNodeMenuOpen } = useParams();
 
-  const [clickCount, setClickCount] = useState(0);
-  const singleClickTimerRef = useRef(null);
-
   const onContextMenu = (event) => {
     event.preventDefault();
     // setVisible(true);
@@ -72,10 +69,6 @@ const CustomNode = ({ id, data }) => {
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
-
-      // onTouchStart={() => {
-      //   console.log('hi');
-      // }}
     >
       {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer

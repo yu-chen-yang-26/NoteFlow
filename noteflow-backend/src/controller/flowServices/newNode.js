@@ -4,15 +4,14 @@ import { NodeRepo } from '../../model/mongodb/model/index.js';
 const newNode = async (ctx) => {
   const nodeRepo = new NodeRepo(ctx.session.email);
 
+  let nodeId;
   try {
-    const nodeId = await nodeRepo.newNode();
-
-    ctx.body = { nodeId };
-    ctx.status = CODE.success;
-  } catch (err) {
-    // 在 Model 階段出現任何錯誤
-    ctx.throw(CODE.internal_error, JSON.stringify(err));
-  }
+    nodeId = await nodeRepo.newNode();
+  } catch (e) {}
+  
+  ctx.body = JSON.stringify(nodeId);
+  ctx.status = nodeId ? CODE.success : CODE.internal_error;
+ 
 };
 
 export default newNode;

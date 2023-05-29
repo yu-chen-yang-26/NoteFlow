@@ -4,6 +4,8 @@ services:
   mongo:
     image: mongo:6.0.5
     restart: always
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
@@ -19,6 +21,8 @@ services:
 
   postgres:
     image: "postgres:14.5-alpine"
+    ports:
+      - 5432:5432
     volumes:
       - data:/var/lib/postgresql/data
     environment:
@@ -47,17 +51,10 @@ services:
 
   redis:
     image: "redis:7.0"
+    ports:
+      - 6383:6379
     networks:
       - noteflow
-    ports:
-      - 6380:6379
-
-  redis-session:
-    image: "redis:7.0"
-    networks:
-      - noteflow
-    ports:
-      - 6381:6379
 
   frontend:
     image: "node:lts"

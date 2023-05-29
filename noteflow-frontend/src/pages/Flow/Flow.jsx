@@ -212,7 +212,7 @@ function Flow() {
             },
           },
 
-          type: dragNode.type,
+          type: 'CustomNode',
           position,
           style: defaultNodeStyle,
           class: 'Node',
