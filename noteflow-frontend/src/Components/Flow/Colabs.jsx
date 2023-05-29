@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import './Colabs.scss';
 import instance from '../../API/api';
 import { useTranslation } from 'react-i18next';
+import { useApp } from '../../hooks/useApp';
 
 export default function Colabs({ show, setShow, handleClose, flowId }) {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
   const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState('');
   const [alarms, setAlarms] = useState('');
+  const { user } = useApp();
 
   useEffect(() => {
     if (show) {
@@ -139,21 +141,23 @@ export default function Colabs({ show, setShow, handleClose, flowId }) {
                           className="colab-tags"
                         >
                           {data.email}
-                          <div
-                            onClick={() => {
-                              setAllColabs((state) => {
-                                // 如果是 new，可以直接 filter 掉，
-                                if (state[index].type === 'new') {
-                                  return state.filter((d, i) => i !== index);
-                                }
-                                state[index].type = 'remove';
-                                return state;
-                              });
-                              setRerender((state) => !state);
-                            }}
-                          >
-                            <CloseIcon />
-                          </div>
+                          {data.email !== user.email && (
+                            <div
+                              onClick={() => {
+                                setAllColabs((state) => {
+                                  // 如果是 new，可以直接 filter 掉，
+                                  if (state[index].type === 'new') {
+                                    return state.filter((d, i) => i !== index);
+                                  }
+                                  state[index].type = 'remove';
+                                  return state;
+                                });
+                                setRerender((state) => !state);
+                              }}
+                            >
+                              <CloseIcon />
+                            </div>
+                          )}
                         </div>
                       );
                     }),
