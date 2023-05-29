@@ -42,13 +42,14 @@ jobs:
         location: ${{ env.GKE_ZONE }}
 
     # Build and push the Docker image
-    - name: BuildAndPublish
-      working-directory: ./
-      run: |-
-        bash bind.build.sh
+    #- name: BuildAndPublish
+    #  working-directory: ./
+    #  run: |-
+    #    bash bind.build.sh
 
     # Deploy the Docker image to the GKE cluster
-    #- name: Deploy
-    #  run: |-
-    #    bin/bash k8s_setup.sh
+    - name: Deploy
+      working-directory: ./k8s_deployment/
+      run: |-
+        bash k8s_setup.sh
 
