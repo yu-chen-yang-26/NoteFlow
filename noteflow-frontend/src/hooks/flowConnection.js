@@ -128,7 +128,9 @@ class FlowWebSocket {
         `/user/get-photo-url?email=${deconvert(email)}`,
       );
       if (res.data) {
-        imgElement.src = `/api/${res.data}`;
+        imgElement.src = res.data.startsWith('http')
+          ? res.data
+          : `/api/${res.data}`;
       } else {
         imgElement.src = getRandomPicture(deconvert(email));
       }

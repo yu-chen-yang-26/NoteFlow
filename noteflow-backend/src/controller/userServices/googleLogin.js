@@ -35,7 +35,7 @@ const googleLogin = async (ctx) => {
     await createUserBucket(user.email);
   }
 
-  user.name = `${user.name} ${user.family_name}`;
+  // user.name = `${user.name}`;
 
   ctx.session = {
     logined: true,

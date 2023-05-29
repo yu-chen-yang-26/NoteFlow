@@ -3,45 +3,56 @@
   flex-direction: column;
   width: 100%;
   .header {
+    width: 100%;
     height: 80px;
     padding: 0;
     display: flex;
     align-items: center;
     position: relative;
+    // flex-wrap: wrap;
+    gap: 10px;
 
-    .toolBarButton {
-      border-radius: 15px;
-      border: none;
-    }
+    .left {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex: 1;
 
-    .title-input {
-      width: 35%;
-      margin-left: 10px;
-      margin-bottom: 0;
-      font-size: 30px;
-      font-weight: 700;
-      border: none;
-      background: transparent;
-      color: #1e1e1e;
-
-      &:focus {
-        outline: none;
-        border-bottom: none;
+      .toolBarButton {
+        border-radius: 15px;
+        border: none;
       }
 
-      &:focus + .focus-border {
-        width: 35%;
+      .title-input {
+        width: 100%;
+        // min-width: 15vw;
+        margin-left: 10px;
+        margin-bottom: 0;
+        font-size: 30px;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: #1e1e1e;
+
+        &:focus {
+          outline: none;
+          border-bottom: none;
+        }
+
+        &:focus + .focus-border {
+          width: 25%;
+          transition: 0.4s;
+        }
+      }
+      .focus-border {
+        position: absolute;
+        bottom: 15px;
+        left: 50px;
+        width: 0px;
+        height: 2px;
+        background-color: #7b7b7b;
         transition: 0.4s;
       }
-    }
-    .focus-border {
-      position: absolute;
-      bottom: 15px;
-      left: 50px;
-      width: 0px;
-      height: 2px;
-      background-color: #7b7b7b;
-      transition: 0.4s;
     }
 
     // .active + .focus-border {
@@ -51,43 +62,53 @@
     //   width: 0px;
     //   height: 2px;
     //   background-color: #7b7b7b;
-    //   transition: 0.4s;
+    //   transitio n: 0.4s;
     // }
+    .right {
 
-    .status-holder {
-      min-width: 20px;
-      width: 100px;
-      padding: 5px 0 0 0;
-      // margin
-    }
-
-    .users {
       display: flex;
-      justify-content: center;
       gap: 5px;
-      position: absolute;
-      right: 3vw;
-      bottom: 2vh;
-      width: fit-content;
+      justify-content: flex-end;
+      align-items: center;
+      flex: 2;
 
-      .user {
-        cursor: pointer;
-        border-radius: 50% 50%;
+      .status-holder {
+        min-width: 20px;
+        width: auto;
+        padding: 5px 0 0 0;
+        // margin
+      }
+
+      .users {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        overflow: hidden;
-        img {
-          object-fit: cover;
-          width: 100%;
-        }
+        justify-content: flex-end;
+        gap: 5px;
+        flex-grow: 1;
+        // position: absolute;
+        padding: 0 27px;
+        right: 3vw;
+        bottom: 2vh;
+        width: fit-content;
 
-        &:hover {
-          border: black solid 2px;
-          transition: 0.2s ease-out;
-          transform: scale(130%);
+        .user {
+          cursor: pointer;
+          border-radius: 50% 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          overflow: hidden;
+          img {
+            object-fit: cover;
+            width: 100%;
+          }
+
+          &:hover {
+            border: black solid 2px;
+            transition: 0.2s ease-out;
+            transform: scale(130%);
+          }
         }
       }
     }
@@ -113,65 +134,79 @@
     display: flex;
     align-items: center;
     position: relative;
+    .left {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex: 2;
+      .title-input {
+        width: 100%;
+        margin-left: 10px;
+        margin-bottom: 0;
+        font-size: 30px;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: #1e1e1e;
 
-    .title-input {
-      margin-left: 10px;
-      margin-bottom: 0;
-      font-size: 30px;
-      font-weight: 700;
-      border: none;
-      background: transparent;
-      color: #1e1e1e;
-      width: 50%;
 
-      &:focus {
-        outline: none;
-        border-bottom: none;
+        &:focus {
+          outline: none;
+          border-bottom: none;
+        }
+
+        &:focus + .focus-border {
+          width: 30%;
+          transition: 0.4s;
+        }
       }
-
-      &:focus + .focus-border {
-        width: 50%;
+      .focus-border {
+        position: absolute;
+        bottom: 15px;
+        left: 50px;
+        width: 0px;
+        height: 2px;
+        background-color: #7b7b7b;
         transition: 0.4s;
       }
     }
-    .focus-border {
-      position: absolute;
-      bottom: 15px;
-      left: 50px;
-      width: 0px;
-      height: 2px;
-      background-color: #7b7b7b;
-      transition: 0.4s;
-    }
+    .right {
 
-    .users {
       display: flex;
-      justify-content: center;
       gap: 5px;
-      position: absolute;
-      right: 3vw;
-      bottom: 2vh;
-      width: fit-content;
-      .user {
-        cursor: pointer;
-        border-radius: 50% 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        overflow: hidden;
-        img {
-          object-fit: cover;
-          width: 100%;
-        }
+      justify-content: flex-end;
+      align-items: center;
+      flex: 3;
 
-        &:hover {
-          border: black solid 2px;
-          transition: 0.2s ease-out;
-          transform: scale(130%);
+      .users {
+        display: flex;
+        justify-content: flex-end;
+        gap: 5px;
+        right: 3vw;
+        bottom: 2vh;
+        width: fit-content;
+        .user {
+          cursor: pointer;
+          border-radius: 50% 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          overflow: hidden;
+          img {
+            object-fit: cover;
+            width: 100%;
+          }
+
+          &:hover {
+            border: black solid 2px;
+            transition: 0.2s ease-out;
+            transform: scale(130%);
+          }
         }
       }
+
     }
   }
   .text-editor {
