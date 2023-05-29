@@ -13,10 +13,6 @@ class Node {
     this.updateAt = Date.now();
   }
 
-  validate() {
-    return !this.id || !this.type || !this.owner || !this.colaborators;
-  }
-
   addEditor() {
     const connection = sharedb.connect();
     const doc = connection.get('editor', this.id);

@@ -180,9 +180,24 @@ export default function FlowGrid({ containerRef }) {
       });
     //change Title API
   };
-  document.addEventListener('click', () => {
-    setIsMenuOpen(null);
-  });
+
+  // 長按功能
+  const pressTimer = useRef(null);
+
+  const startPress = (event, flow) => {
+    pressTimer.current = setTimeout(() => {
+      setTarget(event.currentTarget);
+      setIsMenuOpen(flow.id);
+      event.preventDefault();
+      event.stopPropagation();
+    }, 1000);
+  };
+
+  const cancelPress = () => {
+    clearTimeout(pressTimer.current);
+    pressTimer.current = null;
+  };
+
   return loading ? (
     <LoadingScreen />
   ) : (
@@ -257,6 +272,10 @@ export default function FlowGrid({ containerRef }) {
                     event.preventDefault();
                     event.stopPropagation();
                   }}
+                  onTouchStart={(event) => {
+                    startPress(event, flow);
+                  }}
+                  onTouchEnd={cancelPress}
                   key={key}
                 >
                   <FlowButton

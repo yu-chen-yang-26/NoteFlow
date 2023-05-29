@@ -227,6 +227,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
               setStatus(STATE.turb);
             }
           }}
+          on
           placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}

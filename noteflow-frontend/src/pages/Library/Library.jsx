@@ -151,6 +151,15 @@ const Library = () => {
   const search = (key, query) => {
     if (key === 'Enter') {
       setQuery(query);
+      const tempList = nodes.filter((node) => {
+        if (query === '') {
+          return true;
+        }
+        return node.name.includes(query);
+      });
+      if (tempList.length > 0) {
+        setEditorId(tempList[0].id);
+      }
       setIntervalId('');
     }
   };
@@ -189,7 +198,7 @@ const Library = () => {
             if (query === '') {
               return true;
             }
-            return node.name === query;
+            return node.name.includes(query);
           })
           .map((node) => {
             const editTime = getTime(node.updateAt);
@@ -227,7 +236,7 @@ const Library = () => {
           if (query === '') {
             return true;
           }
-          return node.name === query;
+          return node.name.includes(query);
         }).length === 0 ? (
           <div
             style={{

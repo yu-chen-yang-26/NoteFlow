@@ -215,7 +215,7 @@ function Flow() {
             },
           },
 
-          type: dragNode.type,
+          type: 'CustomNode',
           position,
           style: defaultNodeStyle,
           class: 'Node',
@@ -273,14 +273,9 @@ function Flow() {
         if (!(email in record)) {
           record[email] = true;
           FlowWebSocket.createInstance(email, 'sub-flow').then((instance) => {
-            const oldInstance = document.querySelector('.sub-flow');
+            const oldInstance = document.getElementById(`sub-flow-${email}`);
             if (oldInstance) {
-              const parent = oldInstance.parentNode;
-              if (parent) {
-                while (parent.firstChild) {
-                  parent.removeChild(parent.firstChild);
-                }
-              }
+              subRef.current.removeChild(oldInstance);
             }
             instance.onclick = (e) => {
               const { xPort, yPort } = tracker[email];
@@ -460,6 +455,7 @@ function Flow() {
     zoom = 2;
     setEditorId(node.editorId);
     // setLastSelectedNode(node.id);
+    setNodeIsEditing(node.id);
     setLastSelectedEdge(null);
     setIsEdit(true);
   });
@@ -492,7 +488,7 @@ function Flow() {
   }, [x, y, flowWebSocket]);
 
   useEffect(() => {
-    if (changeLabelId.id) {
+    if (changeLabelId.id && flowWebSocket) {
       const param = [
         {
           id: changeLabelId.id,
@@ -505,7 +501,9 @@ function Flow() {
   }, [changeLabelId, flowWebSocket]);
 
   useEffect(() => {
-    if (changeStyleContent) {
+    console.log('changeLabelId: ', changeLabelId);
+    console.log('flowWebSocket: ', flowWebSocket);
+    if (changeStyleContent && flowWebSocket) {
       const param = [
         {
           id: changeStyleId,
@@ -669,6 +667,7 @@ function Flow() {
           >
             <Node
               nodeId={editorId}
+              setNodeIsEditing={setNodeIsEditing}
               setIsEdit={setIsEdit}
               nodeWidth={nodeWidth}
             />

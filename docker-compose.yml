@@ -4,6 +4,8 @@ services:
   mongo:
     image: mongo:6.0.5
     restart: always
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
@@ -19,8 +21,10 @@ services:
 
   postgres:
     image: "postgres:14.5-alpine"
-    # volumes:
-    #   - data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
@@ -47,33 +51,26 @@ services:
 
   redis:
     image: "redis:7.0"
+    ports:
+      - 6383:6379
+    networks:
+      - noteflow
+
+  frontend:
+    image: "node:lts"
+    working_dir: /frontend
+    command: sh -c "yarn && yarn build && yarn vite"
     networks:
       - noteflow
     ports:
-      - 6380:6379
-
-  # redis-session:
-  #   image: "redis:7.0"
-  #   networks:
-  #     - noteflow
-  #   ports:
-  #     - 6381:6379
-
-  # frontend:
-  #   image: "node:lts"
-  #   working_dir: /frontend
-  #   command: sh -c "yarn && yarn build && yarn preview"
-  #   networks:
-  #     - noteflow
-  #   ports:
-  #     - $FRONTEND_EXPOSE_PORT:$FRONTEND_EXPOSE_PORT
-  #   environment:
-  #     VITE_NOTEFLOW_BACKEND: $NOTEFLOW_BACKEND
-  #     VITE_NOTEFLOW_PORT: $BACKEND_EXPOSE_PORT
-  #     VITE_DEV: $VITE_DEV
-  #     FRONTEND_EXPOSE_PORT: $FRONTEND_EXPOSE_PORT
-    # volumes:
-    #   - ./noteflow-frontend:/frontend
+      - $FRONTEND_EXPOSE_PORT:$FRONTEND_EXPOSE_PORT
+    environment:
+      VITE_NOTEFLOW_BACKEND: $NOTEFLOW_BACKEND
+      VITE_NOTEFLOW_PORT: $BACKEND_EXPOSE_PORT
+      VITE_DEV: $VITE_DEV
+      FRONTEND_EXPOSE_PORT: $FRONTEND_EXPOSE_PORT
+    volumes:
+      - ./noteflow-frontend:/frontend
 
   backend:
     image: "node:lts"

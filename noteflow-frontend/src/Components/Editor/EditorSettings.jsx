@@ -5,12 +5,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import './EditorSettings.scss';
 import instance from '../../API/api';
+import { useApp } from '../../hooks/useApp';
+import { useTranslation } from 'react-i18next';
 
 const Settings = ({ editorId, setShowSettings }) => {
   const [allColabs, setAllColabs] = useState(null);
   const [rerender, setRerender] = useState(false);
   const [colabInput, setColabInput] = useState('');
   const [alarms, setAlarms] = useState('');
+  const { user } = useApp();
+  const { t } = useTranslation();
 
   useEffect(() => {
     instance
@@ -47,7 +51,10 @@ const Settings = ({ editorId, setShowSettings }) => {
             }
           });
           setAllColabs(res.data);
-          setShowSettings(false);
+          if (canClose) {
+            // setShow(false);
+            setShowSettings(false);
+          }
         }
       })
       .catch((e) => {
@@ -80,9 +87,9 @@ const Settings = ({ editorId, setShowSettings }) => {
   return (
     <div className="editor-settings">
       <div className="share-box">
-        <div className="title">
-          <h2> 共用 「筆記本」</h2>
-        </div>
+        {/* <div className="title"> */}
+        <h2> {t('Share Node')}</h2>
+        {/* </div> */}
         <TextField
           margin="normal"
           // required
@@ -93,7 +100,7 @@ const Settings = ({ editorId, setShowSettings }) => {
           id="colabs"
           size="small"
           value={colabInput}
-          placeholder="新增使用者"
+          // placeholder="新增使用者"
           onChange={(e) => {
             setColabInput(e.target.value);
           }}
@@ -114,68 +121,69 @@ const Settings = ({ editorId, setShowSettings }) => {
             style: {
               display: 'flex',
               flexWrap: 'wrap',
-              position: 'relative',
-              height: '100%',
+              // position: 'relative',
+              // height: '100%',
             },
             startAdornment:
-              allColabs === null ? undefined : (
-                <div
-                  className="adorment"
-                  style={{
-                    marginRight: '10px',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    height: '70%',
-                    width: 'calc(100% - 5px)',
-                    overflowY: 'scroll',
-                  }}
-                >
-                  {allColabs.map((data, index) => {
+              allColabs === null
+                ? undefined
+                : //  (
+                  // <div
+                  //   className="adorment"
+                  //   style={{
+                  //     marginRight: '10px',
+                  //     display: 'flex',
+                  //     flexWrap: 'wrap',
+                  //     height: '70%',
+                  //     width: 'calc(100% - 5px)',
+                  //     overflowY: 'scroll',
+                  //   }}
+                  // >
+                  // {
+                  allColabs.map((data, index) => {
                     return data.type === 'remove' ? (
-                      <div
-                        id={`colab-node-${index}`}
-                        key={`colab-node-${index}`}
-                        style={{ display: 'none' }}
-                      ></div>
+                      // <div
+                      //   id={`colab-node-${index}`}
+                      //   key={`colab-node-${index}`}
+                      //   style={{ display: 'none' }}
+                      // ></div>
+                      <></>
                     ) : (
                       <div
                         id={`colab-node-${index}`}
                         key={`colab-node-${index}`}
                         className="colab-tags"
-                        style={{
-                          borderRadius: '20px',
-                          boxShadow: '2px 2px 2px 1px rgba(0, 0, 0, 0.2)',
-                          backgroundColor: '#bae0ff',
-                          margin: '0 5px',
-                        }}
                       >
                         {data.email}
-                        <div
-                          onClick={() => {
-                            setAllColabs((state) => {
-                              // 如果是 new，可以直接 filter 掉，
-                              if (state[index].type === 'new') {
-                                return state.filter((d, i) => i !== index);
-                              }
-                              state[index].type = 'remove';
-                              return state;
-                            });
-                            setRerender((state) => !state);
-                          }}
-                          style={{
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <CloseIcon />
-                        </div>
+                        {data.email !== user.email && (
+                          <div
+                            onClick={() => {
+                              setAllColabs((state) => {
+                                // 如果是 new，可以直接 filter 掉，
+                                if (state[index].type === 'new') {
+                                  return state.filter((d, i) => i !== index);
+                                }
+                                state[index].type = 'remove';
+                                return state;
+                              });
+                              setRerender((state) => !state);
+                            }}
+                            // style={{
+                            //   cursor: 'pointer',
+                            //   display: 'flex',
+                            //   alignItems: 'center',
+                            //   justifyContent: 'center',
+                            // }}
+                          >
+                            <CloseIcon />
+                          </div>
+                        )}
                       </div>
                     );
-                  })}
-                </div>
-              ),
+                  }),
+            // }
+            // </div>
+            // ),
           }}
         />
         <div
@@ -206,7 +214,7 @@ const Settings = ({ editorId, setShowSettings }) => {
             }}
           >
             <LinkIcon />
-            複製連結
+            {t('Copy Link')}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -221,7 +229,7 @@ const Settings = ({ editorId, setShowSettings }) => {
               textTransform: 'none',
             }}
           >
-            完成
+            {t('Done')}
           </Button>
         </div>
       </div>

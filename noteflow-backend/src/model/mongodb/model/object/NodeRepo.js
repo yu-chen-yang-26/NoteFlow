@@ -5,9 +5,6 @@ import Node from './Node.js';
 
 class NodeRepo {
   constructor(user) {
-    if (!/@/.test(user)) {
-      throw Error('User needs to be an email.');
-    }
     this.user = user;
     this.nodes = [];
   }
