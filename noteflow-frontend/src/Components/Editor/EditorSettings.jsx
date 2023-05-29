@@ -85,7 +85,7 @@ const Settings = ({ editorId, setShowSettings }) => {
     <div className="editor-settings">
       <div className="share-box">
         {/* <div className="title"> */}
-        <h2> 共用 「筆記本」</h2>
+        <h2>Share Node</h2>
         {/* </div> */}
         <TextField
           margin="normal"
