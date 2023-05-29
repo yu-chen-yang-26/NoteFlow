@@ -44,7 +44,7 @@ jobs:
     - name: BuildAndPublish
       working-directory: ./
       run: |-
-        bin/bash bind.build.sh
+        bash bind.build.sh
 
     # Deploy the Docker image to the GKE cluster
     #- name: Deploy
