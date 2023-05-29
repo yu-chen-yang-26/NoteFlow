@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import './EditorSettings.scss';
 import instance from '../../API/api';
 import { useApp } from '../../hooks/useApp';
+import { useTranslation } from 'react-i18next';
 
 const Settings = ({ editorId, setShowSettings }) => {
   const [allColabs, setAllColabs] = useState(null);
@@ -13,7 +14,7 @@ const Settings = ({ editorId, setShowSettings }) => {
   const [colabInput, setColabInput] = useState('');
   const [alarms, setAlarms] = useState('');
   const { user } = useApp();
-
+  const { t } = useTranslation();
   useEffect(() => {
     instance
       .get(`/nodes/get-colab-list?id=${editorId}`)
@@ -85,7 +86,7 @@ const Settings = ({ editorId, setShowSettings }) => {
     <div className="editor-settings">
       <div className="share-box">
         {/* <div className="title"> */}
-        <h2>Share Node</h2>
+        <h2> {t('Share Node')}</h2>
         {/* </div> */}
         <TextField
           margin="normal"
@@ -210,7 +211,7 @@ const Settings = ({ editorId, setShowSettings }) => {
             }}
           >
             <LinkIcon />
-            複製連結
+            {t('Copy Link')}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -225,7 +226,7 @@ const Settings = ({ editorId, setShowSettings }) => {
               textTransform: 'none',
             }}
           >
-            完成
+            {t('Done')}
           </Button>
         </div>
       </div>
