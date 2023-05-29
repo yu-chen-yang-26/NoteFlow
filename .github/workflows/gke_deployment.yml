@@ -7,7 +7,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT_ID }}
   GKE_CLUSTER: nodeflowcluster-a1    # TODO: update to cluster name
-  GKE_ZONE: asia-east-1   # TODO: update to cluster zone
+  GKE_ZONE: asia-east1   # TODO: update to cluster zone
   DEPLOYMENT_NAME: GitHub_k8s_deploy # TODO: update to deployment name
   
 jobs:
