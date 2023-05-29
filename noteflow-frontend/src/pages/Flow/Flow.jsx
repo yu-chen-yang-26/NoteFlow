@@ -483,7 +483,7 @@ function Flow() {
   }, [x, y, flowWebSocket]);
 
   useEffect(() => {
-    if (changeLabelId.id) {
+    if (changeLabelId.id && flowWebSocket) {
       const param = [
         {
           id: changeLabelId.id,
@@ -496,7 +496,9 @@ function Flow() {
   }, [changeLabelId, flowWebSocket]);
 
   useEffect(() => {
-    if (changeStyleContent) {
+    console.log('changeLabelId: ', changeLabelId);
+    console.log('flowWebSocket: ', flowWebSocket);
+    if (changeStyleContent && flowWebSocket) {
       const param = [
         {
           id: changeStyleId,

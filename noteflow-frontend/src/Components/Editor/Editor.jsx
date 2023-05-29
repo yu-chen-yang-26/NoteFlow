@@ -232,7 +232,7 @@ const Editor = ({ handleDrawerClose, editorId }) => {
               setStatus(STATE.turb);
             }
           }}
-          onChangeSelection={(prev) => console.log(prev)}
+          on
           placeholder={'Write something awesome...'}
           modules={modules}
           formats={formats}
