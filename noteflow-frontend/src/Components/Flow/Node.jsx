@@ -51,21 +51,6 @@ const CustomNode = ({ id, data }) => {
     setNodeMenuOpen(null);
   };
 
-  // 長按功能
-  const pressTimer = useRef(null);
-
-  const startPress = (event) => {
-    pressTimer.current = setTimeout(() => {
-      console.log('hi');
-      onContextMenu(event);
-    }, 1000);
-  };
-
-  const cancelPress = () => {
-    clearTimeout(pressTimer.current);
-    pressTimer.current = null;
-  };
-
   // useEffect(() => {
   //   const element = document.getElementById(`react-node-${id}`);
   //   element.addEventListener('touchstart', () => {
@@ -84,18 +69,6 @@ const CustomNode = ({ id, data }) => {
       // id={`react-node-${id}`}
       id={id}
       onContextMenu={onContextMenu}
-      // onMouseDown={(event) => {
-      //   startPress(event);
-      // }}
-      // onMouseUp={cancelPress}
-      onTouchStart={(event) => {
-        startPress(event);
-      }}
-      onTouchEnd={cancelPress}
-
-      // onTouchStart={() => {
-      //   console.log('hi');
-      // }}
     >
       {/* <div id={id} onDoubleClick={onContextMenu}> */}
       <NodeResizer
