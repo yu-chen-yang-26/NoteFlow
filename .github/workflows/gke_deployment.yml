@@ -32,7 +32,7 @@ jobs:
 
     - name: Docker configuration
       run: |-
-        docker login -u jounglab112a@gmail.com --password-stdin ilovejoung112A
+        docker login -u jounglab112a@gmail.com --password-stdin $('ilovejoung112A')
         
     # Get the GKE credentials so we can deploy to the cluster
     - name: Set up GKE credentials
