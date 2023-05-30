@@ -12,10 +12,10 @@ services:
       MONGO_NOTEFLOW_USERNAME: $MONGO_NOTEFLOW_USERNAME
       MONGO_NOTEFLOW_PASSWORD: $MONGO_NOTEFLOW_PASSWORD
       MONGO_INITDB_DATABASE: $MONGO_DB
-    # volumes:
-    #   - noteflow_data:/data/db
-    #   - noteflow_config:/data/configdb
-    #   - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    volumes:
+      - noteflow_data:/data/db
+      - noteflow_config:/data/configdb
+      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - noteflow
 
@@ -59,7 +59,7 @@ services:
   frontend:
     image: "node:lts"
     working_dir: /frontend
-    command: sh -c "yarn && yarn vite"
+    command: sh -c "yarn && yarn dev"
     networks:
       - noteflow
     ports:
