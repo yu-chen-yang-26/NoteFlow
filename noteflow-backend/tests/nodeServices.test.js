@@ -189,6 +189,13 @@ describe('Library functionality test', () => {
     nodeId = JSON.parse(res.text);
   });
 
+  it('api: /api/library', async () => {
+    await instance.get('/api/library').send();
+    const res = await instance.get(`/api/library`).send();
+
+    expect(res.status).equal(200);
+  });
+
   it('api: /api/library/is-favorite', async () => {
     await instance.get('/api/library/is-favorite').expect(422).send();
     const res = await instance

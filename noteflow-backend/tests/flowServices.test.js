@@ -93,6 +93,13 @@ describe('Real flow service🌼', () => {
     flowId = JSON.parse(res.text);
   });
 
+  it('api: /api/flows(empty)', async () => {
+    // await instance.get('/api/flows').expect(422).send();
+
+    const res2 = await instance.get(`/api/flows`).send();
+    expect(res2.status).equal(204);
+  });
+
   it('api: /api/flows/get-colab-list', async () => {
     await instance.get('/api/flows/get-colab-list').expect(422).send();
 
@@ -103,9 +110,19 @@ describe('Real flow service🌼', () => {
     expect(res2.text).equal(`["${info.email}"]`);
   });
 
-  // it('api: /api/flows/revise-colab-list', async () => {
-  //   await instance.get('/api/nodes/get-colab-list').expect(422).send();
-  // })
+  it('api: /api/flows/revise-colab-list(insufficient)', async () => {
+    await instance.get('/api/nodes/get-colab-list').expect(422).send();
+
+    const res2 = await instance.post(`/api/flows/revise-colab-list`).send();
+    expect(res2.status).equal(422);
+  });
+
+  it('api: /api/flows/get-title(error)', async () => {
+    await instance.get('/api/flows/get-title').expect(422).send();
+    const res = await instance.get(`/api/flows/get-title?id=-1`).send();
+
+    expect(res.status).equal(500);
+  });
 
   it('api: /api/flows/get-title', async () => {
     await instance.get('/api/flows/get-title').expect(422).send();

@@ -77,6 +77,30 @@ describe('user routine process', function () {
     expect(res.status).equal(200);
   });
 
+  it('api: /api/user/login(interal error)', async () => {
+    const { name, email, password } = info;
+    const res = await request(server)
+      .post('/api/user/login')
+      .send({
+        olduser: {
+
+        },
+      });
+    expect(res.status).equal(422);
+  });
+
+  it('api: /api/user/google-login(not provide)', async () => {
+    const {name, email} = googler;
+    const res = await request(server)
+      .post('/api/user/google-login')
+      .send({
+        notUser:{
+
+        }
+      });
+      expect(res.statusCode).equal(422);
+  });
+
   it('api: /api/user/google-login(new comer)', async () => {
     const {name, email} = googler;
     const res = await request(server)
@@ -102,6 +126,58 @@ describe('user routine process', function () {
       });
       expect(res.statusCode).equal(200);
   });
+
+  it('api: /api/user/reset-password-send-email(insufficient)', async () => {
+    const {name, email} = googler;
+    const res = await request(server)
+      .post('/api/user/reset-password-send-email')
+      .send({
+        email: ""
+      });
+      expect(res.statusCode).equal(422);
+  });
+
+  it('api: /api/user/reset-password-send-email(not found)', async () => {
+    const res = await request(server)
+      .post('/api/user/reset-password-send-email')
+      .send({
+        email: "aaaccc@gmail.com"
+      });
+      expect(res.statusCode).equal(404);
+  });
+
+  it('api: /api/user/reset-password-renew(timeout)', async () => {
+    const res = await request(server)
+    .post('/api/user/reset-password-renew')
+    .send({
+      email: "aaaccc@gmail.com"
+    });
+
+    expect(res.status).equal(408);
+  });
+
+  it('api: /api/user/reset-password-send-email', async () => {
+    const res = await request(server)
+    .post('/api/user/reset-password-send-email')
+    .send({
+      email: "1234@gmail.com"
+    });
+
+    expect(res.status).equal(200);
+  });
+
+  it('api: /api/user/reset-password-auth', async () => {
+    const res = await request(server)
+    .post('/api/user/reset-password-auth')
+    .send({
+      token: "1234@gmail.com",
+      email: "1234@gmail.com"
+    });
+
+    expect(res.status).equal(408);
+  });
+
+
 });
 
 describe('REAL user service, session withregarding', function () {
@@ -144,6 +220,18 @@ describe('REAL user service, session withregarding', function () {
     expect(res.text).equal(`{"email":"test123@gmail.com","logined":true,"name":"test","picture":null}`)
   });
 
+
+  it('api: /api/user/reset-password-renew(unauthorized)', async () => {
+    const res = await request(server)
+    .post('/api/user/reset-password-renew')
+    .send({
+      oldPassword: "123",
+      newPassword: "456"
+    });
+
+    expect(res.status).equal(408);
+  });
+
   it('api: /api/user/get-photo-url', async () => {
 
     const {email} = info;
@@ -165,7 +253,7 @@ describe('REAL user service, session withregarding', function () {
 
     const { email } = info;
     const res2 = await instance.get(`/api/user/get-photo-url?email=${email}`).send();
-    
+
 
     expect(res1.status).equal(200, "set photo not succeeded");
     expect(res2.status).equal(200, "get photo not succeeded");
@@ -173,7 +261,7 @@ describe('REAL user service, session withregarding', function () {
     expect(/^"test123@gmail.com/.test(res2.text)).equal(true);
 
     const res3 = await instance.get('/api/user/get-photo-url').send();
-    
+
     expect(res3.text).equal(res2.text);
   });
 
@@ -181,3 +269,14 @@ describe('REAL user service, session withregarding', function () {
     await instance.post('/api/user/logout').send();
   });
 });
+
+describe('error condition', function(){
+
+  it('api: /user/login(error)', async () => {
+    const res = await request(server)
+    .post('/user/login')
+    .send();
+  });
+
+
+})
