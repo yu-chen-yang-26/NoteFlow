@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: 軟體開發方法-第五組 noteflow
+  title: 軟體開發方法-第六組 noteflow
   description: 詳情請查閱 [Github noteflow-backend](https://github.com/vnaticzhock/noteflow-backend)
   version: "0.1"
 servers:
@@ -24,6 +24,7 @@ paths:
               text/plain:
                 example:
                   ok
+                  
   /api/hello-world:
     get:
       summary: health check
@@ -62,7 +63,7 @@ paths:
                   password: test
       responses:
         '200':
-          description: successful login
+          description: successful registered
           content:
             application/json:
               schema:
@@ -89,53 +90,10 @@ paths:
               example:
                 errors:
                   Forbidden, you already have  an email.
-  /api/user/verify/{userId}/{token}:
-    get:
-      summary: 使用者用email 進行認證
-      tags:
-          - user
-      parameters:
-        - in: path
-          name: userId
-          schema:
-            type: integer
-          required: true
-          description: userId
-          example:
-            userId: 1
-        - in: path
-          name: token
-          schema:
-            type: integer
-          required: true
-          description: hash token
-          example:
-            token: test
-      responses:
-        '200':
-          description: successful verify
-          content:
-            application/json:
-              example:
-                user:
-                  name: test
-                  email: test@gmail.com
-                  uuid: fd16ffe2-61a7-4c61-8693-009428a3b43a
-                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20ifSwiaWF0IjoxNjgxMTMxMjgxLCJleHAiOjE2ODE3MzYwODF9.iUOMcH_ltO42896ruTL5KA9eRokVbte0ByAreH0L0TE
-        '400':
-          description: bad request
   /api/user/login:
-    get:
-      summary: 登入畫面
-      tags:
-        - user
-      responses:
-        '200':
-          description: 進入登入畫面
-        '404':
-          description: not found
     post:
       summary: 登入
+      description: 登入
       tags:
         - user
       requestBody:
@@ -145,15 +103,12 @@ paths:
             schema:
               type: object
               properties:
-                name:
-                  type: string
                 email:
                   type: string
                 password:
                   type: string
               example:
                 user:
-                  name: test
                   email: test@gmail.com
                   password: test
       responses:
@@ -179,42 +134,7 @@ paths:
               example:
                 errors:
                     email or password input error
-  /api/user/google-login:
-    post:
-      summary: 使用google-login登入(undone)
-      tags:
-        - user
-      requestBody:
-        required: true
-        content:
-          application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-              example:
-                user:
-                  email: test@gmail.com
-      responses:
-        '200':
-          description: successful login
-          content:
-            application/json:
-              example:
-                user:
-                  id: 2
-                  email: 'test@gmail.com'
-                  name: 'test'
-                  password: '$argon2id$v=19$m=65536,t=3,p=4$0BjJneCLlW11ZlCj6k62IA$bTQ9YgkdgU4bE4jgnqZrAO1qk68edZaAOxsoEltDTE8'
-                  created_at: '2023-04-10T12:41:17.148Z'
-                  updated_at: '2023-04-10T12:41:17.148Z'
-        '400':
-          description: Bad request.
-          content:
-            application/json:
-              example:
-                errors: You didn't provide user column.
+  
   /api/user/update:
     post:
       summary: update user name
@@ -268,28 +188,47 @@ paths:
 
   /api/user/logout:
     post:
-      summary: 登出(undone)
-      description: 登出(undone)
+      summary: 登出
+      description: 登出
       tags:
         - user
       responses:
         '200':    # status code
-          description: A JSON array of user names
+          description: Successful logout
+
+  /api/user/get-photo-url:
+    get:
+      summary: 獲取使用者的照片連結
+      description: 獲取使用者的照片連結
+      tags:
+        - user
+      responses:
+        '200':
+          description: Successful fetch
           content:
             application/json:
               schema:
                 type: object
                 items:
                   type: string
+
+  
   /api/flows:
     get:
-        summary: flows(undone)
-        description: flows(undone)
+        summary: 獲取全部的 flows
+        description: 獲取全部的 flows
         tags:
           - flows
+        parameters:
+          - name: page
+            in: query
+            description: 第幾次刷新(從零開始計數)
+            required: true
+            schema:
+              type: integer
         responses:
           '200':    # status code
-            description: flows
+            description: Successful fetch flows
             content:
               application/json:
                 schema:
@@ -302,36 +241,154 @@ paths:
               application/json:
                 example:
                   errors: Unauthorized. You haven't log in yet.
+
+  /api/flows/get-colab-list:
+    get:
+        summary: get who is authorized to enter into the flow
+        description: get who is authorized to enter into the flow
+        tags:
+          - flows
+        responses:
+          '200':
+            description: successfully fetch colab list of a flow
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    items:
+                      type: string
+          '404':
+            description: flow not found
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    items:
+                      type: string
+
+  /api/flows/get-title:
+    get:
+      summary: 獲得特定 flow 的 title
+      tags:
+        - flows
+      parameters:
+        - name: page
+          in: query
+          description: 第幾次刷新(從零開始計數)
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200': 
+          description: 成功獲取 title
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+                  
+  /api/flows/set-title:
+    post: 
+      summary: 更改特定 flow 的 title (undone)
+      tags:
+        - flows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+              example:
+                id: test@gmail.com-flow-00000-00000-0000
+                title: test-flow
+      responses:
+        '200':
+          description: successful set flow name
+          content:
+            application/json:
+              schema:
+                type: boolean
+                items:
+                  type: string
+              example:
+                
+
+  
   /api/flows/create:
     post:
-        summary: flows(undone)
-        description: flows(undone)
-        tags:
-          - flows
-        responses:
-          '200':    # status code
-            description: flows
-            content:
-              application/json:
-                schema:
-                  type: object
-                  items:
-                    type: string
-          '401':
-            description: Unauthorized. You haven't log in yet.
-            content:
-              application/json:
-                example:
-                  errors: Unauthorized. You haven't log in yet.
+      summary: 新增一個 Flow 到使用者的 Flow 倉庫中 (undone)
+      tags:
+        - flows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              example:
+                user:
+                  name: test
+                  email: test@gmail.com
+                  password: test
+      responses:
+        '200':    # status code
+          description: 成功獲取收藏
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+        '500':
+          description: 內部伺服器錯誤
+  
+  /api/flows/delete-flow:
+    post:
+      summary: 刪除 Flow
+      tags:
+        - flows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              example:
+                id: test@gmail.com-flow-00000-00000-0000-0000
+      responses:
+        '200':    # status code
+          description: 成功刪除 flow
+        '401':
+          description: 你並未被授權刪除這個 flow
+        '500':
+          description: 內部伺服器錯誤
+      
   /api/library:
     get:
-        summary: get library(undone)
-        description: get library(undone)
+        summary: get library
+        description: get library
         tags:
-          - flows
+          - library
         responses:
           '200':    # status code
-            description: flows
+            description: successfully get library
             content:
               application/json:
                 schema:
@@ -350,24 +407,3 @@ paths:
               application/json:
                 example:
                   errors: Error.
-  /api/nodes/new-node:
-    post:
-        summary: get new node(undone)
-        description: get new node(undone)
-        tags:
-          - flows
-        responses:
-          '200':    # status code
-            description: flows
-            content:
-              application/json:
-                schema:
-                  type: object
-                  items:
-                    type: string
-          '401':
-            description: Unauthorized. You haven't log in yet.
-            content:
-              application/json:
-                example:
-                  errors: Unauthorized. You haven't log in yet.
