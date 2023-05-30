@@ -54,6 +54,7 @@ function Flow() {
   const nodeId = useRef(0);
   const edgeId = useRef(0);
   const subRef = useRef(null);
+  const miniRef = useRef();
 
   const [bgVariant, setBgVariant] = useState('line');
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -64,7 +65,7 @@ function Flow() {
   const [isEdit, setIsEdit] = useState(false);
   const [nodeWidth, setNodeWidth] = useState(window.innerWidth * 0.4);
   const [editorId, setEditorId] = useState(null);
-  const { flowWebSocket, renewFlowWebSocket } = usePageTab();
+  const { flowWebSocket, renewFlowWebSocket, renameTab } = usePageTab();
   const [isNodeBarOpen, setIsNodeBarOpen] = useState(false);
   const [dragNode, setDragNode] = useState({});
   const [changeLabelId, setChangeLabelId] = useState({ id: null, label: null });
@@ -275,7 +276,6 @@ function Flow() {
               subRef.current.removeChild(oldInstance);
             }
             instance.onclick = (e) => {
-              console.log(e);
               const { xPort, yPort } = tracker[email];
               rfInstance.setViewport({ x: -xPort, y: -yPort, zoom: 1 });
             };
@@ -319,6 +319,9 @@ function Flow() {
         }
       },
       trackerCallback,
+      (title) => {
+        renameTab(flowId, title);
+      },
     );
     renewFlowWebSocket(flowConnection);
 
@@ -397,7 +400,7 @@ function Flow() {
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        const editorId = res.data.nodeId;
+        const editorId = res.data;
         const newNode = {
           id: nodeId.current.toString(),
           data: {
@@ -496,8 +499,6 @@ function Flow() {
   }, [changeLabelId, flowWebSocket]);
 
   useEffect(() => {
-    console.log('changeLabelId: ', changeLabelId);
-    console.log('flowWebSocket: ', flowWebSocket);
     if (changeStyleContent && flowWebSocket) {
       const param = [
         {
@@ -638,7 +639,7 @@ function Flow() {
             isEdit={isEdit}
           />
           {/* {isStyleBarOpen ? <StyleBar isOpen={isStyleBarOpen} /> : null} */}
-          <MiniMap nodeStrokeWidth={10} zoomable pannable />
+          <MiniMap ref={miniRef} nodeStrokeWidth={10} zoomable pannable />
           <Controls />
           <Background color="#ccc" variant={bgVariant} />
         </ReactFlow>

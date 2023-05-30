@@ -32,7 +32,7 @@ jobs:
 
     - name: Docker configuration
       run: |-
-        docker login -u jounglab112a@gmail.com --password-stdin ilovejoung112A
+         echo ${{steps.auth.outputs.access_token}} | docker login -u jounglab112a --password ilovejoung112A
         
     # Get the GKE credentials so we can deploy to the cluster
     - name: Set up GKE credentials
@@ -48,7 +48,8 @@ jobs:
         bash bind.build.sh
 
     # Deploy the Docker image to the GKE cluster
-    #- name: Deploy
-    #  run: |-
-    #    bin/bash k8s_setup.sh
+    - name: Deploy
+      working-directory: ./k8s_deployment/
+      run: |-
+        bash k8s_setup.sh
 

@@ -18,7 +18,6 @@ const register = async (ctx) => {
 
   // create User
   const result = await db('users').first().where({ email: user.email });
-  console.log(result);
   ctx.assert(
     !result,
     CODE.unauthorized,

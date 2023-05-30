@@ -68,6 +68,7 @@ export default function ToolBar({
         >
           <BsNodePlus size={18} />
         </Button>
+        {/* 調色盤，需要 handleClick */}
         <Button variant="dark" onClick={handleClick} className="toolBarButton">
           <BsPalette size={18} />
         </Button>

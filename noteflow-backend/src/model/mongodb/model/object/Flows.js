@@ -133,7 +133,7 @@ class Flows {
     //   user: owner,
     //   'flows.id': flowId,
     // });
-    // console.log(result.lastErrorObject.updatedExisting);
+
     const result = await collection.updateOne(
       { user: owner },
       { $pull: { flows: { id: flowId } } },
