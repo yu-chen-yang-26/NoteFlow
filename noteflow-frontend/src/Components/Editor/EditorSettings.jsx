@@ -73,8 +73,6 @@ const Settings = ({ editorId, setShowSettings }) => {
 
   useEffect(() => {
     if (allColabs) {
-      console.log('hi');
-      console.log(allColabs);
       allColabs.forEach((data, index) => {
         const each = document.querySelector(`#colab-node-${index}`);
         if (data.status === 200) {
