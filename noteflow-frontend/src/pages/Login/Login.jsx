@@ -73,6 +73,8 @@ const Login = () => {
           setAlarms('*Account or password error');
         } else if (Math.floor(e.response.status / 100) === 5) {
           setAlarms('*Internal server error');
+        } else if (e.response.status === 404) {
+          setAlarms('*This account does not exist');
         }
       });
   };

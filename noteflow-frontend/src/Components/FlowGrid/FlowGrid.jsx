@@ -112,15 +112,12 @@ export default function FlowGrid({ containerRef }) {
     addTab({
       type: 'flow',
       objectId: flow.id,
-      name: flow.name ? flow.name : 'UnTitled',
+      name: flow.name ? flow.name : 'Untitled',
     }); // name 應該在 flows/create 拿
     navigateTo(`/flow?id=${flow.id}`);
   };
   const handleCloseContextMenu = (event) => {
-    console.log('click away');
     setTarget(null);
-    setFocus(null);
-    // setIsMenuOpen(false);
   };
 
   const deleteFlow = (id) => {
@@ -222,11 +219,11 @@ export default function FlowGrid({ containerRef }) {
                 variant="standard"
                 label={t('Flow Name')}
                 multiline
-                value={focus.value}
+                value={focus.title}
                 onChange={(event) => {
                   setFocus((state) => {
                     state.title = event.target.value;
-                    return state;
+                    return JSON.parse(JSON.stringify(state));
                   });
                 }}
               />
@@ -251,7 +248,6 @@ export default function FlowGrid({ containerRef }) {
           className={`${isMobile ? 'flow-container-mobile' : 'flow-container'}`}
         >
           {flows.map((flow, key) => {
-            console.log('flow', flow);
             const date = new Date();
             date.setTime(flow.updateAt);
             const formattedDate = date.toLocaleString();
@@ -260,6 +256,10 @@ export default function FlowGrid({ containerRef }) {
                 className="grid-item"
                 onContextMenu={(event) => {
                   setTarget(event.currentTarget);
+                  setFocus({
+                    id: flow.id,
+                    title: flow.name,
+                  });
                   // setIsMenuOpen((prev) => !prev);
                   event.preventDefault();
                   event.stopPropagation();
@@ -318,10 +318,6 @@ export default function FlowGrid({ containerRef }) {
                   >
                     <MenuItem
                       onClick={() => {
-                        setFocus({
-                          id: flow.id,
-                          title: flow.name,
-                        });
                         setIsChangeTitleOpen(true);
                       }}
                     >
@@ -329,10 +325,6 @@ export default function FlowGrid({ containerRef }) {
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
-                        setFocus({
-                          id: flow.id,
-                          title: flow.name,
-                        });
                         setIsAlertOpen(true);
                       }}
                     >
@@ -343,12 +335,29 @@ export default function FlowGrid({ containerRef }) {
               </div>
             );
           })}
-
           {containerRef?.current && (
             <BackToTopButton containerRef={containerRef} />
           )}
         </div>
       )}
+      <ClickAwayListener onClickAway={handleCloseContextMenu} key={-1}>
+        <Menu
+          // autoFocusItem={open}
+          open={true}
+          anchorEl={target}
+          anchorOrigin={{
+            vertical: 'center',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          style={{
+            display: 'none',
+          }}
+        ></Menu>
+      </ClickAwayListener>
       <div className="loading-checkpoint" ref={loadingCheckPointRef}>
         CHECKPOINT
       </div>
