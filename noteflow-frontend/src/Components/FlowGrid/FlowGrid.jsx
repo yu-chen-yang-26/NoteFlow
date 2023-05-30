@@ -32,18 +32,14 @@ export default function FlowGrid({ containerRef }) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   // 按右鍵的時候會出現的 menu
-  const [isMenuOpen, setIsMenuOpen] = useState(null);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
   // 刪除 flow 會出現的警告
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   // 更改 flow 名稱時的警告
   const [isChangeTitleOpen, setIsChangeTitleOpen] = useState(false);
 
-  const [focus, setFocus] = useState({
-    title: null,
-    id: null,
-  });
+  const [focus, setFocus] = useState(null);
 
-  const [titleToBeChanged, setTitleToBeChanged] = useState(null);
   const [target, setTarget] = useState(null);
 
   const navigateTo = useNavigate();
@@ -121,29 +117,14 @@ export default function FlowGrid({ containerRef }) {
     navigateTo(`/flow?id=${flow.id}`);
   };
   const handleCloseContextMenu = () => {
+    console.log('click away');
     setTarget(null);
-    setIsMenuOpen(false);
-  };
-
-  const openAlert = () => {
-    setIsAlertOpen(true);
-  };
-
-  const openChangeTitle = () => {
-    setIsChangeTitleOpen(true);
-  };
-
-  const closeAlert = () => {
-    setIsAlertOpen(false);
-  };
-
-  const closeChangeTitle = () => {
-    setIsChangeTitleOpen(false);
+    setFocus(null);
+    // setIsMenuOpen(false);
   };
 
   const deleteFlow = (id) => {
     // flowdd = 'yuti@gmail.com-flow-1b6837f7-10d3-4501-9d9c-f5ad8be24f17';
-    setIsAlertOpen(false);
 
     instance
       .post('/flows/delete-flow', { id })
@@ -172,7 +153,6 @@ export default function FlowGrid({ containerRef }) {
           }),
         );
         renameTab(id, title);
-        setIsChangeTitleOpen(false);
       })
       .catch((e) => {
         console.log(e);
@@ -186,7 +166,7 @@ export default function FlowGrid({ containerRef }) {
   const startPress = (event, flow) => {
     pressTimer.current = setTimeout(() => {
       setTarget(event.currentTarget);
-      setIsMenuOpen(flow.id);
+      // setIsMenuOpen(flow.id);
       event.preventDefault();
       event.stopPropagation();
     }, 1000);
@@ -207,14 +187,23 @@ export default function FlowGrid({ containerRef }) {
             open={isAlertOpen}
             TransitionComponent={Transition}
             keepMounted
-            onClose={closeAlert}
+            onClose={() => setIsAlertOpen(false)}
           >
             <DialogTitle>
               {t('Do you want to delete the follow ') + focus.title + '?'}
             </DialogTitle>
             <DialogActions>
-              <Button onClick={() => deleteFlow(focus.id)}>{t('Yes')}</Button>
-              <Button onClick={closeAlert}>{t('Cancel')}</Button>
+              <Button
+                onClick={() => {
+                  deleteFlow(focus.id);
+                  setIsAlertOpen(false);
+                }}
+              >
+                {t('Yes')}
+              </Button>
+              <Button onClick={() => setIsAlertOpen(false)}>
+                {t('Cancel')}
+              </Button>
             </DialogActions>
           </Dialog>
         ) : (
@@ -222,8 +211,8 @@ export default function FlowGrid({ containerRef }) {
             open={isChangeTitleOpen}
             TransitionComponent={Transition}
             keepMounted
-            onClose={closeChangeTitle}
-            fullWidth="true"
+            onClose={() => setIsChangeTitleOpen(false)}
+            fullWidth
             maxWidth="sm"
           >
             <DialogTitle>{t('Change Name')}</DialogTitle>
@@ -235,21 +224,27 @@ export default function FlowGrid({ containerRef }) {
                 variant="standard"
                 label={t('Flow Name')}
                 multiline
-                value={focus.title}
+                value={focus.value}
                 onChange={(event) => {
-                  setTitleToBeChanged(event.target.value);
+                  setFocus((state) => {
+                    state.title = event.target.value;
+                    return state;
+                  });
                 }}
               />
             </DialogContent>
             <DialogActions>
               <Button
                 onClick={() => {
-                  changeTitle(focus.id, titleToBeChanged);
+                  changeTitle(focus.id, focus.title);
+                  setIsChangeTitleOpen(false);
                 }}
               >
                 {t('Confirm')}
               </Button>
-              <Button onClick={closeChangeTitle}>{t('Cancel')}</Button>
+              <Button onClick={() => setIsChangeTitleOpen(false)}>
+                {t('Cancel')}
+              </Button>
             </DialogActions>
           </Dialog>
         )
@@ -258,6 +253,7 @@ export default function FlowGrid({ containerRef }) {
           className={`${isMobile ? 'flow-container-mobile' : 'flow-container'}`}
         >
           {flows.map((flow, key) => {
+            console.log('flow', flow);
             const date = new Date();
             date.setTime(flow.updateAt);
             const formattedDate = date.toLocaleString();
@@ -267,7 +263,7 @@ export default function FlowGrid({ containerRef }) {
                   className="grid-item"
                   onContextMenu={(event) => {
                     setTarget(event.currentTarget);
-                    setIsMenuOpen((prev) => !prev);
+                    // setIsMenuOpen((prev) => !prev);
                     event.preventDefault();
                     event.stopPropagation();
                   }}
@@ -303,42 +299,46 @@ export default function FlowGrid({ containerRef }) {
                     )}
                   </FlowButton>
                   <Typography>{flow.name}</Typography>
-                  <Menu
-                    // autoFocusItem={open}
-                    open={isMenuOpen}
-                    anchorEl={target}
-                    anchorOrigin={{
-                      vertical: 'center',
-                      horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}
-                  >
-                    <MenuItem
-                      onClick={() => {
-                        setFocus({
-                          id: flow.id,
-                          title: flow.name,
-                        });
-                        openChangeTitle();
+                  {target ? (
+                    <Menu
+                      // autoFocusItem={open}
+                      open={true}
+                      anchorEl={target}
+                      anchorOrigin={{
+                        vertical: 'center',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
                       }}
                     >
-                      {t('Rename')}
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        setFocus({
-                          id: flow.id,
-                          title: flow.name,
-                        });
-                        openAlert();
-                      }}
-                    >
-                      {t('Delete')}
-                    </MenuItem>
-                  </Menu>
+                      <MenuItem
+                        onClick={() => {
+                          setFocus({
+                            id: flow.id,
+                            title: flow.name,
+                          });
+                          setIsChangeTitleOpen(true);
+                        }}
+                      >
+                        {t('Rename')}
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setFocus({
+                            id: flow.id,
+                            title: flow.name,
+                          });
+                          setIsAlertOpen(true);
+                        }}
+                      >
+                        {t('Delete')}
+                      </MenuItem>
+                    </Menu>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </ClickAwayListener>
             );

@@ -9,7 +9,7 @@ if (import.meta.env.VITE_DEV === '1') {
 console.log('bundle with route:', BASE_URL);
 
 const instance = axios.create({
-  baseURL: `http://${BASE_URL}/api`,
+  baseURL: `https://${BASE_URL}/api`,
   withCredentials: true,
 });
 
