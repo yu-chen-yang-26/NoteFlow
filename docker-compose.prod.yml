@@ -73,7 +73,7 @@ services:
   #     - ./noteflow-frontend:/frontend
 
   backend:
-    image: "node:lts"
+    image: "jounglab112a/noteflow-backend:2.0"
     working_dir: /backend
     command: sh -c "npm install && npm run check:migrate && npm run start"
     networks:
