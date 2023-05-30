@@ -20,30 +20,30 @@ class NodeRepo {
     await collection.insertOne(result);
   }
 
-  static async fetchNodes(user, nodeIds) {
-    const mongoClient = getMongoClient();
-    // 不需要 try：有問題 controller 層會 catch
+  // static async fetchNodes(user, nodeIds) {
+  //   const mongoClient = getMongoClient();
+  //   // 不需要 try：有問題 controller 層會 catch
 
-    const database = mongoClient.db('noteflow');
-    const collection = database.collection('nodeRepository');
+  //   const database = mongoClient.db('noteflow');
+  //   const collection = database.collection('nodeRepository');
 
-    const result = await collection.findOne(
-      {
-        user,
-      },
-      nodeIds
-        ? {
-            projection: {
-              nodes: {
-                $elemMatch: { id: { $in: nodeIds } },
-              },
-            },
-          }
-        : {},
-    );
+  //   const result = await collection.findOne(
+  //     {
+  //       user,
+  //     },
+  //     nodeIds
+  //       ? {
+  //           projection: {
+  //             nodes: {
+  //               $elemMatch: { id: { $in: nodeIds } },
+  //             },
+  //           },
+  //         }
+  //       : {},
+  //   );
 
-    return result.nodes;
-  }
+  //   return result.nodes;
+  // }
 
   static async newNode(user) {
     /**
