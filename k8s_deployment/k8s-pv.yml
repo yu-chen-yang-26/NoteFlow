@@ -12,7 +12,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: fast
   gcePersistentDisk:
-    pdName: mydisk
+    pdName: my-disk
     fsType: ext4
 
 ---
@@ -43,7 +43,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: fast
   gcePersistentDisk:
-    pdName: mydisk
+    pdName: my-disk
     fsType: ext4
 
 ---
@@ -74,7 +74,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: fast
   gcePersistentDisk:
-    pdName: mydisk
+    pdName: my-disk
     fsType: ext4
 
 ---
