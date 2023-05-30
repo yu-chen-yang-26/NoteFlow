@@ -1,7 +1,7 @@
 import request from 'supertest';
 import knex from 'knex';
-import server from '../src/app.js'
-import { expect } from 'chai'
+import server from '../src/app.js';
+import { expect } from 'chai';
 import crypto from 'crypto-js';
 
 const {
@@ -9,7 +9,7 @@ const {
   POSTGRES_PORT,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
-  POSTGRES_DB
+  POSTGRES_DB,
 } = process.env;
 
 const k = knex({
@@ -27,171 +27,148 @@ const info = {
   email: 'test123@gmail.com',
   password: crypto.SHA256('test123').toString(),
   name: 'test',
-}
+};
 
 const googler = {
   email: 'test1234@gmail.com',
   name: 'test',
-}
+};
 
 describe('user routine process', function () {
-
   before(async () => {
-    const getter1 = await k("users").first().where({email: info.email});
-    if(getter1){
-      await k("users").where({email: info.email}).del();
+    const getter1 = await k('users').first().where({ email: info.email });
+    if (getter1) {
+      await k('users').where({ email: info.email }).del();
     }
 
-    const getter2 = await k("users").first().where({email: googler.email});
-    if(getter2){
-      await k("users").where({email: googler.email}).del();
+    const getter2 = await k('users').first().where({ email: googler.email });
+    if (getter2) {
+      await k('users').where({ email: googler.email }).del();
     }
   });
 
   it('api: /api/user/register', async () => {
     const { name, email, password } = info;
-    const res = await request(server)
-      .post('/api/user/register')
-      .send({
-        user: {
-          name,
-          email,
-          password,
-        },
-      });
+    const res = await request(server).post('/api/user/register').send({
+      user: {
+        name,
+        email,
+        password,
+      },
+    });
     expect(res.status).equal(200);
   });
 
-
   it('api: /api/user/login', async () => {
     const { name, email, password } = info;
-    const res = await request(server)
-      .post('/api/user/login')
-      .send({
-        user: {
-          name,
-          email,
-          password
-        },
-      });
+    const res = await request(server).post('/api/user/login').send({
+      user: {
+        name,
+        email,
+        password,
+      },
+    });
     expect(res.status).equal(200);
   });
 
   it('api: /api/user/login(interal error)', async () => {
     const { name, email, password } = info;
-    const res = await request(server)
-      .post('/api/user/login')
-      .send({
-        olduser: {
-
-        },
-      });
+    const res = await request(server).post('/api/user/login').send({
+      olduser: {},
+    });
     expect(res.status).equal(422);
   });
 
   it('api: /api/user/google-login(not provide)', async () => {
-    const {name, email} = googler;
-    const res = await request(server)
-      .post('/api/user/google-login')
-      .send({
-        notUser:{
-
-        }
-      });
-      expect(res.statusCode).equal(422);
+    const { name, email } = googler;
+    const res = await request(server).post('/api/user/google-login').send({
+      notUser: {},
+    });
+    expect(res.statusCode).equal(422);
   });
 
   it('api: /api/user/google-login(new comer)', async () => {
-    const {name, email} = googler;
-    const res = await request(server)
-      .post('/api/user/google-login')
-      .send({
-        user: {
-          email,
-          name,
-        },
-      });
-      expect(res.statusCode).equal(200);
+    const { name, email } = googler;
+    const res = await request(server).post('/api/user/google-login').send({
+      user: {
+        email,
+        name,
+      },
+    });
+    expect(res.statusCode).equal(200);
   });
 
   it('api: /api/user/google-login(veteran)', async () => {
-    const {name, email} = googler;
-    const res = await request(server)
-      .post('/api/user/google-login')
-      .send({
-        user: {
-          email,
-          name,
-        },
-      });
-      expect(res.statusCode).equal(200);
+    const { name, email } = googler;
+    const res = await request(server).post('/api/user/google-login').send({
+      user: {
+        email,
+        name,
+      },
+    });
+    expect(res.statusCode).equal(200);
   });
 
   it('api: /api/user/reset-password-send-email(insufficient)', async () => {
-    const {name, email} = googler;
+    const { name, email } = googler;
     const res = await request(server)
       .post('/api/user/reset-password-send-email')
       .send({
-        email: ""
+        email: '',
       });
-      expect(res.statusCode).equal(422);
+    expect(res.statusCode).equal(422);
   });
 
   it('api: /api/user/reset-password-send-email(not found)', async () => {
     const res = await request(server)
       .post('/api/user/reset-password-send-email')
       .send({
-        email: "aaaccc@gmail.com"
+        email: 'aaaccc@gmail.com',
       });
-      expect(res.statusCode).equal(404);
+    expect(res.statusCode).equal(404);
   });
 
   it('api: /api/user/reset-password-renew(timeout)', async () => {
     const res = await request(server)
-    .post('/api/user/reset-password-renew')
-    .send({
-      email: "aaaccc@gmail.com"
-    });
+      .post('/api/user/reset-password-renew')
+      .send({
+        email: 'aaaccc@gmail.com',
+      });
 
     expect(res.status).equal(408);
   });
 
   it('api: /api/user/reset-password-send-email', async () => {
     const res = await request(server)
-    .post('/api/user/reset-password-send-email')
-    .send({
-      email: "1234@gmail.com"
-    });
+      .post('/api/user/reset-password-send-email')
+      .send({
+        email: '1234@gmail.com',
+      });
 
     expect(res.status).equal(200);
   });
 
   it('api: /api/user/reset-password-auth', async () => {
     const res = await request(server)
-    .post('/api/user/reset-password-auth')
-    .send({
-      token: "1234@gmail.com",
-      email: "1234@gmail.com"
-    });
+      .post('/api/user/reset-password-auth')
+      .send({
+        token: '1234@gmail.com',
+        email: '1234@gmail.com',
+      });
 
     expect(res.status).equal(408);
   });
-
-
 });
 
 describe('REAL user service, session withregarding', function () {
-
   let instance = request.agent(server);
 
   before(async () => {
     const { name, email, password } = info;
-    const getter1 = await k("users").first().where({email});
+    const getter1 = await k('users').first().where({ email });
 
-    if(!getter1){
-      await request(server)
-      .post('/api/user/register')
-      .send({
+    if (!getter1) {
+      await request(server).post('/api/user/register').send({
         user: {
           name,
           email,
@@ -200,63 +177,59 @@ describe('REAL user service, session withregarding', function () {
       });
     }
 
-    await instance
-      .post('/api/user/login')
-      .send({
-        user: {
-          name,
-          email,
-          password
-        },
-      });
-  })
-
-  it('api: /api/user/who-am-i', async () => {
-    const res = await instance
-    .get('/api/user/who-am-i')
-    .send();
-
-    expect(res.status).equal(200);
-    expect(res.text).equal(`{"email":"test123@gmail.com","logined":true,"name":"test","picture":null}`)
+    await instance.post('/api/user/login').send({
+      user: {
+        name,
+        email,
+        password,
+      },
+    });
   });
 
+  it('api: /api/user/who-am-i', async () => {
+    const res = await instance.get('/api/user/who-am-i').send();
+
+    expect(res.status).equal(200);
+    expect(res.text).equal(
+      `{"email":"test123@gmail.com","logined":true,"name":"test","picture":null}`,
+    );
+  });
 
   it('api: /api/user/reset-password-renew(unauthorized)', async () => {
     const res = await request(server)
-    .post('/api/user/reset-password-renew')
-    .send({
-      oldPassword: "123",
-      newPassword: "456"
-    });
+      .post('/api/user/reset-password-renew')
+      .send({
+        oldPassword: '123',
+        newPassword: '456',
+      });
 
     expect(res.status).equal(408);
   });
 
   it('api: /api/user/get-photo-url', async () => {
-
-    const {email} = info;
+    const { email } = info;
     const res = await instance
-    .get(`/api/user/get-photo-url?email=${email}`)
-    .expect(200) // 設定期望的狀態碼
-    .expect('Content-Type', 'application/json') // 設定期望的回應 Content-Type
-    .send();
+      .get(`/api/user/get-photo-url?email=${email}`)
+      .expect(200) // 設定期望的狀態碼
+      .expect('Content-Type', 'application/json') // 設定期望的回應 Content-Type
+      .send();
 
     expect(res.status).equal(200);
     expect(JSON.parse(res.text)).equal(null);
   });
 
   it('api: /api/user/set-photo', async () => {
-
     const res1 = await instance
-    .post('/api/user/set-photo')
-    .attach('image', `${process.cwd()}/tests/assets/yoshi.png`)
+      .post('/api/user/set-photo')
+      .attach('image', `${process.cwd()}/tests/assets/yoshi.png`);
 
     const { email } = info;
-    const res2 = await instance.get(`/api/user/get-photo-url?email=${email}`).send();
+    const res2 = await instance
+      .get(`/api/user/get-photo-url?email=${email}`)
+      .send();
 
-
-    expect(res1.status).equal(200, "set photo not succeeded");
-    expect(res2.status).equal(200, "get photo not succeeded");
+    expect(res1.status).equal(200, 'set photo not succeeded');
+    expect(res2.status).equal(200, 'get photo not succeeded');
 
     expect(/^"test123@gmail.com/.test(res2.text)).equal(true);
 
@@ -270,13 +243,8 @@ describe('REAL user service, session withregarding', function () {
   });
 });
 
-describe('error condition', function(){
-
+describe('error condition', function () {
   it('api: /user/login(error)', async () => {
-    const res = await request(server)
-    .post('/user/login')
-    .send();
+    const res = await request(server).post('/user/login').send();
   });
-
-
-})
+});

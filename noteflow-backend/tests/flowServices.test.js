@@ -30,6 +30,16 @@ const info = {
   name: 'test',
 };
 
+const info2 = {
+  email: 'test1234@gmail.com',
+  password: crypto.SHA256('test123').toString(),
+  name: 'test2',
+};
+
+const ghost = {
+  email: '99999999999999999999999@gmail.com',
+};
+
 describe('Flow init', () => {
   const instance = request.agent(server);
 
@@ -182,5 +192,215 @@ describe('Delete Flows😶‍🌫️', () => {
     await instance.post('/api/flows/delete-flow').expect(200).send({
       id: flowId,
     });
+  });
+});
+
+describe('colab list handling', () => {
+  const instance1 = request.agent(server);
+  const instance2 = request.agent(server);
+  let flowId1;
+
+  before(async () => {
+    let { name, email, password } = info;
+    const getter1 = await k('users').first().where({ email });
+
+    if (!getter1) {
+      await instance1.post('/api/user/register').send({
+        user: {
+          name,
+          email,
+          password,
+        },
+      });
+    }
+
+    await instance1.post('/api/user/login').send({
+      user: {
+        name,
+        email,
+        password,
+      },
+    });
+
+    ({ name, email, password } = info2);
+    const getter2 = await k('users').first().where({ email });
+
+    if (!getter2) {
+      await instance2.post('/api/user/register').send({
+        user: {
+          name,
+          email,
+          password,
+        },
+      });
+    }
+
+    await instance2.post('/api/user/login').send({
+      user: {
+        name,
+        email,
+        password,
+      },
+    });
+  });
+
+  beforeEach(async () => {
+    const res = await instance1.post('/api/flows/create').send();
+    flowId1 = JSON.parse(res.text);
+    console.log('flow id:', flowId1);
+  });
+
+  it('Revise colab list😎️🤩️', async () => {
+    const res = await instance1
+      .get(`/api/flows/get-colab-list?id=${flowId1}`)
+      .expect(200)
+      .send();
+    const colabList = JSON.parse(res.text);
+    expect(colabList.length).equal(1);
+
+    const res2 = await instance1
+      .post('/api/flows/revise-colab-list')
+      .expect(200)
+      .send({
+        id: flowId1,
+        colabs: [
+          {
+            email: info.email,
+            type: 'original',
+            status: 200,
+          },
+          {
+            email: info2.email,
+            type: 'new',
+            status: 200,
+          },
+        ],
+      });
+    const result2 = JSON.parse(res2.text);
+    result2.forEach((data) => {
+      expect(data.status).equal(200);
+    });
+    expect(result2.length).equal(2);
+  });
+
+  it('Invited a ghost👻️👻️', async () => {
+    const res = await instance1
+      .post('/api/flows/revise-colab-list')
+      .expect(200)
+      .send({
+        id: flowId1,
+        colabs: [
+          {
+            email: info.email,
+            type: 'original',
+            status: 200,
+          },
+          {
+            email: ghost.email,
+            type: 'new',
+            status: 200,
+          },
+        ],
+      });
+
+    const result = JSON.parse(res.text);
+
+    let found = false;
+    result.forEach((data) => {
+      if (data.email === ghost.email) {
+        found = true;
+        expect(data.status).equal(404);
+      }
+    });
+
+    expect(found).equal(true);
+  });
+
+  it('Remove a peer😠️😠️', async () => {
+    await instance1
+      .post('/api/flows/revise-colab-list')
+      .expect(200)
+      .send({
+        id: flowId1,
+        colabs: [
+          {
+            email: info.email,
+            type: 'original',
+            status: 200,
+          },
+          {
+            email: info2.email,
+            type: 'new',
+            status: 200,
+          },
+        ],
+      });
+
+    const res = await instance1
+      .post('/api/flows/revise-colab-list')
+      .expect(200)
+      .send({
+        id: flowId1,
+        colabs: [
+          {
+            email: info.email,
+            type: 'original',
+            status: 200,
+          },
+          {
+            email: info2.email,
+            type: 'remove',
+            status: 200,
+          },
+        ],
+      });
+
+    const result = JSON.parse(res.text);
+
+    let found = false;
+    result.forEach((data) => {
+      if (data.email === info.email) {
+        found = true;
+        expect(data.status).equal(200);
+      }
+    });
+
+    expect(found).equal(true);
+
+    const res3 = await instance1
+      .get(`/api/flows/get-colab-list?id=${flowId1}`)
+      .expect(200)
+      .send();
+    const colabList = JSON.parse(res3.text);
+    expect(colabList.length).equal(1);
+  });
+
+  it('Remove the master😓️😓️', async () => {
+    const res = await instance1
+      .post('/api/flows/revise-colab-list')
+      .expect(200)
+      .send({
+        id: flowId1,
+        colabs: [
+          {
+            email: info.email,
+            type: 'remove',
+            status: 200,
+          },
+        ],
+      });
+
+    const result = JSON.parse(res.text);
+
+    let found = false;
+    result.forEach((data) => {
+      if (data.email === info.email) {
+        found = true;
+        expect(data.status).equal(401);
+      }
+    });
+
+    expect(result.length).equal(1);
+    expect(found).equal(true);
   });
 });
