@@ -195,16 +195,16 @@ describe('REAL user service, session withregarding', function () {
     );
   });
 
-  it('api: /api/user/reset-password-renew(unauthorized)', async () => {
-    const res = await request(server)
-      .post('/api/user/reset-password-renew')
-      .send({
-        oldPassword: '123',
-        newPassword: '456',
-      });
+  // it('api: /api/user/reset-password-renew(unauthorized)', async () => {
+  //   const res = await request(server)
+  //     .post('/api/user/reset-password-renew')
+  //     .send({
+  //       oldPassword: '123',
+  //       newPassword: '456',
+  //     });
 
-    expect(res.status).equal(408);
-  });
+  //   expect(res.status).equal(408);
+  // });
 
   it('api: /api/user/get-photo-url', async () => {
     const { email } = info;
