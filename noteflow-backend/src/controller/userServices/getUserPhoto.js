@@ -9,10 +9,18 @@ const getUserPhoto = async (ctx) => {
   if (!email) {
     email = ctx.session.email;
   }
-
   let result;
   try {
     result = await db('users').first().where({ email });
+    if (result.picture) {
+      if (
+        !result.picture.startsWith('http') &&
+        !fs.existsSync(path.join(process.cwd(), 'images', result.picture))
+      ) {
+        result.picture = null;
+        db('users').insert({ picture: null }).where({ email });
+      }
+    }
   } catch (e) {}
 
   ctx.status = CODE.success;
