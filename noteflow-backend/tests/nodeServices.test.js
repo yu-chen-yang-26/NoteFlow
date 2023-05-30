@@ -84,7 +84,7 @@ describe('Node service', function () {
 
   let instance = request.agent(server);
   let nodeId;
-  
+
   before(async () => {
     const { name, email, password } = info;
     const getter1 = await k("users").first().where({email});
@@ -144,16 +144,17 @@ describe('Node service', function () {
     })
 
     expect(res1.status).equal(200);
-    
+
     const res2 = await instance.get(`/api/nodes/get-title?id=${nodeId}`).send();
     expect(JSON.parse(res2.text)).equal(target)
   })
+
 });
 
 describe('Library functionality test', function () {
   let instance = request.agent(server);
   let nodeId;
-  
+
   before(async () => {
     const { name, email, password } = info;
     const getter1 = await k("users").first().where({email});
@@ -200,6 +201,13 @@ describe('Library functionality test', function () {
 
     const res = await instance.post("/api/nodes/new-node").send();
     nodeId = JSON.parse(res.text);
+  })
+
+  it('api: /api/library', async () => {
+    await instance.get('/api/library').send();
+    const res = await instance.get(`/api/library`).send();
+
+    expect(res.status).equal(200);
   })
 
   it('api: /api/library/is-favorite', async () => {
