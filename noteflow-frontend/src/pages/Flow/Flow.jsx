@@ -74,8 +74,6 @@ function Flow() {
   const [nodeIsEditing, setNodeIsEditing] = useState(null);
   const { nodeMenuOpen, setNodeMenuOpen } = useParams();
 
-  console.log('mini ref:', miniRef.current);
-
   // for node remove
   const [lastSelectedNode, setLastSelectedNode] = useState(null);
   const [lastSelectedEdge, setLastSelectedEdge] = useState(null);
@@ -402,7 +400,7 @@ function Flow() {
     instance
       .post('/nodes/new-node')
       .then((res) => {
-        const editorId = res.data.nodeId;
+        const editorId = res.data;
         const newNode = {
           id: nodeId.current.toString(),
           data: {

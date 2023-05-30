@@ -33,8 +33,6 @@ export default function ToolBar({
   const handleShow = () => setShow(true);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  console.log('anchor element:', anchorEl);
-
   const open = Boolean(anchorEl);
 
   const changeBG = (bg) => {
