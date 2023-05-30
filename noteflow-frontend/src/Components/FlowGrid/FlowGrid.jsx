@@ -116,7 +116,7 @@ export default function FlowGrid({ containerRef }) {
     }); // name 應該在 flows/create 拿
     navigateTo(`/flow?id=${flow.id}`);
   };
-  const handleCloseContextMenu = () => {
+  const handleCloseContextMenu = (event) => {
     console.log('click away');
     setTarget(null);
     setFocus(null);
@@ -124,8 +124,6 @@ export default function FlowGrid({ containerRef }) {
   };
 
   const deleteFlow = (id) => {
-    // flowdd = 'yuti@gmail.com-flow-1b6837f7-10d3-4501-9d9c-f5ad8be24f17';
-
     instance
       .post('/flows/delete-flow', { id })
       .then((res) => {
@@ -258,89 +256,91 @@ export default function FlowGrid({ containerRef }) {
             date.setTime(flow.updateAt);
             const formattedDate = date.toLocaleString();
             return (
-              <ClickAwayListener onClickAway={handleCloseContextMenu} key={key}>
-                <div
-                  className="grid-item"
-                  onContextMenu={(event) => {
-                    setTarget(event.currentTarget);
-                    // setIsMenuOpen((prev) => !prev);
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }}
-                  onTouchStart={(event) => {
-                    startPress(event, flow);
-                  }}
-                  onTouchEnd={cancelPress}
-                  key={key}
+              <div
+                className="grid-item"
+                onContextMenu={(event) => {
+                  setTarget(event.currentTarget);
+                  // setIsMenuOpen((prev) => !prev);
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                onTouchStart={(event) => {
+                  startPress(event, flow);
+                }}
+                onTouchEnd={cancelPress}
+                key={key}
+              >
+                <FlowButton
+                  onClick={() => toFlow(flow)}
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
                 >
-                  <FlowButton
-                    onClick={() => toFlow(flow)}
-                    aria-controls="simple-menu"
-                    aria-haspopup="true"
-                  >
-                    {flow.thumbnail !== '' ? (
-                      <img
-                        style={{ objectFit: 'cover' }}
-                        loading="lazy"
-                        alt="flow.thumbnail"
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography>{t('Last Edit Time:')}</Typography>
-                        <Typography>{formattedDate}</Typography>
-                      </div>
-                    )}
-                  </FlowButton>
-                  <Typography>{flow.name}</Typography>
-                  {target ? (
-                    <Menu
-                      // autoFocusItem={open}
-                      open={true}
-                      anchorEl={target}
-                      anchorOrigin={{
-                        vertical: 'center',
-                        horizontal: 'center',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
+                  {flow.thumbnail !== '' ? (
+                    <img
+                      style={{ objectFit: 'cover' }}
+                      loading="lazy"
+                      alt="flow.thumbnail"
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
                     >
-                      <MenuItem
-                        onClick={() => {
-                          setFocus({
-                            id: flow.id,
-                            title: flow.name,
-                          });
-                          setIsChangeTitleOpen(true);
-                        }}
-                      >
-                        {t('Rename')}
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setFocus({
-                            id: flow.id,
-                            title: flow.name,
-                          });
-                          setIsAlertOpen(true);
-                        }}
-                      >
-                        {t('Delete')}
-                      </MenuItem>
-                    </Menu>
-                  ) : (
-                    <></>
+                      <Typography>{t('Last Edit Time:')}</Typography>
+                      <Typography>{formattedDate}</Typography>
+                    </div>
                   )}
-                </div>
-              </ClickAwayListener>
+                </FlowButton>
+                <Typography>{flow.name}</Typography>
+                <ClickAwayListener
+                  onClickAway={handleCloseContextMenu}
+                  key={key}
+                >
+                  <Menu
+                    // autoFocusItem={open}
+                    open={!!target}
+                    anchorEl={target}
+                    anchorOrigin={{
+                      vertical: 'center',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    style={{
+                      border: '1px solid red',
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        setFocus({
+                          id: flow.id,
+                          title: flow.name,
+                        });
+                        setIsChangeTitleOpen(true);
+                      }}
+                    >
+                      {t('Rename')}
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setFocus({
+                          id: flow.id,
+                          title: flow.name,
+                        });
+                        setIsAlertOpen(true);
+                      }}
+                    >
+                      {t('Delete')}
+                    </MenuItem>
+                  </Menu>
+                </ClickAwayListener>
+              </div>
             );
           })}
 
