@@ -2,8 +2,6 @@
 import Koa from 'koa';
 import { koaBody } from 'koa-body';
 
-
-
 import logger from 'koa-logger';
 import { WebSocketServer } from 'ws';
 import http from 'http';
@@ -57,6 +55,7 @@ const server = http.createServer(app.callback());
 const wsServer = new WebSocketServer({ server });
 
 app.use(async (ctx, next) => {
+  
   await next();
 });
 
