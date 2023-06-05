@@ -2,8 +2,6 @@
 import Koa from 'koa';
 import { koaBody } from 'koa-body';
 
-
-
 import logger from 'koa-logger';
 import { WebSocketServer } from 'ws';
 import http from 'http';
@@ -12,7 +10,7 @@ import http from 'http';
 import koaStatic from 'koa-static';
 import send from 'koa-send';
 import cors from '@koa/cors';
-import WebSocketJSONStream from '@teamwork/websocket-json-stream';
+import WebSocketJSONStream from '@vnatic/websocket-json-stream';
 import path from 'path';
 import fs from 'fs';
 

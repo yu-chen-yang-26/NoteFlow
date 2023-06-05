@@ -115,8 +115,8 @@ services:
     depends_on:
       - mongo
       - postgres
-    volumes:
-      - ./noteflow-backend:/backend
+    # volumes:
+    #   - ./noteflow-backend:/backend
 
   migrate:
     image: "node:lts"

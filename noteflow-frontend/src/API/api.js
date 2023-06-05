@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let BASE_URL = 'noteflow.live';
+let BASE_URL = 'localhost';
 
 if (import.meta.env.VITE_DEV === '1') {
   BASE_URL = `localhost`;

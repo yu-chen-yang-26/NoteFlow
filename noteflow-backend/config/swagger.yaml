@@ -81,15 +81,14 @@ paths:
           content:
             application/json:
               example:
-                errors:
-                  You didn't provide sufficient information.
+                errors: You didn't provide sufficient information.
         '401':
           description: bad request
           content:
             application/json:
               example:
-                errors:
-                  Forbidden, you already have  an email.
+                errors: Forbidden, you already have  an email.
+
   /api/user/login:
     post:
       summary: 登入
@@ -125,15 +124,13 @@ paths:
           content:
             application/json:
               example:
-                errors:
-                  email or password is not valid
+                errors: email or password is not valid
         '422':
           description: input data error
           content:
             application/json:
               example:
-                errors:
-                    email or password input error
+                errors: email or password input error
   
   
   /api/user/who-am-i:
