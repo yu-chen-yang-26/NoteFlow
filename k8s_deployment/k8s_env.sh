@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export NODE_ENV=development
-export VITE_DEV=1
 export NOTEFLOW_BACKEND=backend
 export PHOTO_FS=noteflow.live
 export BACKEND_EXPOSE_PORT=3000
@@ -37,9 +36,9 @@ export secret=secret
 
 export S3_BUCKET_REGION=ap-northeast-1
 
-export EMAIL_HOST=https://localhost
-export EMAIL_USER=sdmnoteflow@gmail.com
-export EMAIL_PASSWORD=jounglab112a
-export REFRESH_TOKEN=1//04vU3MLSFDeuHCgYIARAAGAQSNwF-L9IrVWpGmc-faTN90oNZhAmsz6bSihr37YJOdwlzRybSY697OZCe0VHQh0vQYTHfpAJckbQ
-export CLIENT_SECRET=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
-export CLIENT_ID=390935399634-bpk359lp2lks426la19bk11b1hv9c4m8.apps.googleusercontent.com
+export EMAIL_HOST=
+export EMAIL_USER=
+export EMAIL_PASSWORD=
+export REFRESH_TOKEN=
+export CLIENT_SECRET=
+export CLIENT_ID=
