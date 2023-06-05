@@ -55,6 +55,7 @@ const server = http.createServer(app.callback());
 const wsServer = new WebSocketServer({ server });
 
 app.use(async (ctx, next) => {
+  
   await next();
 });
 

@@ -215,6 +215,13 @@ paths:
         description: get who is authorized to enter into the flow
         tags:
           - flows
+        parameters:
+          - name: id
+            in: query
+            description: 拿到可以共同編輯這個 Flow 的名單
+            required: true
+            schema:
+              type: integer
         responses:
           '200':
             description: successfully fetch colab list of a flow
@@ -239,9 +246,9 @@ paths:
       tags:
         - flows
       parameters:
-        - name: page
+        - name: id
           in: query
-          description: 第幾次刷新(從零開始計數)
+          description: specific flow id
           required: true
           schema:
             type: string
@@ -258,7 +265,7 @@ paths:
                   
   /api/flows/set-title:
     post: 
-      summary: 更改特定 flow 的 title (undone)
+      summary: 更改特定 flow 的 title
       tags:
         - flows
       requestBody:
@@ -290,34 +297,16 @@ paths:
   
   /api/flows/create:
     post:
-      summary: 新增一個 Flow 到使用者的 Flow 倉庫中 (undone)
+      summary: 新增一個 Flow 到使用者的 Flow 倉庫中
       tags:
         - flows
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-              example:
-                user:
-                  name: test
-                  email: test@gmail.com
-                  password: test
       responses:
         '200':    # status code
-          description: 成功獲取收藏
+          description: 成功
           content:
-            application/json:
+             application/json:
               schema:
-                type: object
+                type: boolean
                 items:
                   type: string
         '500':
