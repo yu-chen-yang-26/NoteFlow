@@ -36,6 +36,9 @@ docker compose --env-file .env.local up -d
 
 docker compose --env-file .env.local down
 ```
+## 其他說明
+
+本地版本沒有 SSO，如果需要測試 SSO 請使用線上版本
 
 ## 線上版本
 
