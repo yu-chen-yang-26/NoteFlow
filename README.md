@@ -39,7 +39,7 @@ docker compose --env-file .env.local down
 ## 其他說明
 
 1. 本地版本沒有 SSO，如果需要測試 SSO 請使用線上版本
-2. .env 以及 k8s_deployment 資料夾中的 k8s_env.sh 需要填上對應的值，這部分已在 email 中附給老師
+2. .env.local 以及 k8s_deployment 資料夾中的 k8s_env.sh 需要填上對應的值，這部分已在 email 中附給老師
 
 ## 線上版本
 
